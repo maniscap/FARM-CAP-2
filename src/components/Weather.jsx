@@ -624,7 +624,6 @@ const Weather = () => {
            </span>
          </div>
          <div style={styles.topRight}>
-            <button onClick={() => navigate(-1)} style={styles.iconBtn} aria-label="Go Back"><IoMdArrowBack size={26}/></button>
             <button onClick={handleRefresh} style={styles.iconBtn}><IoMdRefresh size={22}/></button>
             <button onClick={toggleUnit} style={styles.unitBtn}>°{unit}</button>
             <button onClick={handleOpenCityManager} style={styles.iconBtn}><IoMdAdd size={24}/></button>
@@ -906,7 +905,7 @@ const Weather = () => {
                   <WiTime3 size={18}/> 24-HOUR FORECAST
               </motion.p>
               <motion.div 
-                  className="no-swipe" 
+                  className="no-swipe no-scrollbar" 
                   style={styles.hourlyScroll}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
