@@ -57,7 +57,7 @@ function App() {
           </main>
 
           {/* Bottom Navigation Bar */}
-          <nav className="w-full bg-[#1e293b]/90 backdrop-blur-xl border-t border-slate-700 shadow-[0_-4px_20px_rgba(0,0,0,0.5)] fixed bottom-0 left-0 z-20 pb-safe">
+          <nav className="w-full bg-[#020617]/50 backdrop-blur-[30px] backdrop-saturate-[180%] border-t border-white/[0.08] shadow-[0_-10px_30px_rgba(0,0,0,0.5)] fixed bottom-0 left-0 z-20 pb-safe">
             <div className="flex justify-around items-center h-16 max-w-md mx-auto">
               
               {/* Home Nav Item */}
