@@ -43,14 +43,37 @@ export default function WeatherHeader({ handleLogout }) {
   };
 
   // Weather Icon Logic
+  const AppleWeatherIcon = () => (
+    <svg width="45" height="45" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0px 6px 8px rgba(0,0,0,0.15))' }}>
+      <defs>
+        <radialGradient id="sunGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#FFE872" />
+          <stop offset="100%" stopColor="#FFA800" />
+        </radialGradient>
+        <linearGradient id="cloudGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="100%" stopColor="#E2E8F0" />
+        </linearGradient>
+      </defs>
+      {/* Sun glow */}
+      <circle cx="28" cy="18" r="12" fill="#FFA800" opacity="0.4" filter="blur(4px)" />
+      {/* Sun */}
+      <circle cx="28" cy="18" r="10" fill="url(#sunGrad)" />
+      {/* Cloud shadow */}
+      <path d="M16 35C12.6863 35 10 32.3137 10 29C10 25.6863 12.6863 23 16 23C16.7738 23 17.5133 23.1466 18.1965 23.4116C19.5113 19.1566 23.464 16 28 16C33.5228 16 38 20.4772 38 26C38 26.1388 37.9972 26.2769 37.9916 26.4144C40.2711 27.2573 42 29.4316 42 32C42 35.3137 39.3137 38 36 38H16Z" fill="rgba(0,0,0,0.1)" filter="blur(2px)" />
+      {/* Cloud */}
+      <path d="M16 34C12.6863 34 10 31.3137 10 28C10 24.6863 12.6863 22 16 22C16.7738 22 17.5133 22.1466 18.1965 22.4116C19.5113 18.1566 23.464 15 28 15C33.5228 15 38 19.4772 38 25C38 25.1388 37.9972 25.2769 37.9916 25.4144C40.2711 26.2573 42 28.4316 42 31C42 34.3137 39.3137 37 36 37H16Z" fill="url(#cloudGrad)" />
+    </svg>
+  );
+
   const getWeatherIcon = () => {
-    if (!weatherData) return <Sun className="w-10 h-10 text-white drop-shadow-md" />;
+    if (!weatherData) return <AppleWeatherIcon />;
     const condition = weatherData.current.condition.text.toLowerCase();
     
     if (condition.includes('rain') || condition.includes('drizzle')) return <CloudRain className="w-10 h-10 text-white drop-shadow-md" />;
     if (condition.includes('thunder') || condition.includes('storm')) return <CloudLightning className="w-10 h-10 text-white drop-shadow-md" />;
-    if (condition.includes('cloud') || condition.includes('overcast')) return <Cloud className="w-10 h-10 text-white drop-shadow-md" />;
-    return <CloudSun className="w-10 h-10 drop-shadow-md" color="#FCD34D" />;
+    if (condition.includes('cloud') || condition.includes('overcast') || condition.includes('partly')) return <AppleWeatherIcon />;
+    return <AppleWeatherIcon />;
   };
 
   return (
