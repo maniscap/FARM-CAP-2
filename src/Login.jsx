@@ -77,7 +77,7 @@ export default function Login({ onLogin }) {
     <div className="fixed inset-0 w-full h-full flex justify-center items-center z-0 font-sans">
       {/* Blurred Background Image */}
       <div 
-        className="absolute inset-0 w-full h-full bg-cover bg-center bg-black blur-[8px] scale-110 z-[-2]"
+        className="absolute inset-0 w-full h-full bg-cover bg-center bg-black blur-[4px] scale-110 z-[-2]"
         style={{ backgroundImage: `url('${bgImage}')` }}
       />
       {/* Darkening Overlay for better contrast */}
@@ -86,9 +86,10 @@ export default function Login({ onLogin }) {
       {/* Glass Card */}
       <div className="w-full max-w-[360px] text-center bg-white/10 backdrop-blur-md p-10 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/20 relative overflow-hidden z-10">
         
-        <div className="mb-8">
-          <h2 className="text-white m-0 font-bold text-[32px] drop-shadow-lg tracking-wide">Sign In</h2>
-          <p className="text-white/90 mt-2 text-[16px] font-semibold drop-shadow-md">Access your Farm Cap dashboard</p>
+        <div className="mb-6 flex flex-col items-center">
+          <div className="text-5xl mb-3 drop-shadow-[0_2px_5px_rgba(0,0,0,0.3)]">🧢</div>
+          <h2 className="text-white m-0 font-bold text-[32px] drop-shadow-lg tracking-wide">FARM CAP 2</h2>
+          <p className="text-white/90 mt-2 text-[15px] font-semibold drop-shadow-md">Access your dashboard</p>
         </div>
 
         {error && (
