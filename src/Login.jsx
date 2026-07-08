@@ -74,29 +74,35 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div 
-      className="fixed inset-0 w-full h-full bg-cover bg-center bg-black flex justify-center items-center z-0 transition-all duration-1000 font-sans"
-      style={{ backgroundImage: `url('${bgImage}')` }}
-    >
-      <div className="w-full max-w-[360px] text-center bg-transparent backdrop-blur-[12px] backdrop-saturate-[120%] backdrop-brightness-[110%] p-10 rounded-[36px] shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_8px_32px_rgba(0,0,0,0.15)] border border-white/10 border-t-white/30 border-l-white/20 relative overflow-hidden">
+    <div className="fixed inset-0 w-full h-full flex justify-center items-center z-0 font-sans">
+      {/* Blurred Background Image */}
+      <div 
+        className="absolute inset-0 w-full h-full bg-cover bg-center bg-black blur-[8px] scale-110 z-[-2]"
+        style={{ backgroundImage: `url('${bgImage}')` }}
+      />
+      {/* Darkening Overlay for better contrast */}
+      <div className="absolute inset-0 w-full h-full bg-black/30 z-[-1]" />
+
+      {/* Glass Card */}
+      <div className="w-full max-w-[360px] text-center bg-white/10 backdrop-blur-md p-10 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/20 relative overflow-hidden z-10">
         
-        <div className="mb-6">
-          <h2 className="text-white m-0 font-semibold text-[26px] drop-shadow-md tracking-wide">Sign In</h2>
-          <p className="text-white/80 mt-2 text-[14px] font-normal">Access your Farm Cap dashboard</p>
+        <div className="mb-8">
+          <h2 className="text-white m-0 font-bold text-[32px] drop-shadow-lg tracking-wide">Sign In</h2>
+          <p className="text-white/90 mt-2 text-[16px] font-semibold drop-shadow-md">Access your Farm Cap dashboard</p>
         </div>
 
         {error && (
-          <div className="text-white text-[13px] bg-red-500/60 backdrop-blur-md p-3 rounded-[14px] mb-4 font-normal shadow-md">
+          <div className="text-white text-[14px] bg-red-600/90 backdrop-blur-md p-3 rounded-[12px] mb-6 font-semibold shadow-lg border border-red-400">
             {error}
           </div>
         )}
 
         <div id="recaptcha-container"></div>
-        <form onSubmit={confirmationResult ? handleVerifyOtp : handleSendOtp} className="flex flex-col gap-4">
+        <form onSubmit={confirmationResult ? handleVerifyOtp : handleSendOtp} className="flex flex-col gap-5">
           {!confirmationResult ? (
             <>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/90 font-medium text-[16px] z-10">+91</span>
+                <span className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-800 font-bold text-[17px] z-10">+91</span>
                 <input 
                   type="tel" 
                   placeholder="Phone Number" 
@@ -104,14 +110,14 @@ export default function Login({ onLogin }) {
                   maxLength="10"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
-                  className="w-full p-3.5 pl-[56px] rounded-[20px] border border-white/20 border-t-white/40 border-l-white/30 text-[16px] outline-none bg-white/10 backdrop-blur-[12px] backdrop-saturate-[120%] transition-all text-white font-normal box-border placeholder:text-white/60 focus:bg-white/20 focus:border-white/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_4px_15px_rgba(0,0,0,0.1)]"
+                  className="w-full p-4 pl-[64px] rounded-[16px] border-none text-[17px] outline-none bg-white/95 transition-all text-gray-900 font-bold box-border placeholder:text-gray-500 focus:bg-white focus:ring-4 focus:ring-white/40 shadow-[0_4px_15px_rgba(0,0,0,0.2)]"
                 />
               </div>
               
               <button 
                 type="submit" 
                 disabled={!isButtonEnabled}
-                className={`p-3.5 border border-white/20 border-t-white/40 border-l-white/30 rounded-[20px] text-[16px] font-medium transition-all duration-300 w-full text-white backdrop-blur-[12px] backdrop-saturate-[120%] shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_4px_15px_rgba(0,0,0,0.1)] ${isButtonEnabled ? 'bg-white/20 cursor-pointer hover:bg-white/30 hover:scale-[1.02]' : 'bg-white/5 opacity-60 cursor-not-allowed'}`}
+                className={`p-4 rounded-[16px] text-[17px] font-bold transition-all duration-300 w-full text-white shadow-[0_4px_15px_rgba(0,0,0,0.2)] ${isButtonEnabled ? 'bg-[#4CAF50] cursor-pointer hover:bg-[#43a047] hover:scale-[1.02]' : 'bg-gray-500 opacity-60 cursor-not-allowed'}`}
               >
                 Send OTP
               </button>
@@ -124,32 +130,32 @@ export default function Login({ onLogin }) {
                 required 
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                className="w-full p-3.5 rounded-[20px] border border-white/20 border-t-white/40 border-l-white/30 text-[20px] outline-none bg-white/10 backdrop-blur-[12px] backdrop-saturate-[120%] transition-all text-white box-border text-center tracking-[6px] font-normal focus:bg-white/20 focus:border-white/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_4px_15px_rgba(0,0,0,0.1)]" 
+                className="w-full p-4 rounded-[16px] border-none text-[24px] outline-none bg-white/95 transition-all text-gray-900 box-border text-center tracking-[8px] font-bold focus:bg-white focus:ring-4 focus:ring-white/40 shadow-[0_4px_15px_rgba(0,0,0,0.2)]" 
               />
               <button 
                 type="submit" 
-                className="p-3.5 bg-white/20 backdrop-blur-[12px] backdrop-saturate-[120%] border border-white/20 border-t-white/40 border-l-white/30 rounded-[20px] text-[16px] font-medium transition-all duration-300 w-full text-white hover:bg-white/30 hover:scale-[1.02] shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_4px_15px_rgba(0,0,0,0.1)] cursor-pointer"
+                className="p-4 bg-[#4CAF50] rounded-[16px] text-[17px] font-bold transition-all duration-300 w-full text-white hover:bg-[#43a047] hover:scale-[1.02] shadow-[0_4px_15px_rgba(0,0,0,0.2)] cursor-pointer"
               >
                 Verify Code
               </button>
-              <p className="text-[13px] text-white/80 font-normal mt-2 cursor-pointer hover:text-white transition-all" onClick={() => setConfirmationResult(null)}>
+              <p className="text-[14px] text-white font-semibold mt-2 cursor-pointer hover:underline transition-all drop-shadow-md" onClick={() => setConfirmationResult(null)}>
                 Use a different number
               </p>
             </>
           )}
         </form>
 
-        <div className="flex items-center my-6 text-white/60 text-[12px] font-normal">
-          <div className="flex-1 h-px bg-white/20"></div>
-          <span className="mx-4">or</span>
-          <div className="flex-1 h-px bg-white/20"></div>
+        <div className="flex items-center my-7 text-white/90 text-[14px] font-bold drop-shadow-md">
+          <div className="flex-1 h-px bg-white/40"></div>
+          <span className="mx-4">OR</span>
+          <div className="flex-1 h-px bg-white/40"></div>
         </div>
 
         <button 
           onClick={handleGoogleLogin} 
-          className="w-full p-3.5 bg-white/10 backdrop-blur-[12px] backdrop-saturate-[120%] text-white border border-white/20 border-t-white/40 border-l-white/30 rounded-[20px] cursor-pointer text-[15px] flex items-center justify-center font-medium transition-all hover:bg-white/20 hover:scale-[1.02] shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_4px_15px_rgba(0,0,0,0.1)]"
+          className="w-full p-4 bg-white/95 text-gray-900 rounded-[16px] cursor-pointer text-[16px] flex items-center justify-center font-bold transition-all hover:bg-white hover:scale-[1.02] shadow-[0_4px_15px_rgba(0,0,0,0.2)]"
         >
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" className="w-[18px] mr-[12px]" />
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" className="w-[20px] mr-[12px]" />
           Continue with Google
         </button>
 
