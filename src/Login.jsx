@@ -75,42 +75,28 @@ export default function Login({ onLogin }) {
 
   return (
     <div 
-      className="fixed inset-0 w-full h-full bg-cover bg-center bg-black flex justify-center items-center z-0 transition-all duration-1000 font-sans tracking-tight"
+      className="fixed inset-0 w-full h-full bg-cover bg-center bg-black flex justify-center items-center z-0 transition-all duration-1000 font-sans"
       style={{ backgroundImage: `url('${bgImage}')` }}
     >
-      <div className="w-full max-w-[360px] text-center bg-[#f5f5f7]/30 backdrop-blur-3xl p-10 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-white/50 relative overflow-hidden">
+      <div className="w-full max-w-[360px] text-center bg-transparent backdrop-blur-[12px] backdrop-saturate-[120%] backdrop-brightness-[110%] p-10 rounded-[36px] shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_8px_32px_rgba(0,0,0,0.15)] border border-white/10 border-t-white/30 border-l-white/20 relative overflow-hidden">
         
-        <div className="mb-8">
-          <h2 className="text-white m-0 font-bold text-[28px] tracking-tight drop-shadow-md">Sign In</h2>
-          <p className="text-white/80 mt-2 text-[15px] font-medium tracking-normal">Access your Farm Cap dashboard.</p>
+        <div className="mb-6">
+          <h2 className="text-white m-0 font-semibold text-[26px] drop-shadow-md tracking-wide">Sign In</h2>
+          <p className="text-white/80 mt-2 text-[14px] font-normal">Access your Farm Cap dashboard</p>
         </div>
 
         {error && (
-          <div className="text-white text-[13px] bg-red-500/80 backdrop-blur-md p-3 rounded-[14px] mb-5 font-medium shadow-md">
+          <div className="text-white text-[13px] bg-red-500/60 backdrop-blur-md p-3 rounded-[14px] mb-4 font-normal shadow-md">
             {error}
           </div>
         )}
-
-        <button 
-          onClick={handleGoogleLogin} 
-          className="w-full p-4 bg-white/90 backdrop-blur-md text-black border-none rounded-[16px] cursor-pointer text-[17px] flex items-center justify-center font-semibold transition-all hover:bg-white hover:scale-[1.02] shadow-[0_4px_14px_rgba(0,0,0,0.15)]"
-        >
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" className="w-[20px] mr-[12px]" />
-          Continue with Google
-        </button>
-
-        <div className="flex items-center my-6 text-white/80 text-[13px] font-medium">
-          <div className="flex-1 h-px bg-white/40"></div>
-          <span className="mx-4">or</span>
-          <div className="flex-1 h-px bg-white/40"></div>
-        </div>
 
         <div id="recaptcha-container"></div>
         <form onSubmit={confirmationResult ? handleVerifyOtp : handleSendOtp} className="flex flex-col gap-4">
           {!confirmationResult ? (
             <>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-semibold text-[17px] z-10">+91</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/90 font-medium text-[16px] z-10">+91</span>
                 <input 
                   type="tel" 
                   placeholder="Phone Number" 
@@ -118,16 +104,16 @@ export default function Login({ onLogin }) {
                   maxLength="10"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
-                  className="w-full p-4 pl-[56px] rounded-[16px] border border-white/40 text-[17px] outline-none bg-white/80 backdrop-blur-md transition-all text-black font-medium box-border placeholder:text-gray-500 focus:bg-white focus:border-white focus:ring-4 focus:ring-white/30 shadow-inner"
+                  className="w-full p-3.5 pl-[56px] rounded-[20px] border border-white/20 border-t-white/40 border-l-white/30 text-[16px] outline-none bg-white/10 backdrop-blur-[12px] backdrop-saturate-[120%] transition-all text-white font-normal box-border placeholder:text-white/60 focus:bg-white/20 focus:border-white/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_4px_15px_rgba(0,0,0,0.1)]"
                 />
               </div>
               
               <button 
                 type="submit" 
                 disabled={!isButtonEnabled}
-                className={`p-4 border-none rounded-[16px] text-[17px] font-semibold transition-all duration-300 w-full text-white backdrop-blur-md ${isButtonEnabled ? 'bg-black/90 cursor-pointer hover:bg-black hover:scale-[1.02] shadow-[0_4px_14px_rgba(0,0,0,0.3)]' : 'bg-black/30 opacity-60 cursor-not-allowed'}`}
+                className={`p-3.5 border border-white/20 border-t-white/40 border-l-white/30 rounded-[20px] text-[16px] font-medium transition-all duration-300 w-full text-white backdrop-blur-[12px] backdrop-saturate-[120%] shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_4px_15px_rgba(0,0,0,0.1)] ${isButtonEnabled ? 'bg-white/20 cursor-pointer hover:bg-white/30 hover:scale-[1.02]' : 'bg-white/5 opacity-60 cursor-not-allowed'}`}
               >
-                Continue
+                Send OTP
               </button>
             </>
           ) : (
@@ -138,20 +124,34 @@ export default function Login({ onLogin }) {
                 required 
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                className="w-full p-4 rounded-[16px] border border-white/40 text-[22px] outline-none bg-white/90 backdrop-blur-md transition-all text-black box-border text-center tracking-[8px] font-medium focus:bg-white focus:border-white focus:ring-4 focus:ring-white/30 shadow-inner" 
+                className="w-full p-3.5 rounded-[20px] border border-white/20 border-t-white/40 border-l-white/30 text-[20px] outline-none bg-white/10 backdrop-blur-[12px] backdrop-saturate-[120%] transition-all text-white box-border text-center tracking-[6px] font-normal focus:bg-white/20 focus:border-white/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_4px_15px_rgba(0,0,0,0.1)]" 
               />
               <button 
                 type="submit" 
-                className="p-4 bg-black/90 backdrop-blur-md border-none rounded-[16px] text-[17px] font-semibold transition-all duration-300 w-full text-white hover:bg-black hover:scale-[1.02] shadow-[0_4px_14px_rgba(0,0,0,0.3)] cursor-pointer"
+                className="p-3.5 bg-white/20 backdrop-blur-[12px] backdrop-saturate-[120%] border border-white/20 border-t-white/40 border-l-white/30 rounded-[20px] text-[16px] font-medium transition-all duration-300 w-full text-white hover:bg-white/30 hover:scale-[1.02] shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_4px_15px_rgba(0,0,0,0.1)] cursor-pointer"
               >
                 Verify Code
               </button>
-              <p className="text-[14px] text-white/90 font-medium mt-3 cursor-pointer hover:text-white hover:underline transition-all" onClick={() => setConfirmationResult(null)}>
+              <p className="text-[13px] text-white/80 font-normal mt-2 cursor-pointer hover:text-white transition-all" onClick={() => setConfirmationResult(null)}>
                 Use a different number
               </p>
             </>
           )}
         </form>
+
+        <div className="flex items-center my-6 text-white/60 text-[12px] font-normal">
+          <div className="flex-1 h-px bg-white/20"></div>
+          <span className="mx-4">or</span>
+          <div className="flex-1 h-px bg-white/20"></div>
+        </div>
+
+        <button 
+          onClick={handleGoogleLogin} 
+          className="w-full p-3.5 bg-white/10 backdrop-blur-[12px] backdrop-saturate-[120%] text-white border border-white/20 border-t-white/40 border-l-white/30 rounded-[20px] cursor-pointer text-[15px] flex items-center justify-center font-medium transition-all hover:bg-white/20 hover:scale-[1.02] shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_4px_15px_rgba(0,0,0,0.1)]"
+        >
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" className="w-[18px] mr-[12px]" />
+          Continue with Google
+        </button>
 
       </div>
     </div>
