@@ -24,10 +24,17 @@ export default function Login({ onLogin }) {
   }, []);
 
   useEffect(() => {
-    if (!window.recaptchaVerifier) {
+    if (window.recaptchaVerifier) {
+      window.recaptchaVerifier.clear();
+      window.recaptchaVerifier = null;
+    }
+
+    try {
       window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         'size': 'invisible'
       });
+    } catch (e) {
+      console.error("Recaptcha Init Error", e);
     }
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -118,6 +125,7 @@ export default function Login({ onLogin }) {
           <div className="flex-1 h-px bg-white/30"></div>
         </div>
 
+        <div id="recaptcha-container"></div>
         <form onSubmit={confirmationResult ? handleVerifyOtp : handleSendOtp} className="flex flex-col gap-[15px]">
           {!confirmationResult ? (
             <>
@@ -133,8 +141,6 @@ export default function Login({ onLogin }) {
                   className="w-full py-3 px-[15px] pl-[50px] rounded-xl border border-white/30 text-[16px] outline-none bg-white/90 transition-all text-[#333] font-bold box-border placeholder:text-gray-500"
                 />
               </div>
-              
-              <div id="recaptcha-container"></div>
               
               <button 
                 type="submit" 
