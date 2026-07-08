@@ -1,25 +1,44 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { CloudRain, CloudSun, Sun, Cloud, CloudLightning, Navigation } from 'lucide-react';
+import LocationModal from './LocationModal';
 
 export default function WeatherHeader({ handleLogout }) {
   const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [userLocation, setUserLocation] = useState({ name: 'Chennai', region: 'TN', lat: null, lon: null });
 
   useEffect(() => {
-    const fetchWeather = async () => {
-      try {
-        const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
-        const res = await axios.get(`https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=Chennai`);
-        setWeatherData(res.data);
-      } catch (err) {
-        console.error("Failed to fetch weather:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchWeather();
+    // Read from localStorage on mount
+    const savedLoc = localStorage.getItem('farmCap_userLocation');
+    if (savedLoc) {
+      setUserLocation(JSON.parse(savedLoc));
+    }
   }, []);
+
+  useEffect(() => {
+    fetchWeather(userLocation);
+  }, [userLocation]);
+
+  const fetchWeather = async (loc) => {
+    setLoading(true);
+    try {
+      const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
+      const query = loc.lat && loc.lon ? `${loc.lat},${loc.lon}` : loc.name;
+      const res = await axios.get(`https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${query}`);
+      setWeatherData(res.data);
+    } catch (err) {
+      console.error("Failed to fetch weather:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLocationSelect = (loc) => {
+    setUserLocation(loc);
+    localStorage.setItem('farmCap_userLocation', JSON.stringify(loc));
+  };
 
   // Weather Icon Logic
   const getWeatherIcon = () => {
@@ -34,14 +53,15 @@ export default function WeatherHeader({ handleLogout }) {
   };
 
   return (
-    <div className="relative w-full h-56 overflow-hidden rounded-b-[2rem] shadow-sm shrink-0">
+    <>
+    <div className="relative w-full overflow-hidden shrink-0 rounded-b-[2.5rem] shadow-md border-b border-sky-100/50" style={{ paddingBottom: 0 }}>
       <style>{`
         .sky-header {
           position: absolute;
           top: 0; left: 0;
           width: 100%;
           height: 100%;
-          background: linear-gradient(150deg, #1ea2ff 0%, #7ed3ff 45%, #d0f0ff 100%);
+          background: linear-gradient(150deg, #0ea5e9 0%, #38bdf8 45%, #bae6fd 100%);
           overflow: hidden;
           isolation: isolate;
         }
@@ -55,8 +75,8 @@ export default function WeatherHeader({ handleLogout }) {
         }
         .sun-core {
           position: absolute;
-          top: 30px;
-          right: 25%;
+          top: 20px;
+          right: 120px;
           width: 35px;
           height: 35px;
           background: #ffffff;
@@ -69,8 +89,8 @@ export default function WeatherHeader({ handleLogout }) {
         }
         .sun-halo {
           position: absolute;
-          top: 25px;
-          right: calc(25% - 5px);
+          top: 15px;
+          right: 115px;
           width: 45px;
           height: 45px;
           background: rgba(255, 255, 255, 0.7);
@@ -81,8 +101,8 @@ export default function WeatherHeader({ handleLogout }) {
         }
         .sun-ambient {
           position: absolute;
-          top: 15px;
-          right: calc(25% - 15px);
+          top: 5px;
+          right: 105px;
           width: 65px;
           height: 65px;
           background: rgba(255, 255, 255, 0.3);
@@ -97,9 +117,9 @@ export default function WeatherHeader({ handleLogout }) {
           mix-blend-mode: screen;
           animation: bokeh-drift 8s ease-in-out infinite alternate;
         }
-        .bokeh-1 { top: 40px; right: 35%; width: 45px; height: 45px; background: rgba(255, 255, 255, 0.08); border: 1.5px solid rgba(255, 255, 255, 0.25); filter: blur(0.5px); }
-        .bokeh-2 { top: 60px; right: 40%; width: 30px; height: 30px; background: rgba(255, 255, 255, 0.15); border: 1.5px solid rgba(255, 255, 255, 0.25); filter: blur(0.5px); animation-delay: -2s; }
-        .bokeh-3 { top: 80px; right: 45%; width: 20px; height: 20px; background: rgba(255, 255, 255, 0.25); border: 1.5px solid rgba(255, 255, 255, 0.35); animation-delay: -4s; }
+        .bokeh-1 { top: 30px; right: 140px; width: 45px; height: 45px; background: rgba(255, 255, 255, 0.08); border: 1.5px solid rgba(255, 255, 255, 0.25); filter: blur(0.5px); }
+        .bokeh-2 { top: 50px; right: 160px; width: 30px; height: 30px; background: rgba(255, 255, 255, 0.15); border: 1.5px solid rgba(255, 255, 255, 0.25); filter: blur(0.5px); animation-delay: -2s; }
+        .bokeh-3 { top: 70px; right: 180px; width: 20px; height: 20px; background: rgba(255, 255, 255, 0.25); border: 1.5px solid rgba(255, 255, 255, 0.35); animation-delay: -4s; }
       `}</style>
 
       {/* Background Art */}
@@ -112,61 +132,79 @@ export default function WeatherHeader({ handleLogout }) {
         <div className="bokeh bokeh-3"></div>
 
         {/* SVG Birds */}
-        <div style={{ position: 'absolute', top: '25%', left: '15%', opacity: 0.85, transform: 'scale(0.5) rotate(-5deg)' }}>
+        <div style={{ position: 'absolute', top: '15%', left: '20%', opacity: 0.85, transform: 'scale(0.5) rotate(-5deg)' }}>
           <svg width="40" height="20" viewBox="0 0 40 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M0 10 Q10 0 20 10 Q30 0 40 10 Q30 5 20 15 Q10 5 0 10 Z" fill="#2c3e50"/>
           </svg>
         </div>
-        <div style={{ position: 'absolute', top: '35%', left: '30%', opacity: 0.7, transform: 'scale(0.35) rotate(-10deg)' }}>
+        <div style={{ position: 'absolute', top: '22%', left: '35%', opacity: 0.7, transform: 'scale(0.35) rotate(-10deg)' }}>
+          <svg width="40" height="20" viewBox="0 0 40 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 10 Q10 0 20 10 Q30 0 40 10 Q30 5 20 15 Q10 5 0 10 Z" fill="#2c3e50"/>
+          </svg>
+        </div>
+        <div style={{ position: 'absolute', top: '12%', left: '55%', opacity: 0.6, transform: 'scale(0.3) rotate(5deg)' }}>
+          <svg width="40" height="20" viewBox="0 0 40 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 10 Q10 0 20 10 Q30 0 40 10 Q30 5 20 15 Q10 5 0 10 Z" fill="#2c3e50"/>
+          </svg>
+        </div>
+        <div style={{ position: 'absolute', top: '28%', left: '75%', opacity: 0.5, transform: 'scale(0.25) rotate(-2deg)' }}>
           <svg width="40" height="20" viewBox="0 0 40 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M0 10 Q10 0 20 10 Q30 0 40 10 Q30 5 20 15 Q10 5 0 10 Z" fill="#2c3e50"/>
           </svg>
         </div>
       </div>
 
-      {/* Foreground UI */}
-      <div className="relative z-20 w-full h-full p-6 pb-8 flex flex-col justify-between pt-10">
-        
-        {/* Top Navbar Row */}
-        <div className="flex justify-between items-start w-full">
-          {/* Location Area */}
-          <div className="flex flex-col">
-            <div className="flex items-center gap-1.5 text-white drop-shadow-md cursor-pointer">
-              <Navigation className="w-5 h-5 text-red-500 fill-red-500 drop-shadow-sm" />
-              <h2 className="text-2xl font-bold tracking-tight">
-                {loading ? "Locating..." : (weatherData?.location?.name || "Chennai")}
-              </h2>
+      {/* Foreground UI - EXACT MATCH TO MY FIRST APP */}
+      <div className="relative z-20 w-full" style={{ padding: '25px 20px 20px 20px', paddingTop: 'max(25px, env(safe-area-inset-top))' }}>
+        <div className="flex justify-between items-start w-full mb-2">
+          
+          {/* Location Area - EXACTLY like old app */}
+          <div className="flex flex-col justify-center cursor-pointer" onClick={() => setShowLocationModal(true)}>
+            <div className="flex items-center">
+                <div style={{fontSize:'20px', fontWeight:'900', color: '#ffffff', textTransform:'capitalize'}}>
+                    <span style={{color:'#ff5252', marginRight:'6px'}}>📍</span>{loading ? "Locating..." : (weatherData?.location?.name || userLocation.name)}
+                </div>
             </div>
-            <p className="text-white/90 text-sm font-medium pl-6 drop-shadow-sm">
-              {loading ? "--" : `${weatherData?.location?.region || "TN"}, ${weatherData?.location?.country || "India"}`}
-            </p>
+            <div style={{
+                color: 'rgba(255,255,255,0.8)', fontSize:'13px', marginTop:'2px', maxWidth:'280px', 
+                whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', fontWeight:'600', paddingLeft:'2px'
+            }}>
+              {loading ? "Fetching Location" : (weatherData?.location?.name + ", " + weatherData?.location?.region || `${userLocation.name}, ${userLocation.region}`)}
+            </div>
           </div>
 
-          <button 
-            onClick={handleLogout}
-            className="text-white/90 font-medium text-xs px-3 py-1.5 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full border border-white/20 transition drop-shadow-sm"
-          >
-            Logout
-          </button>
+          {/* Right Side Weather Logo (Replacing Profile Circle) */}
+          <div style={{
+            padding: '4px 10px',
+            borderRadius: '16px',
+            background: 'rgba(0,0,0,0.15)',
+            backdropFilter: 'blur(10px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            border: '1px solid rgba(255,255,255,0.1)',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+          }}>
+            <div className="flex flex-col items-end text-white">
+              <span className="text-sm font-black leading-none drop-shadow-sm">{loading ? "--" : Math.round(weatherData?.current?.temp_c)}°</span>
+              <span className="text-[10px] font-bold opacity-80 leading-tight capitalize drop-shadow-sm">{loading ? "..." : weatherData?.current?.condition?.text}</span>
+            </div>
+            <div className="scale-75 origin-right">
+              {getWeatherIcon()}
+            </div>
+          </div>
+          
         </div>
-
-        {/* Bottom Row - Weather Info */}
-        <div className="flex justify-between items-end w-full">
-          <div className="flex flex-col text-white drop-shadow-md">
-            <h1 className="text-6xl font-black tabular-nums tracking-tighter">
-              {loading ? "--" : Math.round(weatherData?.current?.temp_c)}°
-            </h1>
-            <p className="text-base font-semibold opacity-95 mt-1 capitalize tracking-wide">
-              {loading ? "Fetching weather..." : weatherData?.current?.condition?.text}
-            </p>
-          </div>
-
-          <div className="flex items-center justify-center p-3 bg-white/10 backdrop-blur-md rounded-3xl border border-white/20 shadow-xl">
-            {getWeatherIcon()}
-          </div>
-        </div>
-
       </div>
     </div>
+
+    {/* Modals */}
+    <LocationModal 
+      isOpen={showLocationModal} 
+      onClose={() => setShowLocationModal(false)} 
+      onLocationSelect={handleLocationSelect}
+    />
+    </>
   );
 }
