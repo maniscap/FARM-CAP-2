@@ -106,7 +106,7 @@ export default function Login({ onLogin }) {
           {!confirmationResult ? (
             <>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 font-semibold text-[15px] z-10">+91</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 font-semibold text-[17px] z-10">+91</span>
                 <input 
                   type="tel" 
                   placeholder="Phone Number" 
@@ -114,14 +114,14 @@ export default function Login({ onLogin }) {
                   maxLength="10"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
-                  className="w-full p-3 pl-[56px] rounded-[12px] border border-transparent text-[15px] outline-none bg-black/20 transition-all text-white font-medium box-border placeholder:text-white/50 focus:border-white/50 focus:bg-black/30"
+                  className="w-full p-4 pl-[58px] rounded-[14px] border border-transparent text-[18px] outline-none bg-black/20 transition-all text-white font-bold box-border placeholder:text-white/50 focus:border-white/50 focus:bg-black/30 tracking-wide"
                 />
               </div>
               
               <button 
                 type="submit" 
                 disabled={!isButtonEnabled}
-                className={`p-3 rounded-[12px] border border-white/30 text-[15px] font-semibold transition-all duration-300 w-full text-white ${isButtonEnabled ? 'bg-[#4CAF50]/80 backdrop-blur-md cursor-pointer hover:bg-[#4CAF50] hover:scale-[1.02] shadow-[0_4px_15px_rgba(76,175,80,0.4)]' : 'bg-white/10 opacity-50 cursor-not-allowed'}`}
+                className={`py-2 px-8 mt-2 rounded-[20px] border border-white/30 text-[14px] font-semibold transition-all duration-300 w-auto mx-auto text-white ${isButtonEnabled ? 'bg-[#4CAF50]/80 backdrop-blur-md cursor-pointer hover:bg-[#4CAF50] hover:scale-[1.05] shadow-[0_4px_15px_rgba(76,175,80,0.4)]' : 'bg-white/10 opacity-50 cursor-not-allowed'}`}
               >
                 Send OTP
               </button>
