@@ -112,11 +112,6 @@ const Weather = () => {
   const [isSearchingGPS, setIsSearchingGPS] = useState(false);
   const [showFullForecast, setShowFullForecast] = useState(false);
   
-  // Fix for React Router back button mapping
-  const handleBack = () => {
-    navigate(-1);
-  };
-
   // --- SEARCH HISTORY STATE ---
   const [searchHistory, setSearchHistory] = useState([]);
 
@@ -629,11 +624,10 @@ const Weather = () => {
            </span>
          </div>
          <div style={styles.topRight}>
+            <button onClick={() => navigate(-1)} style={styles.iconBtn} aria-label="Go Back"><IoMdArrowBack size={26}/></button>
             <button onClick={handleRefresh} style={styles.iconBtn}><IoMdRefresh size={22}/></button>
             <button onClick={toggleUnit} style={styles.unitBtn}>°{unit}</button>
-            <button style={styles.iconBtn} onClick={handleBack} aria-label="Go Back">
-            <IoMdArrowBack size={26} />
-          </button>
+            <button onClick={handleOpenCityManager} style={styles.iconBtn}><IoMdAdd size={24}/></button>
          </div>
       </div>
       
@@ -814,20 +808,55 @@ const Weather = () => {
         </motion.div>
       ) : (
       <div id="weather-scroll-content" style={styles.scrollContent}>
-          <div style={styles.mainInfoContainer}>
-              <div style={styles.tempWrapper}>
-                  <h1 style={styles.tempValue}>{getTemp(current.temp_c)}</h1>
-                  <span style={styles.tempSymbol}>°{unit}</span>
-              </div>
-              <div style={styles.weatherCondition}>{current.is_day === 0 ? current.condition.text.replace(/Sunny/gi, 'Clear') : current.condition.text}</div>
-              <div style={styles.hiLoText}>H:{getTemp(forecast.forecastday[0].day.maxtemp_c)}° L:{getTemp(forecast.forecastday[0].day.mintemp_c)}°</div>
-          </div>
+          <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              style={styles.hero}
+          >
+              <motion.div 
+                  initial={{ scale: 0.8 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.1, type: 'spring', bounce: 0.4 }}
+                  style={styles.tempWrapper}
+              >
+                  <h1 style={styles.bigTemp}>{getTemp(current.temp_c)}</h1>
+                  <span style={styles.celcius}>°{unit}</span>
+              </motion.div>
+              <motion.p 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  style={styles.condition}
+              >
+                  {current.is_day === 0 ? current.condition.text.replace(/Sunny/gi, 'Clear') : current.condition.text}
+              </motion.p>
+               <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  whileHover={{ scale: 1.05 }}
+                  style={{...styles.aqiPill, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', display:'inline-flex', flexDirection:'column', gap:'4px'}}
+                  onClick={() => setShowVerificationModal(true)}
+              >
+                  <div style={{display:'flex', alignItems:'center', gap:'8px', fontSize:'13px', fontWeight: 'bold'}}>
+                      {weatherStatus === 'live' && <span style={{color:'#10B981'}}>Verified Live 🟢</span>}
+                      {weatherStatus === 'cached' && <span style={{color:'#F59E0B'}}>Offline Cache ⚠️</span>}
+                      {weatherStatus === 'demo' && <span style={{color:'#3B82F6'}}>Demo Mode 🧪</span>}
+                      <span style={{opacity:0.3}}>•</span>
+                      <span style={{display:'flex', alignItems:'center', gap:'4px'}}><FaMaskFace style={{fontSize:'14px'}} /> AQI: {aqiInfo.text}</span>
+                  </div>
+                  <div style={{fontSize:'9px', opacity:0.7, textDecoration:'underline', letterSpacing:'0.2px', fontWeight:'500'}}>
+                      Tap to Verify Authenticity & Source
+                  </div>
+              </motion.div>
+          </motion.div>
 
           <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.5 }}
-              style={styles.glassCard}
+              style={styles.glassSection}
           >
               <div style={styles.sectionHeader}>
                   <span>Forecast</span>
@@ -867,7 +896,7 @@ const Weather = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 + visibleDays.length * 0.08, duration: 0.5 }}
-              style={styles.glassCard}
+              style={styles.glassSection}
           >
               <motion.p 
                   style={{fontSize:'12px', opacity:0.7, marginBottom:'15px', display:'flex', alignItems:'center', gap:'5px', fontWeight:'600', letterSpacing:'0.5px'}}
@@ -973,6 +1002,72 @@ const Weather = () => {
                            <div style={styles.cardValue}>{current.pressure_mb}</div>
                            <div style={{fontSize:'12px', opacity:0.7, marginTop:'2px'}}>hPa</div>
                       </div>
+                  </motion.div>
+              </motion.div>
+
+              <motion.div 
+                  style={styles.fullWidthCard}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.7 + visibleDays.length * 0.08 }}
+                  whileHover={{ scale: 1.02 }}
+              >
+                    <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
+                        <div style={styles.cardLabel}><WiRain size={24}/> Chance of Rain</div>
+                        <div style={{textAlign:'right', marginLeft:'auto'}}>
+                            <div style={{fontSize:'24px', fontWeight:'bold'}}>
+                                {forecast.forecastday[0].day.daily_chance_of_rain}%
+                            </div>
+                                    {(unit === 'C' ? forecast.forecastday[0].day.totalprecip_mm : forecast.forecastday[0].day.totalprecip_in) > 0 && (
+                                <div style={{fontSize:'12px', color:'#63c5da', fontWeight:'bold', marginTop:'-2px'}}>
+                                            {unit === 'C' ? forecast.forecastday[0].day.totalprecip_mm : forecast.forecastday[0].day.totalprecip_in} {unit === 'C' ? 'mm' : 'in'} expected
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    <div style={{fontSize:'11px', opacity:0.6, marginTop:'5px'}}>
+                        {forecast.forecastday[0].day.daily_chance_of_rain < 10 ? "No rain expected today." :
+                         forecast.forecastday[0].day.daily_chance_of_rain < 40 ? "Low chance of rain." :
+                         forecast.forecastday[0].day.daily_chance_of_rain < 70 ? "You might need an umbrella." :
+                         "High chance of rain. Plan accordingly."}
+                    </div>
+              </motion.div>
+          </motion.div>
+
+          {/* ADVANCED INSIGHTS SECTION */}
+          <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 + visibleDays.length * 0.08, duration: 0.5 }}
+              style={styles.glassSection}
+          >
+              <div style={styles.sectionHeader}>
+                  <span style={{display:'flex', alignItems:'center', gap:'8px'}}>✨ Advanced Insights</span>
+              </div>
+              <motion.div 
+                  style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px'}}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.85 + visibleDays.length * 0.08 }}
+              >
+                  {/* Visibility */}
+                  <motion.div 
+                      style={styles.modernCard}
+                      whileHover={{ scale: 1.05, y: -5 }}
+                  >
+                      <div style={styles.cardLabel}><MdVisibility size={20}/> Visibility</div>
+                      <div style={styles.cardValue}>{(current.vis_km || 10).toFixed(1)} km</div>
+                      <div style={{fontSize:'11px', opacity:0.7, marginTop:'4px'}}>Clear conditions</div>
+                  </motion.div>
+                  
+                  {/* Dew Point */}
+                  <motion.div 
+                      style={styles.modernCard}
+                      whileHover={{ scale: 1.05, y: -5 }}
+                  >
+                      <div style={styles.cardLabel}><MdWaterDrop size={20}/> Dew Point</div>
+                      <div style={styles.cardValue}>{getTemp(current.dewpoint_c || 15)}°</div>
+                      <div style={{fontSize:'11px', opacity:0.7, marginTop:'4px'}}>{current.humidity > 70 ? 'High moisture' : 'Comfortable'}</div>
                   </motion.div>
               </motion.div>
           </motion.div>
@@ -1095,7 +1190,7 @@ const Weather = () => {
                           <div style={{marginTop:'4px', opacity:0.9, color: weatherStatus === 'live' ? '#fff' : weatherStatus === 'cached' ? '#ffcc80' : '#bbdefb'}}>
                               {weatherStatus === 'live' && "This data is authentic. It is safe to use this report for critical farm decisions like spraying pesticides (do not spray if wind exceeds 15 km/h), harvesting, or irrigation scheduling."}
                               {weatherStatus === 'cached' && "WARNING: Stale weather readings can lead to crop damage. Do not perform time-critical sowing, chemical spraying, or irrigation based solely on this cached card. Restore internet connection to sync live feeds."}
-                              {(weatherStatus === 'demo' || weatherStatus === 'loading') && `Please register at WeatherAPI.com to obtain a free key and save it as ${import.meta.env.VITE_WEATHER_API_KEY} in your Vercel Dashboard or .env file to enable satellite weather telemetry for your growers.`}
+                              {(weatherStatus === 'demo' || weatherStatus === 'loading') && "Please register at WeatherAPI.com to obtain a free key and save it as WEATHER_API_KEY in your Vercel Dashboard or .env file to enable satellite weather telemetry for your growers."}
                           </div>
                       </div>
                   </div>
@@ -1124,33 +1219,47 @@ const Weather = () => {
   );
 };
 
+// --- UPDATED: PADDING FIX & TRANSPARENCY ADDED ONLY TO MODAL/SEARCH UI ---
 const styles = {
   container: { position:'fixed', top:0, left:0, width:'100%', height:'100%', color:'white', fontFamily:'"SF Pro Display", sans-serif', background:'#111', textShadow: '0 2px 8px rgba(0,0,0,0.3)', display: 'flex', justifyContent: 'center' },
   videoBg: { position:'absolute', top:0, left:0, width:'100%', height:'100%', objectFit:'cover', zIndex:-2 },
   overlay: { position:'absolute', top:0, left:0, width:'100%', height:'100%', background:'rgba(0,0,0,0.1)', zIndex:-1 },
   appWrapper: { position: 'relative', width: '100%', maxWidth: '520px', height: '100%', display: 'flex', flexDirection: 'column' },
   loadingContainer: { height:'100vh', display:'flex', alignItems:'center', justifyContent:'center', background:'#111' },
+  skeletonContainer: { width: '80%', display: 'flex', flexDirection: 'column', alignItems: 'center' },
+  skeletonBox: { background: '#333', borderRadius: '12px', animation: 'shimmer 1.5s infinite linear', backgroundSize: '400px 100%', backgroundImage: 'linear-gradient(to right, #333 0%, #444 20%, #333 40%, #333 100%)' },
 
-  topBar: { display:'flex', justifyContent:'space-between', alignItems:'center', background: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px) saturate(180%)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '40px', padding: '10px 18px', margin: '15px 12px', boxShadow: '0 8px 32px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.2)', zIndex: 10 },
+  refreshIndicator: { position: 'absolute', top: '20px', left: '50%', transform: 'translateX(-50%)', zIndex: 99, background: 'rgba(0,0,0,0.7)', borderRadius: '50%', padding: '10px' },
+  toast: { position: 'absolute', bottom: '80px', left: '50%', background: '#333', color: '#fff', padding: '10px 20px', borderRadius: '25px', boxShadow: '0 4px 12px rgba(0,0,0,0.3)', transition: 'all 0.3s ease', zIndex: 1000, whiteSpace: 'nowrap', fontSize: '14px', fontWeight: '500' },
+  
+  topBar: { display:'flex', justifyContent:'space-between', alignItems:'center', background: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px) saturate(150%)', border: '1px solid rgba(255, 255, 255, 0.15)', borderTop: '1px solid rgba(255, 255, 255, 0.4)', borderRadius: '40px', padding: '10px 18px', margin: '15px 12px', boxShadow: '0 8px 32px rgba(0,0,0,0.2), inset 0 1px 2px rgba(255,255,255,0.4)', zIndex: 10 },
   locationText: { display:'flex', flexDirection:'column', alignItems:'center', flex: 1, overflow: 'hidden', padding: '0 10px', textAlign: 'center' },
-  cityTitle: { fontSize:'18px', fontWeight:'700', letterSpacing:'0.5px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', width:'100%' },
+  cityTitle: { fontSize:'18px', fontWeight:'700', textShadow:'0 2px 5px rgba(0,0,0,0.5)', letterSpacing:'0.5px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', width:'100%' },
   regionTitle: { fontSize:'11px', opacity:0.9, marginTop:'2px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', width:'100%' },
-  iconBtn: { background:'transparent', border:'none', color:'white', cursor:'pointer', padding:'5px' },
-  unitBtn: { background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:'50%', width:'30px', height:'30px', color:'white', cursor:'pointer', fontSize:'14px', fontWeight:'bold', backdropFilter: 'blur(5px)' },
+  iconBtn: { background:'transparent', border:'none', color:'white', cursor:'pointer', padding:'5px', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' },
+  unitBtn: { background:'rgba(255,255,255,0.2)', border:'1px solid rgba(255,255,255,0.3)', borderRadius:'50%', width:'30px', height:'30px', color:'white', cursor:'pointer', fontSize:'14px', fontWeight:'bold', transform: 'translateZ(0)', willChange: 'transform, backdrop-filter', backdropFilter: 'blur(5px)' },
   topRight: { display:'flex', gap:'10px', alignItems: 'center' },
   dotsContainer: { display: 'flex', justifyContent: 'center', gap: '6px', width: '100%', zIndex: 5, marginTop: '-5px', marginBottom: '10px' },
   dot: { height: '6px', borderRadius: '3px', transition: 'all 0.3s ease' },
 
-  mainInfoContainer: { display:'flex', flexDirection:'column', alignItems:'center', margin:'10px 20px', padding:'25px 0', background:'rgba(0, 0, 0, 0.1)', transform: 'translateZ(0)', willChange: 'transform, backdrop-filter', backdropFilter:'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderRadius:'40px', border:'1px solid rgba(255,255,255,0.15)', borderTop: '1px solid rgba(255,255,255,0.3)', boxShadow:'0 10px 30px rgba(0,0,0,0.15), inset 0 2px 5px rgba(255,255,255,0.15)', flex: 1, justifyContent:'center' },
-  tempWrapper: { display:'flex', alignItems:'flex-start', justifyContent:'center' },
-  tempValue: { fontSize:'90px', fontWeight:'700', lineHeight:'1', textShadow:'0 4px 15px rgba(0,0,0,0.3)', letterSpacing: '-2px' },
-  tempSymbol: { fontSize:'30px', fontWeight:'300', marginTop:'10px', marginLeft:'2px', opacity:0.8, textShadow:'0 2px 5px rgba(0,0,0,0.3)' },
-  weatherCondition: { fontSize:'22px', fontWeight:'500', marginTop:'5px', textShadow:'0 2px 8px rgba(0,0,0,0.4)', textTransform:'capitalize' },
-  hiLoText: { fontSize:'14px', marginTop:'8px', opacity:0.8, fontWeight:'500', letterSpacing:'0.5px' },
+  hero: { textAlign:'center', marginTop:'20px', marginBottom:'30px' },
+  tempWrapper: { display:'flex', justifyContent:'center', alignItems:'flex-start', marginLeft:'15px' },
+  bigTemp: { fontSize:'96px', fontWeight:'200', lineHeight:'1', margin:0, letterSpacing: '-2px', textShadow:'0 10px 30px rgba(0,0,0,0.35)' },
+  celcius: { fontSize:'30px', fontWeight:'400', marginTop:'15px' },
+  condition: { fontSize:'24px', textTransform:'capitalize', margin:'5px 0 15px', fontWeight:'500' },
+  aqiPill: { display:'inline-flex', alignItems:'center', gap:'8px', padding:'6px 16px', borderRadius:'30px', fontSize:'14px', transform: 'translateZ(0)', willChange: 'transform, backdrop-filter', backdropFilter: 'blur(12px) saturate(120%) brightness(110%)', WebkitBackdropFilter:'blur(12px) saturate(120%) brightness(110%)', border: '1px solid rgba(255, 255, 255, 0.1)', borderTop: '1px solid rgba(255, 255, 255, 0.3)', borderLeft: '1px solid rgba(255, 255, 255, 0.2)', boxShadow: 'inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 4px 15px rgba(0,0,0,0.1)', transition: 'background 0.5s' },
+
+  scrollContent: { flex: 1, overflowY:'auto', padding:'0 12px', scrollbarWidth:'none', zIndex: 1 },
   
-  glassCard: { background:'rgba(255, 255, 255, 0.05)', transform: 'translateZ(0)', willChange: 'transform, backdrop-filter', backdropFilter:'blur(16px)', WebkitBackdropFilter:'blur(16px)', borderRadius:'24px', padding:'20px', margin:'10px 20px', border:'1px solid rgba(255,255,255,0.15)', borderTop: '1px solid rgba(255,255,255,0.3)', boxShadow:'0 8px 32px rgba(0,0,0,0.2), inset 0 1px 2px rgba(255,255,255,0.2)' },
+  glassSection: { 
+      background: 'rgba(255, 255, 255, 0.05)', 
+      borderRadius:'36px', padding:'20px', marginBottom:'15px', 
+      backdropFilter: 'blur(20px) saturate(150%)', 
+      border: '1px solid rgba(255, 255, 255, 0.15)', borderTop: '1px solid rgba(255, 255, 255, 0.4)',
+      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 2px rgba(255, 255, 255, 0.3)'
+  },
   sectionHeader: { display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'10px' },
-  capsuleBtn: { background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:'20px', padding:'6px 14px', color:'#fff', fontSize:'11px', cursor:'pointer', fontWeight:'600' },
+  capsuleBtn: { background:'rgba(255,255,255,0.15)', border:'none', borderRadius:'20px', padding:'6px 14px', color:'#fff', fontSize:'11px', cursor:'pointer', fontWeight:'600' },
 
   dailyRow: { display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px 0', borderBottom:'1px solid rgba(255,255,255,0.05)' },
   dayName: { flex:1, fontSize:'16px', fontWeight:'500' },
@@ -1161,39 +1270,53 @@ const styles = {
   hourlyScroll: { display:'flex', overflowX:'auto', gap:'25px', paddingBottom:'5px' },
   hourItem: { display:'flex', flexDirection:'column', alignItems:'center', minWidth:'55px', fontSize:'14px' },
 
-  gridContainer: { display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px', padding: '0 20px' },
+  gridContainer: { display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px' },
   leftColumn: { display:'flex', flexDirection:'column', gap:'12px' },
   rightColumn: { display:'flex' },
   
-  modernCard: { 
-      background: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(16px)', borderRadius:'32px', 
+  modernCard: {
+      background: 'rgba(255, 255, 255, 0.05)', 
+      backdropFilter: 'blur(20px) saturate(150%)', borderRadius:'36px', 
       padding:'18px', aspectRatio:'1/1', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'space-between',
-      border: '1px solid rgba(255, 255, 255, 0.1)', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)', position: 'relative'
+      border: '1px solid rgba(255, 255, 255, 0.15)', borderTop: '1px solid rgba(255, 255, 255, 0.4)',
+      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 2px rgba(255, 255, 255, 0.3)', position: 'relative'
   },
   
   modernBigCard: {
-      background: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(16px)', borderRadius:'32px', 
+      background: 'rgba(255, 255, 255, 0.05)',
+      backdropFilter: 'blur(20px) saturate(150%)', borderRadius:'36px', 
       padding:'20px', width:'100%', display:'grid', gridTemplateColumns:'1fr 1fr', gridTemplateRows:'1fr 1fr', gap:'20px',
-      border: '1px solid rgba(255, 255, 255, 0.1)', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)'
+      border: '1px solid rgba(255, 255, 255, 0.15)', borderTop: '1px solid rgba(255, 255, 255, 0.4)',
+      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 2px rgba(255, 255, 255, 0.3)'
   },
   
   detailItem: { display:'flex', flexDirection:'column', justifyContent:'center' },
+  
+  fullWidthCard: {
+      gridColumn: '1 / -1', background: 'rgba(255, 255, 255, 0.05)',
+      backdropFilter: 'blur(20px) saturate(150%)', borderRadius:'36px', padding:'20px', 
+      border: '1px solid rgba(255, 255, 255, 0.15)', borderTop: '1px solid rgba(255, 255, 255, 0.4)',
+      marginBottom:'10px', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 2px rgba(255, 255, 255, 0.3)'
+  },
+
   cardLabel: { fontSize:'13px', opacity:0.7, display:'flex', gap:'6px', alignItems:'center', width:'100%', fontWeight:'500' },
   cardValue: { fontSize:'26px', fontWeight:'700', marginTop:'6px' },
   
   compassContainer: { position:'relative', display:'flex', flexDirection:'column', alignItems:'center' },
-  compassCircle: { width:'55px', height:'55px', borderRadius:'50%', border:'2px solid rgba(255,255,255,0.2)', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'5px' },
+  compassCircle: { width:'55px', height:'55px', borderRadius:'50%', border:'2px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'5px' },
   windSpeed: { fontSize:'18px', fontWeight:'bold' },
   sunArcWrapper: { position:'relative', width:'100%', height:'50px', marginTop:'10px', display:'flex', justifyContent:'center' },
-  sunArc: { width:'80%', height:'70px', borderTop:'2px solid rgba(255,255,255,0.3)', borderRadius:'50% 50% 0 0', position:'absolute', top:0 },
+  sunArc: { width:'80%', height:'70px', borderTop:'2px solid rgba(255,255,255,0.5)', borderLeft:'2px solid transparent', borderRight:'2px solid transparent', borderRadius:'50% 50% 0 0', position:'absolute', top:0 },
   sunTimes: { textAlign:'center', paddingTop:'15px', fontSize:'12px' },
 
-  modalOverlay: { position:'fixed', top:0, left:0, width:'100%', height:'100%', background:'rgba(0,0,0,0.2)', backdropFilter:'blur(20px)', zIndex:100, display:'flex', flexDirection:'column', boxSizing: 'border-box' },
-  modalContent: { flex:1, padding:'20px', background:'rgba(0, 0, 0, 0.2)', backdropFilter: 'blur(30px) saturate(150%)', overflowY:'auto', boxSizing: 'border-box' },
+  // --- FIXED: ADDED boxSizing & DECREASED BACKGROUND OPACITY ---
+  modalOverlay: { position:'fixed', top:0, left:0, width:'100%', height:'100%', background:'rgba(0,0,0,0.2)', transform: 'translateZ(0)', willChange: 'transform, backdrop-filter', backdropFilter: 'blur(10px)', WebkitBackdropFilter:'blur(10px)', zIndex:100, display:'flex', flexDirection:'column', boxSizing: 'border-box' },
+  modalContent: { flex:1, padding:'20px', background:'rgba(0, 0, 0, 0.2)', transform: 'translateZ(0)', willChange: 'transform, backdrop-filter', backdropFilter: 'blur(30px) saturate(150%) brightness(115%)', WebkitBackdropFilter:'blur(30px) saturate(150%) brightness(115%)', overflowY:'auto', boxSizing: 'border-box', overflowX: 'hidden' },
   modalHeader: { display:'flex', justifyContent:'center', alignItems:'center', marginBottom:'20px', position:'relative' },
   closeModal: { background:'none', border:'none', color:'#fff', cursor:'pointer', position:'absolute', right:0 },
   
   searchBarTrigger: { 
+      background: 'transparent', padding:'14px 20px', borderRadius:'30px', display:'flex', alignItems:'center', marginBottom:'25px', cursor:'pointer',
       border: '1px solid rgba(255, 255, 255, 0.1)', borderTop: '1px solid rgba(255, 255, 255, 0.3)', borderLeft: '1px solid rgba(255, 255, 255, 0.2)',
       boxShadow: 'inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 4px 15px rgba(0, 0, 0, 0.1)', transform: 'translateZ(0)', willChange: 'transform, backdrop-filter', backdropFilter: 'blur(12px) saturate(120%) brightness(110%)', WebkitBackdropFilter:'blur(12px) saturate(120%) brightness(110%)', boxSizing: 'border-box'
   },
