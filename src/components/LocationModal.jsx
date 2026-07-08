@@ -114,7 +114,7 @@ export default function LocationModal({ isOpen, onClose, onLocationSelect }) {
   };
 
   const styles = {
-    overlay: { position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0, 0, 0, 0.3)', backdropFilter: 'blur(30px) saturate(180%)', WebkitBackdropFilter: 'blur(30px) saturate(180%)', display: 'flex', flexDirection: 'column', width: '100vw', height: '100vh', overflow: 'hidden' },
+    overlay: { position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0, 0, 0, 0.85)', backdropFilter: 'blur(30px) saturate(180%)', WebkitBackdropFilter: 'blur(30px) saturate(180%)', display: 'flex', flexDirection: 'column', width: '100vw', height: '100vh', overflow: 'hidden' },
     content: { padding: '25px', display: 'flex', flexDirection: 'column', height: '100%', boxSizing: 'border-box' },
     header: { display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '25px', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(30px) saturate(200%)', padding: '14px 20px', borderRadius: '25px', border: '1px solid rgba(255,255,255,0.2)', borderTop: '1px solid rgba(255,255,255,0.5)', boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.4)' },
     closeBtn: { background: 'transparent', border: 'none', color: '#ccc', cursor: 'pointer', padding: '5px' },
