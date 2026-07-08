@@ -43,7 +43,7 @@ function App() {
       <Route path="/" element={
         <div 
           className="min-h-screen bg-black text-slate-100 font-sans flex flex-col relative overflow-hidden bg-cover bg-center bg-fixed"
-          style={{ backgroundImage: `url('/assets/images/cinematic_farm_bg.png')` }}
+          style={{ backgroundImage: `url('/assets/images/weather_defaultFallback.webp')` }}
         >
           {/* Subtle dark overlay for readability */}
           <div className="absolute inset-0 bg-black/30 pointer-events-none"></div>
