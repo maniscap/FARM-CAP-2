@@ -24,8 +24,8 @@ export default function SplashScreen() {
           </h1>
           
           {/* Quote */}
-          <p className="text-white/70 text-sm md:text-base font-semibold tracking-widest text-center mb-6">
-            "GROWING SMARTER TOGETHER"
+          <p className="text-white/70 text-xs md:text-sm font-semibold tracking-widest text-center mb-6">
+            - GROWING SMARTER TOGETHER -
           </p>
           
           <div className="w-16 h-1 bg-white/30 rounded-full mb-8"></div>
