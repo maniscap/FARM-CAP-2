@@ -1,12 +1,18 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Crosshair, X, Search, MapPin } from 'lucide-react';
+import { Crosshair, X, Search, MapPin, Share2, Clock } from 'lucide-react';
 
 export default function LocationModal({ isOpen, onClose, onLocationSelect }) {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [manualCity, setManualCity] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+  const [searchHistory, setSearchHistory] = useState([]);
+
+  useEffect(() => {
+    const history = localStorage.getItem('farmBuddy_mainSearchHistory');
+    if (history) setSearchHistory(JSON.parse(history));
+  }, []);
 
   useEffect(() => {
     if (manualCity.length > 2) {
@@ -26,6 +32,18 @@ export default function LocationModal({ isOpen, onClose, onLocationSelect }) {
   }, [manualCity]);
 
   if (!isOpen) return null;
+
+  const saveToHistory = (loc) => {
+    const updated = [loc, ...searchHistory.filter(h => h.name !== loc.name)].slice(0, 5);
+    setSearchHistory(updated);
+    localStorage.setItem('farmBuddy_mainSearchHistory', JSON.stringify(updated));
+  };
+
+  const handleSelectSuggestion = (loc) => {
+    saveToHistory(loc);
+    onLocationSelect({ name: loc.name, region: loc.region, lat: loc.lat, lon: loc.lon });
+    onClose();
+  };
 
   const handleGPSScan = () => {
     setLoading(true);
@@ -48,7 +66,9 @@ export default function LocationModal({ isOpen, onClose, onLocationSelect }) {
           
           if (res.data && res.data.length > 0) {
             const loc = res.data[0];
-            onLocationSelect({ name: loc.name, region: loc.region, lat, lon });
+            const locData = { name: loc.name, region: loc.region, lat, lon };
+            saveToHistory(locData);
+            onLocationSelect(locData);
             onClose();
           } else {
             setErrorMsg("Could not find city from GPS coordinates.");
@@ -68,9 +88,21 @@ export default function LocationModal({ isOpen, onClose, onLocationSelect }) {
     );
   };
 
-  const handleSelectSuggestion = (loc) => {
-    onLocationSelect({ name: loc.name, region: loc.region, lat: loc.lat, lon: loc.lon });
-    onClose();
+  const handleShare = async (e, loc) => {
+    e.stopPropagation();
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: `Location: ${loc.name}`,
+          text: `Check out this location: ${loc.name}, ${loc.region}\nCoordinates: ${loc.lat}, ${loc.lon}`,
+          url: `https://www.google.com/maps?q=${loc.lat},${loc.lon}`
+        });
+      } else {
+        alert("Sharing is not supported on this browser.");
+      }
+    } catch (err) {
+      console.log("Error sharing", err);
+    }
   };
 
   const handleManualSearch = async (e) => {
@@ -82,75 +114,93 @@ export default function LocationModal({ isOpen, onClose, onLocationSelect }) {
   };
 
   const styles = {
-    overlay: { position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', background: 'rgba(0, 0, 0, 0.4)', backdropFilter: 'blur(30px) saturate(180%)', WebkitBackdropFilter: 'blur(30px) saturate(180%)' },
-    modal: { width: '100%', maxWidth: '500px', background: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(40px) saturate(200%)', WebkitBackdropFilter: 'blur(40px) saturate(200%)', borderTopLeftRadius: '32px', borderTopRightRadius: '32px', border: '1px solid rgba(255, 255, 255, 0.2)', borderTop: '1px solid rgba(255, 255, 255, 0.5)', padding: '24px', boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.4)', display: 'flex', flexDirection: 'column', maxHeight: '85vh', boxSizing: 'border-box' },
-    dragHandle: { width: '50px', height: '6px', background: 'rgba(255, 255, 255, 0.3)', borderRadius: '10px', margin: '0 auto 20px', backdropFilter: 'blur(10px)' },
-    closeBtn: { position: 'absolute', top: '24px', right: '24px', background: 'rgba(255, 255, 255, 0.1)', border: 'none', padding: '8px', borderRadius: '50%', color: '#fff', cursor: 'pointer' },
-    title: { color: '#fff', fontSize: '22px', fontWeight: 'bold', marginBottom: '5px', textShadow: '0 2px 5px rgba(0,0,0,0.3)' },
-    subtitle: { color: 'rgba(255, 255, 255, 0.7)', fontSize: '14px', marginBottom: '25px' },
-    gpsBtn: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', width: '100%', padding: '16px', background: 'rgba(76, 175, 80, 0.8)', backdropFilter: 'blur(20px)', border: '1px solid rgba(76, 175, 80, 0.4)', borderTop: '1px solid rgba(120, 255, 120, 0.6)', borderRadius: '20px', color: '#fff', fontWeight: 'bold', fontSize: '16px', cursor: 'pointer', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)' },
-    dividerWrap: { display: 'flex', alignItems: 'center', gap: '15px', margin: '20px 0', opacity: 0.6 },
-    dividerLine: { flex: 1, height: '1px', background: 'rgba(255, 255, 255, 0.3)' },
-    dividerText: { color: '#fff', fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' },
-    searchContainer: { display: 'flex', alignItems: 'center', position: 'relative', marginBottom: '15px' },
-    inputBox: { width: '100%', background: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255, 255, 255, 0.2)', borderTop: '1px solid rgba(255, 255, 255, 0.4)', padding: '16px 50px', borderRadius: '20px', color: '#fff', fontSize: '16px', outline: 'none', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)', boxSizing: 'border-box' },
-    searchIcon: { position: 'absolute', left: '16px', color: 'rgba(255, 255, 255, 0.6)' },
-    submitBtn: { position: 'absolute', right: '12px', padding: '8px', background: 'rgba(255, 255, 255, 0.15)', borderRadius: '12px', color: '#fff', border: 'none', cursor: 'pointer' },
-    error: { background: 'rgba(255, 0, 0, 0.1)', border: '1px solid rgba(255, 0, 0, 0.3)', color: '#ffb3b3', padding: '10px', borderRadius: '15px', textAlign: 'center', marginBottom: '15px', fontSize: '14px' },
-    suggestionsList: { flex: 1, overflowY: 'auto', scrollbarWidth: 'none', paddingBottom: '20px' },
-    suggestionItem: { padding: '16px 20px', marginBottom: '10px', background: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255, 255, 255, 0.1)', borderTop: '1px solid rgba(255, 255, 255, 0.3)', borderRadius: '18px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '15px' },
+    overlay: { position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0, 0, 0, 0.3)', backdropFilter: 'blur(30px) saturate(180%)', WebkitBackdropFilter: 'blur(30px) saturate(180%)', display: 'flex', flexDirection: 'column', width: '100vw', height: '100vh', overflow: 'hidden' },
+    content: { padding: '25px', display: 'flex', flexDirection: 'column', height: '100%', boxSizing: 'border-box' },
+    header: { display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '25px', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(30px) saturate(200%)', padding: '14px 20px', borderRadius: '25px', border: '1px solid rgba(255,255,255,0.2)', borderTop: '1px solid rgba(255,255,255,0.5)', boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.4)' },
+    closeBtn: { background: 'transparent', border: 'none', color: '#ccc', cursor: 'pointer', padding: '5px' },
+    inputBox: { flex: 1, background: 'transparent', border: 'none', color: '#fff', fontSize: '18px', outline: 'none', fontWeight: '500' },
+    gpsBtn: { display: 'flex', alignItems: 'center', gap: '10px', color: '#4CAF50', padding: '18px 22px', background: 'rgba(76, 175, 80, 0.1)', backdropFilter: 'blur(20px)', borderRadius: '20px', border: '1px solid rgba(76, 175, 80, 0.3)', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)', fontWeight: 'bold', cursor: 'pointer', marginBottom: '20px' },
+    suggestionsList: { flex: 1, overflowY: 'auto', scrollbarWidth: 'none', paddingBottom: '40px' },
+    suggestionItem: { padding: '18px 22px', marginBottom: '12px', borderRadius: '20px', background: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px) saturate(150%)', border: '1px solid rgba(255, 255, 255, 0.15)', borderTop: '1px solid rgba(255, 255, 255, 0.4)', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 2px rgba(255, 255, 255, 0.3)', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '16px', fontWeight: '600' },
     suggestionIcon: { color: '#4CAF50', opacity: 0.8 },
     suggestionText: { color: '#fff', fontSize: '16px', fontWeight: '500' },
-    suggestionSub: { color: 'rgba(255, 255, 255, 0.6)', fontSize: '13px', marginLeft: '5px' }
+    suggestionSub: { color: 'rgba(255, 255, 255, 0.6)', fontSize: '13px', marginLeft: '5px' },
+    sectionLabel: { fontSize: '12px', opacity: 0.6, marginBottom: '12px', fontWeight: 'bold', letterSpacing: '1px', color: '#fff' },
+    shareBtn: { padding: '8px', background: 'rgba(255, 255, 255, 0.1)', borderRadius: '50%', color: '#fff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+    error: { background: 'rgba(255, 0, 0, 0.1)', border: '1px solid rgba(255, 0, 0, 0.3)', color: '#ffb3b3', padding: '10px', borderRadius: '15px', textAlign: 'center', marginBottom: '15px', fontSize: '14px' }
   };
 
   return (
-    <div style={styles.overlay} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div style={styles.modal}>
-        <div style={styles.dragHandle}></div>
-        <button onClick={onClose} style={styles.closeBtn}><X size={20} /></button>
+    <div style={styles.overlay}>
+      <div style={styles.content}>
         
-        <h3 style={styles.title}>Set Your Location</h3>
-        <p style={styles.subtitle}>Get accurate weather and local market rates.</p>
-
-        <button onClick={handleGPSScan} disabled={loading} style={styles.gpsBtn}>
-          <Crosshair size={22} />
-          {loading ? "Locating..." : "Use Current Location"}
-        </button>
-
-        <div style={styles.dividerWrap}>
-          <div style={styles.dividerLine}></div>
-          <span style={styles.dividerText}>or manually</span>
-          <div style={styles.dividerLine}></div>
+        <div style={styles.header}>
+          <button onClick={onClose} style={styles.closeBtn}><X size={24} /></button>
+          <form onSubmit={handleManualSearch} style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+            <input 
+              type="text"
+              placeholder="Search for a city..."
+              value={manualCity}
+              onChange={(e) => setManualCity(e.target.value)}
+              disabled={loading}
+              style={styles.inputBox}
+              autoFocus
+            />
+          </form>
+          {manualCity && (
+             <X size={22} color="#888" style={{ cursor: 'pointer' }} onClick={() => setManualCity("")} />
+          )}
         </div>
-
-        <form onSubmit={handleManualSearch} style={styles.searchContainer}>
-          <Search size={20} style={styles.searchIcon} />
-          <input 
-            type="text"
-            placeholder="Enter city name..."
-            value={manualCity}
-            onChange={(e) => setManualCity(e.target.value)}
-            disabled={loading}
-            style={styles.inputBox}
-            autoFocus
-          />
-        </form>
 
         {errorMsg && <p style={styles.error}>{errorMsg}</p>}
 
         <div style={styles.suggestionsList} className="no-scrollbar">
+          
+          {manualCity.length === 0 && (
+            <>
+              <div style={styles.gpsBtn} onClick={handleGPSScan}>
+                {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Crosshair size={22} />}
+                {loading ? "Locating..." : "Use Precise GPS Location"}
+              </div>
+
+              {searchHistory.length > 0 && (
+                <>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '25px', marginBottom: '10px' }}>
+                    <p style={{ ...styles.sectionLabel, margin: 0 }}>RECENT SEARCHES</p>
+                    <span style={{ fontSize: '12px', color: '#ff6b6b', cursor: 'pointer', fontWeight: 'bold' }} onClick={() => { setSearchHistory([]); localStorage.removeItem('farmBuddy_mainSearchHistory') }}>Clear</span>
+                  </div>
+                  {searchHistory.map((historyItem, idx) => (
+                    <div key={`hist-${idx}`} style={styles.suggestionItem} onClick={() => handleSelectSuggestion(historyItem)}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                        <Clock size={20} color="#888" />
+                        <div>
+                          <div style={styles.suggestionText}>{historyItem.name}</div>
+                          <div style={styles.suggestionSub}>{historyItem.region}</div>
+                        </div>
+                      </div>
+                      <button style={styles.shareBtn} onClick={(e) => handleShare(e, historyItem)}>
+                        <Share2 size={16} />
+                      </button>
+                    </div>
+                  ))}
+                </>
+              )}
+            </>
+          )}
+
           {suggestions.map((loc, idx) => (
             <div key={idx} style={styles.suggestionItem} onClick={() => handleSelectSuggestion(loc)}>
-              <MapPin size={18} style={styles.suggestionIcon} />
-              <div>
-                <span style={styles.suggestionText}>{loc.name}</span>
-                <span style={styles.suggestionSub}>{loc.region}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <MapPin size={20} style={styles.suggestionIcon} />
+                <div>
+                  <div style={styles.suggestionText}>{loc.name}</div>
+                  <div style={styles.suggestionSub}>{loc.region}</div>
+                </div>
               </div>
             </div>
           ))}
-        </div>
 
+        </div>
       </div>
     </div>
   );
