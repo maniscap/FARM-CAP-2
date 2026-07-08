@@ -3,6 +3,7 @@ import { ref, onValue, set } from 'firebase/database'
 import { signOut } from 'firebase/auth'
 import { db, auth } from './firebase'
 import Login from './Login'
+import SplashScreen from './SplashScreen'
 import './App.css'
 
 function App() {
@@ -10,6 +11,15 @@ function App() {
   const [activeTab, setActiveTab] = useState('irrigation')
   const [sensorData, setSensorData] = useState({ temp: 0, humidity: 0, soilMoisture: 0 })
   const [motorStatus, setMotorStatus] = useState(false)
+  const [showSplash, setShowSplash] = useState(true)
+
+  // Splash Screen Timer
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 3500); // Show splash for 3.5 seconds
+    return () => clearTimeout(timer);
+  }, []);
 
   // Firebase Realtime Database Listener for Sensor Data
   useEffect(() => {
@@ -45,6 +55,10 @@ function App() {
       console.error("Logout failed", error);
     }
   };
+
+  if (showSplash) {
+    return <SplashScreen />
+  }
 
   if (!user) {
     return <Login onLogin={setUser} />
