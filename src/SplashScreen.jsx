@@ -31,7 +31,7 @@ export default function SplashScreen() {
           </p>
           
           {/* Team Name */}
-          <p className="text-white/60 text-sm md:text-base font-semibold tracking-widest text-center mt-4 uppercase">
+          <p className="text-white/60 text-sm md:text-base tracking-widest text-center mt-4 uppercase" style={{ fontFamily: '"Times New Roman", Times, serif' }}>
             by Sathyabama Democratic Alliance
           </p>
         </div>
@@ -41,7 +41,12 @@ export default function SplashScreen() {
       <div className={`transition-all duration-1000 delay-700 ease-out ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
         <p className="text-white/40 text-xs font-bold tracking-[0.3em] uppercase flex items-center gap-2">
           <span>POWERED BY</span>
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-red-400">GEMINI</span>
+          <span className="flex items-center gap-1.5 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-red-400 font-extrabold">
+            <svg className="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" />
+            </svg>
+            GEMINI
+          </span>
         </p>
       </div>
       
