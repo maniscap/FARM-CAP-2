@@ -64,7 +64,7 @@ function App() {
           </main>
 
           {/* Bottom Navigation Bar */}
-          <nav className="w-[calc(100%-2rem)] mx-4 mb-6 bg-[rgba(255,255,255,0.05)] backdrop-blur-[20px] backdrop-saturate-[150%] rounded-[25px] border border-[rgba(255,255,255,0.15)] border-t-[rgba(255,255,255,0.4)] shadow-[0_8px_32px_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.3)] fixed bottom-0 left-0 z-20">
+          <nav className="w-full bg-[rgba(255,255,255,0.05)] backdrop-blur-[20px] backdrop-saturate-[150%] border-t border-[rgba(255,255,255,0.2)] shadow-[0_-8px_32px_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.2)] fixed bottom-0 left-0 z-20 pb-safe">
             <div className="flex justify-around items-center h-16 max-w-md mx-auto">
               
               {/* Home Nav Item */}
