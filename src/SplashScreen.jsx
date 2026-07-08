@@ -36,8 +36,8 @@ export default function SplashScreen() {
           </p>
           
           {/* Team Name */}
-          <p className="text-white/80 text-sm md:text-base tracking-[0.2em] text-center uppercase" style={{ fontFamily: '"Times New Roman", Times, serif' }}>
-            Sathyabama Democratic Alliance
+          <p className="text-white/80 text-base md:text-lg tracking-[0.2em] text-center uppercase leading-relaxed" style={{ fontFamily: '"Times New Roman", Times, serif' }}>
+            Sathyabama Democratic<br/>Alliance
           </p>
         </div>
       </div>

@@ -8,7 +8,7 @@ export default function Login({ onLogin }) {
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [error, setError] = useState('');
   const [recaptchaKey, setRecaptchaKey] = useState(0); // Force DOM node recreation
-  const bgImage = 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=2940&auto=format&fit=crop';
+  const bgImage = '/login-bg.jpg';
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
