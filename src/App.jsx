@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import { signOut } from 'firebase/auth'
+import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { auth } from './firebase'
 import Login from './Login'
 import SplashScreen from './SplashScreen'
+import WeatherHeader from './components/WeatherHeader'
 import './App.css'
 
 function App() {
@@ -37,22 +38,11 @@ function App() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col relative overflow-hidden">
       
-      {/* Top Header */}
-      <header className="w-full bg-white px-6 py-4 flex justify-between items-center shadow-sm z-10 sticky top-0">
-        <div className="flex items-center gap-2">
-          <div className="text-2xl drop-shadow-sm">🧢</div>
-          <h1 className="text-xl font-bold tracking-tight text-emerald-600">Farm CAP</h1>
-        </div>
-        <button 
-          onClick={handleLogout}
-          className="text-red-500 font-semibold text-sm px-3 py-1.5 bg-red-50 rounded-lg hover:bg-red-100 transition"
-        >
-          Logout
-        </button>
-      </header>
+      {/* Dynamic Weather Header */}
+      <WeatherHeader handleLogout={handleLogout} />
 
       {/* Main Content Area (Scrollable) */}
-      <main className="flex-1 w-full overflow-y-auto p-5 pb-24">
+      <main className="flex-1 w-full overflow-y-auto p-5 pb-24 -mt-4 z-10 relative">
         
         {/* Placeholder for the Grid */}
         <div className="flex flex-col gap-6">
