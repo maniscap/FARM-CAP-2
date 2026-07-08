@@ -26,17 +26,17 @@ export default function SplashScreen() {
           <div className="w-16 h-1 bg-white/30 rounded-full mb-6"></div>
           
           {/* Quote */}
-          <p className="text-white/90 text-xl md:text-2xl font-bold tracking-wide text-center mb-4">
+          <p className="text-white/70 text-sm md:text-base font-semibold tracking-widest text-center mb-8">
             "GROWING SMARTER TOGETHER"
           </p>
           
           {/* By */}
-          <p className="text-white/50 text-xs tracking-widest text-center mb-1 uppercase">
+          <p className="text-white/40 text-[10px] md:text-xs tracking-[0.3em] text-center mb-1.5 uppercase">
             by
           </p>
           
           {/* Team Name */}
-          <p className="text-white/70 text-sm md:text-base tracking-widest text-center uppercase" style={{ fontFamily: '"Times New Roman", Times, serif' }}>
+          <p className="text-white/80 text-sm md:text-base tracking-[0.2em] text-center uppercase" style={{ fontFamily: '"Times New Roman", Times, serif' }}>
             Sathyabama Democratic Alliance
           </p>
         </div>
