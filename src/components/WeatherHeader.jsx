@@ -56,13 +56,13 @@ export default function WeatherHeader({ handleLogout }) {
         </linearGradient>
       </defs>
       {/* Sun glow */}
-      <circle cx="28" cy="18" r="12" fill="#FFA800" opacity="0.4" filter="blur(4px)" />
+      <circle cx="34" cy="18" r="18" fill="#FFA800" opacity="0.4" filter="blur(4px)" />
       {/* Sun */}
-      <circle cx="28" cy="18" r="10" fill="url(#sunGrad)" />
+      <circle cx="34" cy="18" r="16" fill="url(#sunGrad)" />
       {/* Cloud shadow */}
-      <path d="M16 35C12.6863 35 10 32.3137 10 29C10 25.6863 12.6863 23 16 23C16.7738 23 17.5133 23.1466 18.1965 23.4116C19.5113 19.1566 23.464 16 28 16C33.5228 16 38 20.4772 38 26C38 26.1388 37.9972 26.2769 37.9916 26.4144C40.2711 27.2573 42 29.4316 42 32C42 35.3137 39.3137 38 36 38H16Z" fill="rgba(0,0,0,0.1)" filter="blur(2px)" />
+      <path d="M12 35C9.6863 35 7 32.3137 7 29C7 25.6863 9.6863 23 12 23C12.7738 23 13.5133 23.1466 14.1965 23.4116C15.5113 19.1566 19.464 16 24 16C29.5228 16 34 20.4772 34 26C34 26.1388 33.9972 26.2769 33.9916 26.4144C36.2711 27.2573 38 29.4316 38 32C38 35.3137 35.3137 38 32 38H12Z" fill="rgba(0,0,0,0.1)" filter="blur(2px)" />
       {/* Cloud */}
-      <path d="M16 34C12.6863 34 10 31.3137 10 28C10 24.6863 12.6863 22 16 22C16.7738 22 17.5133 22.1466 18.1965 22.4116C19.5113 18.1566 23.464 15 28 15C33.5228 15 38 19.4772 38 25C38 25.1388 37.9972 25.2769 37.9916 25.4144C40.2711 26.2573 42 28.4316 42 31C42 34.3137 39.3137 37 36 37H16Z" fill="url(#cloudGrad)" />
+      <path d="M12 34C9.6863 34 7 31.3137 7 28C7 24.6863 9.6863 22 12 22C12.7738 22 13.5133 22.1466 14.1965 22.4116C15.5113 18.1566 19.464 15 24 15C29.5228 15 34 19.4772 34 25C34 25.1388 33.9972 25.2769 33.9916 25.4144C36.2711 26.2573 38 28.4316 38 31C38 34.3137 35.3137 37 32 37H12Z" fill="url(#cloudGrad)" />
     </svg>
   );
 
@@ -197,12 +197,13 @@ export default function WeatherHeader({ handleLogout }) {
             </div>
           </div>
 
-          {/* Right Side Weather Logo (No Circle, Big Icon + Chevron) */}
+          {/* Right Side Weather Logo (Big Icon + Temp Below) */}
           <div 
             onClick={() => navigate('/weather')}
             className="cursor-pointer hover:opacity-80 transition-opacity"
             style={{
             display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             gap: '2px'
@@ -210,7 +211,9 @@ export default function WeatherHeader({ handleLogout }) {
             <div className="flex items-center justify-center">
               {getWeatherIcon()}
             </div>
-            <ChevronDown className="w-5 h-5 text-white/80" strokeWidth={2.5} />
+            <span className="text-[14px] font-black leading-none drop-shadow-sm text-white">
+              {loading ? "--" : Math.round(weatherData?.current?.temp_c)}°
+            </span>
           </div>
           
         </div>
