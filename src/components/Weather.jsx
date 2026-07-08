@@ -1334,22 +1334,24 @@ const styles = {
   cardHighLow: { fontSize:'13px', opacity:0.6 },
 
   // --- FIXED: ADDED boxSizing & DECREASED BACKGROUND OPACITY ---
-  searchOverlay: { position:'absolute', top:0, left:0, width:'100%', height:'100%', background:'rgba(0, 0, 0, 0.2)', transform: 'translateZ(0)', willChange: 'transform, backdrop-filter', backdropFilter: 'blur(30px) saturate(150%) brightness(115%)', WebkitBackdropFilter:'blur(30px) saturate(150%) brightness(115%)', zIndex:200, padding:'20px', boxSizing: 'border-box', overflowX: 'hidden' },
-  searchHeader: { display:'flex', alignItems:'center', gap:'15px', marginBottom:'25px', background: 'rgba(255,255,255,0.08)', padding: '12px 20px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.1)', boxSizing: 'border-box' },
-  searchInputBig: { flex:1, background:'transparent', border:'none', color:'#fff', fontSize:'18px', outline:'none' },
+  searchOverlay: { position:'absolute', top:0, left:0, width:'100%', height:'100%', background:'rgba(0, 0, 0, 0.3)', backdropFilter: 'blur(30px) saturate(180%)', WebkitBackdropFilter:'blur(30px) saturate(180%)', zIndex:200, padding:'20px', boxSizing: 'border-box', overflowX: 'hidden', display: 'flex', flexDirection: 'column' },
+  searchHeader: { display:'flex', alignItems:'center', gap:'15px', marginBottom:'25px', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(30px) saturate(200%)', padding: '14px 20px', borderRadius: '25px', border: '1px solid rgba(255,255,255,0.2)', borderTop: '1px solid rgba(255,255,255,0.5)', boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.4)', boxSizing: 'border-box' },
+  searchInputBig: { flex:1, background:'transparent', border:'none', color:'#fff', fontSize:'18px', outline:'none', fontWeight: '500' },
   suggestionsList: { marginTop:'10px' },
   suggestionItem: { padding:'18px', borderBottom:'1px solid rgba(255,255,255,0.05)', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', fontSize:'16px' },
   
-  gpsRow: { display:'flex', alignItems:'center', gap:'15px', padding:'15px 20px', background: 'rgba(76, 175, 80, 0.15)', color:'#4CAF50', cursor:'pointer', borderRadius: '16px', fontSize:'16px', fontWeight:'600', border: '1px solid rgba(76, 175, 80, 0.3)', boxSizing: 'border-box' },
-  gpsResultCard: { marginTop: '15px', padding: '15px', background: 'rgba(76, 175, 80, 0.1)', borderRadius: '15px', border: '1px solid #4CAF50', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', boxSizing: 'border-box' },
+  suggestionsList: { overflowY:'auto', paddingBottom:'40px', scrollbarWidth: 'none' },
+  suggestionItem: { padding:'18px 22px', marginBottom:'12px', borderRadius: '20px', background: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px) saturate(150%)', border: '1px solid rgba(255, 255, 255, 0.15)', borderTop: '1px solid rgba(255, 255, 255, 0.4)', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 2px rgba(255, 255, 255, 0.3)', cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center', fontSize:'16px', fontWeight: '600' },
+  gpsRow: { display:'flex', alignItems:'center', gap:'10px', color:'#4CAF50', padding:'18px 22px', background:'rgba(76, 175, 80, 0.1)', backdropFilter: 'blur(20px)', borderRadius:'20px', border:'1px solid rgba(76, 175, 80, 0.3)', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)', fontWeight:'bold', cursor:'pointer', marginBottom: '20px' },
+  gpsResultCard: { display:'flex', justifyContent:'space-between', alignItems:'center', padding:'18px 22px', background:'rgba(76, 175, 80, 0.15)', backdropFilter: 'blur(20px)', borderRadius:'20px', border:'1px solid rgba(76, 175, 80, 0.4)', borderTop: '1px solid rgba(76, 175, 80, 0.6)', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)', marginBottom:'15px', cursor:'pointer' },
   spinner: { width:'20px', height:'20px', border:'2px solid #fff', borderTop:'2px solid transparent', borderRadius:'50%', animation:'spin 1s linear infinite' },
   
-  historyRow: { display:'flex', alignItems:'center', gap:'12px', padding:'15px', color:'#ddd', cursor:'pointer', borderBottom:'1px solid rgba(255,255,255,0.05)', fontSize:'16px', boxSizing: 'border-box' },
+  historyRow: { display:'flex', alignItems:'center', gap:'12px', padding:'16px 20px', marginBottom: '10px', background:'rgba(255,255,255,0.05)', backdropFilter: 'blur(20px)', borderRadius:'20px', border: '1px solid rgba(255,255,255,0.15)', borderTop: '1px solid rgba(255, 255, 255, 0.4)', cursor:'pointer', fontSize: '15px', fontWeight: '500' },
   clearBtn: { fontSize: '12px', color: '#ff6b6b', cursor: 'pointer', fontWeight: 'bold' },
   
-  popularLabel: { fontSize:'12px', color: '#ddd', marginTop:'30px', marginBottom:'15px', letterSpacing:'1px', fontWeight: 'bold' },
-  popularGrid: { display:'flex', flexWrap:'wrap', gap:'10px' },
-  popularChip: { background:'rgba(255,255,255,0.1)', padding:'10px 18px', borderRadius:'25px', fontSize:'14px', cursor:'pointer', border:'1px solid rgba(255,255,255,0.2)', color: '#fff', transform: 'translateZ(0)', willChange: 'transform, backdrop-filter', backdropFilter: 'blur(10px)', boxSizing: 'border-box' },
+  popularLabel: { fontSize:'12px', opacity:0.6, marginBottom:'12px', fontWeight:'bold', letterSpacing:'1px' },
+  popularGrid: { display:'flex', flexWrap:'wrap', gap:'12px', marginBottom: '25px' },
+  popularChip: { padding:'12px 20px', background:'rgba(255,255,255,0.05)', backdropFilter: 'blur(20px)', borderRadius:'25px', fontSize:'14px', border: '1px solid rgba(255,255,255,0.15)', borderTop: '1px solid rgba(255, 255, 255, 0.4)', boxShadow: '0 4px 15px rgba(0, 0, 0, 0.15)', cursor:'pointer', fontWeight: '600' },
 
   emptyStateWrapper: { flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', zIndex: 5 },
   emptyStateCard: { background: 'rgba(0,0,0,0.4)', transform: 'translateZ(0)', willChange: 'transform, backdrop-filter', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderRadius: '32px', padding: '40px 25px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 40px rgba(0,0,0,0.3)', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', boxSizing: 'border-box' },
