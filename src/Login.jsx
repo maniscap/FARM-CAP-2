@@ -7,7 +7,7 @@ export default function Login({ onLogin }) {
   const [otp, setOtp] = useState('');
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [error, setError] = useState('');
-  const bgImage = '/bg-lush.png';
+  const bgImage = 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=2940&auto=format&fit=crop';
 
   useEffect(() => {
     if (window.recaptchaVerifier) {
