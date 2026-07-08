@@ -10,26 +10,19 @@ export default function Login({ onLogin }) {
   const bgImage = 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=2940&auto=format&fit=crop';
 
   useEffect(() => {
-    if (window.recaptchaVerifier) {
-      window.recaptchaVerifier.clear();
-      window.recaptchaVerifier = null;
-    }
-
-    try {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        'size': 'invisible'
-      });
-    } catch (e) {
-      console.error("Recaptcha Init Error", e);
-    }
-
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         onLogin(user);
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+        window.recaptchaVerifier = null;
+      }
+    };
   }, [onLogin]);
 
   const cleanPhone = phoneNumber.replace(/\D/g, ''); 
@@ -54,11 +47,21 @@ export default function Login({ onLogin }) {
     const formattedPhone = `+91${cleanPhone}`;
 
     try {
+      if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+          'size': 'invisible'
+        });
+      }
+      
       const appVerifier = window.recaptchaVerifier;
       const confirmation = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
       setConfirmationResult(confirmation);
     } catch (err) {
       setError('Failed to send OTP. ' + err.message);
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+        window.recaptchaVerifier = null;
+      }
     }
   };
 
