@@ -48,6 +48,8 @@ export default function Login({ onLogin }) {
 
     try {
       if (!window.recaptchaVerifier) {
+        const container = document.getElementById('recaptcha-container');
+        if (container) container.innerHTML = ''; // Force clear before creating
         window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
           'size': 'invisible'
         });
@@ -57,10 +59,15 @@ export default function Login({ onLogin }) {
       const confirmation = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
       setConfirmationResult(confirmation);
     } catch (err) {
-      setError('Failed to send OTP. ' + err.message);
+      console.error('OTP Send Error:', err);
+      setError('Failed to send OTP. Ensure your tester number is registered in Firebase console. (' + err.message + ')');
       if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
+        try {
+          window.recaptchaVerifier.clear();
+        } catch (e) {}
         window.recaptchaVerifier = null;
+        const container = document.getElementById('recaptcha-container');
+        if (container) container.innerHTML = ''; // Force clear DOM on error
       }
     }
   };
