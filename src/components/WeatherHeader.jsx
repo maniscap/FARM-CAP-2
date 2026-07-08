@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { CloudRain, CloudSun, Sun, Cloud, CloudLightning, Navigation } from 'lucide-react';
 import LocationModal from './LocationModal';
 
 export default function WeatherHeader({ handleLogout }) {
+  const navigate = useNavigate();
   const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showLocationModal, setShowLocationModal] = useState(false);
@@ -174,7 +176,10 @@ export default function WeatherHeader({ handleLogout }) {
           </div>
 
           {/* Right Side Weather Logo (Replacing Profile Circle) */}
-          <div style={{
+          <div 
+            onClick={() => navigate('/weather')}
+            className="cursor-pointer hover:bg-black/20 transition"
+            style={{
             padding: '4px 10px',
             borderRadius: '16px',
             background: 'rgba(0,0,0,0.15)',
