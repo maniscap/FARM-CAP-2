@@ -7,6 +7,7 @@ export default function Login({ onLogin }) {
   const [otp, setOtp] = useState('');
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [error, setError] = useState('');
+  const [recaptchaKey, setRecaptchaKey] = useState(0); // Force DOM node recreation
   const bgImage = 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=2940&auto=format&fit=crop';
 
   useEffect(() => {
@@ -48,8 +49,6 @@ export default function Login({ onLogin }) {
 
     try {
       if (!window.recaptchaVerifier) {
-        const container = document.getElementById('recaptcha-container');
-        if (container) container.innerHTML = ''; // Force clear before creating
         window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
           'size': 'invisible'
         });
@@ -66,9 +65,9 @@ export default function Login({ onLogin }) {
           window.recaptchaVerifier.clear();
         } catch (e) {}
         window.recaptchaVerifier = null;
-        const container = document.getElementById('recaptcha-container');
-        if (container) container.innerHTML = ''; // Force clear DOM on error
       }
+      // Force React to completely destroy and recreate the recaptcha container DOM node
+      setRecaptchaKey(prev => prev + 1);
     }
   };
 
@@ -108,7 +107,7 @@ export default function Login({ onLogin }) {
           </div>
         )}
 
-        <div id="recaptcha-container"></div>
+        <div key={recaptchaKey} id="recaptcha-container"></div>
         <form onSubmit={confirmationResult ? handleVerifyOtp : handleSendOtp} className="flex flex-col gap-4">
           {!confirmationResult ? (
             <>
