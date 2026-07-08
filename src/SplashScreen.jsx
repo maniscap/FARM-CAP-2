@@ -19,19 +19,19 @@ export default function SplashScreen() {
         {/* Logo and Name */}
         <div className={`flex flex-col items-center transition-all duration-1000 ease-out ${mounted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'}`}>
           <div className="text-6xl md:text-7xl mb-4 drop-shadow-[0_2px_10px_rgba(255,255,255,0.2)]">🧢</div>
-          <h1 className="text-white text-4xl md:text-5xl font-black tracking-widest text-center mb-6 drop-shadow-lg">
+          <h1 className="text-white text-4xl md:text-5xl font-black tracking-widest text-center mb-2 drop-shadow-lg">
             FARM CAP
           </h1>
           
-          <div className="w-16 h-1 bg-white/30 rounded-full mb-6"></div>
-          
           {/* Quote */}
-          <p className="text-white/70 text-sm md:text-base font-semibold tracking-widest text-center mb-8">
+          <p className="text-white/70 text-sm md:text-base font-semibold tracking-widest text-center mb-6">
             "GROWING SMARTER TOGETHER"
           </p>
           
+          <div className="w-16 h-1 bg-white/30 rounded-full mb-8"></div>
+          
           {/* By */}
-          <p className="text-white/40 text-[10px] md:text-xs tracking-[0.3em] text-center mb-1.5 uppercase">
+          <p className="text-white/70 text-sm md:text-base font-semibold tracking-[0.3em] text-center mb-2 uppercase">
             by
           </p>
           
