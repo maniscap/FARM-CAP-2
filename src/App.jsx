@@ -35,10 +35,10 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white font-sans flex flex-col items-center justify-center relative p-6">
+    <div className="min-h-screen bg-white text-slate-900 font-sans flex flex-col items-center justify-center relative p-6">
       <button 
         onClick={handleLogout}
-        className="absolute top-6 right-6 px-4 py-2 bg-red-500/10 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/20 transition-all font-semibold"
+        className="absolute top-6 right-6 px-4 py-2 bg-red-500/10 text-red-600 border border-red-500/30 rounded-lg hover:bg-red-500/20 transition-all font-semibold"
       >
         Sign Out
       </button>
