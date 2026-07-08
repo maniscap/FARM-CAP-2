@@ -7,20 +7,7 @@ export default function Login({ onLogin }) {
   const [otp, setOtp] = useState('');
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [error, setError] = useState('');
-  const [bgImage, setBgImage] = useState('');
-
-  const dayBg = 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=2940&auto=format&fit=crop';
-  const nightBg = 'https://images.unsplash.com/photo-1652454159675-11ead6275680?q=80&w=1170&auto=format&fit=crop';
-
-  useEffect(() => {
-    const updateTime = () => {
-      const hour = new Date().getHours();
-      setBgImage((hour >= 18 || hour < 6) ? nightBg : dayBg);
-    };
-    updateTime();
-    const timer = setInterval(updateTime, 60000);
-    return () => clearInterval(timer);
-  }, []);
+  const bgImage = '/bg-lush.png';
 
   useEffect(() => {
     if (window.recaptchaVerifier) {
@@ -88,80 +75,79 @@ export default function Login({ onLogin }) {
 
   return (
     <div 
-      className="fixed inset-0 w-full h-full bg-cover bg-center bg-black flex justify-center items-center z-0 transition-all duration-1000"
+      className="fixed inset-0 w-full h-full bg-cover bg-center bg-black flex justify-center items-center z-0 transition-all duration-1000 font-sans tracking-tight"
       style={{ backgroundImage: `url('${bgImage}')` }}
     >
-      <div className="w-full max-w-[340px] text-center bg-white/5 backdrop-blur-2xl p-8 rounded-[40px] shadow-[0_8px_32px_0_rgba(255,255,255,0.1)] border border-white/40 border-b-white/10 border-r-white/10 relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-tr before:from-white/10 before:to-transparent before:-z-10">
+      <div className="w-full max-w-[360px] text-center bg-[#f5f5f7]/30 backdrop-blur-3xl p-10 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-white/50 relative overflow-hidden">
         
-        <div className="mb-4">
-          <div className="text-5xl mb-2 drop-shadow-[0_2px_5px_rgba(0,0,0,0.3)]">🧢</div>
-          <h2 className="text-white m-0 font-extrabold text-2xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">Login to Farm Cap</h2>
-          <p className="text-white/90 mt-1 text-[13px]">Secure access for farmers</p>
+        <div className="mb-8">
+          <h2 className="text-white m-0 font-bold text-[28px] tracking-tight drop-shadow-md">Sign In</h2>
+          <p className="text-white/80 mt-2 text-[15px] font-medium tracking-normal">Access your Farm Cap dashboard.</p>
         </div>
 
         {error && (
-          <div className="text-[#ffcdd2] text-xs bg-red-500/20 p-2 rounded-md mb-3">
-            ⚠️ {error}
+          <div className="text-white text-[13px] bg-red-500/80 backdrop-blur-md p-3 rounded-[14px] mb-5 font-medium shadow-md">
+            {error}
           </div>
         )}
 
         <button 
           onClick={handleGoogleLogin} 
-          className="w-full p-3.5 bg-white/80 backdrop-blur-md text-[#333] border border-white/50 rounded-[20px] cursor-pointer text-[15px] flex items-center justify-center font-bold transition-all hover:bg-white hover:scale-[1.02] hover:shadow-[0_4px_15px_rgba(255,255,255,0.4)]"
+          className="w-full p-4 bg-white/90 backdrop-blur-md text-black border-none rounded-[16px] cursor-pointer text-[17px] flex items-center justify-center font-semibold transition-all hover:bg-white hover:scale-[1.02] shadow-[0_4px_14px_rgba(0,0,0,0.15)]"
         >
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" className="w-[18px] mr-[10px]" />
-          Sign in with Google
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" className="w-[20px] mr-[12px]" />
+          Continue with Google
         </button>
 
-        <div className="flex items-center my-5 text-white/70 text-[11px] font-bold">
-          <div className="flex-1 h-px bg-white/30"></div>
-          <span className="mx-2.5">OR USE MOBILE NUMBER</span>
-          <div className="flex-1 h-px bg-white/30"></div>
+        <div className="flex items-center my-6 text-white/80 text-[13px] font-medium">
+          <div className="flex-1 h-px bg-white/40"></div>
+          <span className="mx-4">or</span>
+          <div className="flex-1 h-px bg-white/40"></div>
         </div>
 
         <div id="recaptcha-container"></div>
-        <form onSubmit={confirmationResult ? handleVerifyOtp : handleSendOtp} className="flex flex-col gap-[15px]">
+        <form onSubmit={confirmationResult ? handleVerifyOtp : handleSendOtp} className="flex flex-col gap-4">
           {!confirmationResult ? (
             <>
               <div className="relative">
-                <span className="absolute left-[15px] top-1/2 -translate-y-1/2 text-[#333] font-bold text-[16px] z-10">+91</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-semibold text-[17px] z-10">+91</span>
                 <input 
                   type="tel" 
-                  placeholder="Mobile Number" 
+                  placeholder="Phone Number" 
                   required 
                   maxLength="10"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
-                  className="w-full py-3.5 px-[15px] pl-[50px] rounded-[20px] border border-white/40 text-[16px] outline-none bg-white/60 backdrop-blur-md transition-all text-[#333] font-bold box-border placeholder:text-gray-600 focus:bg-white/80 focus:border-white focus:shadow-[0_0_15px_rgba(255,255,255,0.5)]"
+                  className="w-full p-4 pl-[56px] rounded-[16px] border border-white/40 text-[17px] outline-none bg-white/80 backdrop-blur-md transition-all text-black font-medium box-border placeholder:text-gray-500 focus:bg-white focus:border-white focus:ring-4 focus:ring-white/30 shadow-inner"
                 />
               </div>
               
               <button 
                 type="submit" 
                 disabled={!isButtonEnabled}
-                className={`p-3.5 border border-white/30 rounded-[20px] text-[16px] font-bold transition-all duration-300 w-full text-white backdrop-blur-md ${isButtonEnabled ? 'bg-[#4CAF50]/80 cursor-pointer hover:bg-[#4CAF50] hover:scale-[1.02] shadow-[0_4px_20px_rgba(76,175,80,0.4)]' : 'bg-white/10 opacity-50 cursor-not-allowed'}`}
+                className={`p-4 border-none rounded-[16px] text-[17px] font-semibold transition-all duration-300 w-full text-white backdrop-blur-md ${isButtonEnabled ? 'bg-black/90 cursor-pointer hover:bg-black hover:scale-[1.02] shadow-[0_4px_14px_rgba(0,0,0,0.3)]' : 'bg-black/30 opacity-60 cursor-not-allowed'}`}
               >
-                Get OTP
+                Continue
               </button>
             </>
           ) : (
             <>
               <input 
                 type="text" 
-                placeholder="Enter 6-digit OTP" 
+                placeholder="000000" 
                 required 
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                className="w-full p-3.5 rounded-[20px] border border-white/40 text-[18px] outline-none bg-white/60 backdrop-blur-md transition-all text-[#333] box-border text-center tracking-[4px] font-bold focus:bg-white/80 focus:border-white focus:shadow-[0_0_15px_rgba(255,255,255,0.5)]" 
+                className="w-full p-4 rounded-[16px] border border-white/40 text-[22px] outline-none bg-white/90 backdrop-blur-md transition-all text-black box-border text-center tracking-[8px] font-medium focus:bg-white focus:border-white focus:ring-4 focus:ring-white/30 shadow-inner" 
               />
               <button 
                 type="submit" 
-                className="p-3.5 bg-[#4CAF50]/80 backdrop-blur-md border border-white/30 rounded-[20px] text-[16px] font-bold transition-all duration-300 w-full text-white hover:bg-[#4CAF50] hover:scale-[1.02] shadow-[0_4px_20px_rgba(76,175,80,0.4)] cursor-pointer"
+                className="p-4 bg-black/90 backdrop-blur-md border-none rounded-[16px] text-[17px] font-semibold transition-all duration-300 w-full text-white hover:bg-black hover:scale-[1.02] shadow-[0_4px_14px_rgba(0,0,0,0.3)] cursor-pointer"
               >
-                Verify OTP
+                Verify Code
               </button>
-              <p className="text-[12px] text-white/90 font-semibold mt-2 cursor-pointer hover:text-white transition-colors" onClick={() => setConfirmationResult(null)}>
-                Wrong number? Go back
+              <p className="text-[14px] text-white/90 font-medium mt-3 cursor-pointer hover:text-white hover:underline transition-all" onClick={() => setConfirmationResult(null)}>
+                Use a different number
               </p>
             </>
           )}
