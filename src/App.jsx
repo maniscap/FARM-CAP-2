@@ -41,13 +41,20 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={
-        <div className="min-h-screen bg-black text-slate-100 font-sans flex flex-col relative overflow-hidden">
+        <div 
+          className="min-h-screen bg-black text-slate-100 font-sans flex flex-col relative overflow-hidden bg-cover bg-center bg-fixed"
+          style={{ backgroundImage: `url('/assets/images/weather_sunrise.webp')` }}
+        >
+          {/* Subtle dark overlay for readability */}
+          <div className="absolute inset-0 bg-black/30 pointer-events-none"></div>
           
           {/* Dynamic Weather Header */}
-          <WeatherHeader handleLogout={handleLogout} />
+          <div className="relative z-10">
+            <WeatherHeader handleLogout={handleLogout} />
+          </div>
 
-          {/* Main Content Area (Scrollable) */}
-          <main className="flex-1 w-full overflow-y-auto p-5 pb-24 -mt-4 z-10 relative">
+          {/* Main Dashboard Content */}
+          <main className="flex-1 w-full max-w-md mx-auto pt-4 px-4 pb-24 overflow-y-auto z-10 relative no-scrollbar">
             
             {/* Dashboard Grid */}
             <div className="flex flex-col gap-6">
