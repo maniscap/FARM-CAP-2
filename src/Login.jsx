@@ -7,7 +7,6 @@ export default function Login({ onLogin }) {
   const [otp, setOtp] = useState('');
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [error, setError] = useState('');
-  const [termsAccepted, setTermsAccepted] = useState(false);
   const [bgImage, setBgImage] = useState('');
 
   const dayBg = 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=2940&auto=format&fit=crop';
@@ -48,13 +47,9 @@ export default function Login({ onLogin }) {
 
   const cleanPhone = phoneNumber.replace(/\D/g, ''); 
   const isPhoneValid = cleanPhone.length === 10;
-  const isButtonEnabled = isPhoneValid && termsAccepted;
+  const isButtonEnabled = isPhoneValid;
 
   const handleGoogleLogin = async () => {
-    if (!termsAccepted) {
-      setError("Please accept Terms & Conditions first.");
-      return;
-    }
     try {
       const result = await signInWithPopup(auth, googleProvider);
       onLogin(result.user);
@@ -96,7 +91,7 @@ export default function Login({ onLogin }) {
       className="fixed inset-0 w-full h-full bg-cover bg-center bg-black flex justify-center items-center z-0 transition-all duration-1000"
       style={{ backgroundImage: `url('${bgImage}')` }}
     >
-      <div className="w-full max-w-[340px] text-center bg-white/15 backdrop-blur-[15px] p-6 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] border border-white/20">
+      <div className="w-full max-w-[340px] text-center bg-white/5 backdrop-blur-2xl p-8 rounded-[40px] shadow-[0_8px_32px_0_rgba(255,255,255,0.1)] border border-white/40 border-b-white/10 border-r-white/10 relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-tr before:from-white/10 before:to-transparent before:-z-10">
         
         <div className="mb-4">
           <div className="text-5xl mb-2 drop-shadow-[0_2px_5px_rgba(0,0,0,0.3)]">🧢</div>
@@ -112,8 +107,7 @@ export default function Login({ onLogin }) {
 
         <button 
           onClick={handleGoogleLogin} 
-          disabled={!termsAccepted}
-          className="w-full p-3 bg-white text-[#333] border-none rounded-full cursor-pointer text-[15px] flex items-center justify-center font-semibold transition-transform hover:scale-[1.02] shadow-[0_2px_8px_rgba(0,0,0,0.2)] disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full p-3.5 bg-white/80 backdrop-blur-md text-[#333] border border-white/50 rounded-[20px] cursor-pointer text-[15px] flex items-center justify-center font-bold transition-all hover:bg-white hover:scale-[1.02] hover:shadow-[0_4px_15px_rgba(255,255,255,0.4)]"
         >
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" className="w-[18px] mr-[10px]" />
           Sign in with Google
@@ -138,14 +132,14 @@ export default function Login({ onLogin }) {
                   maxLength="10"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
-                  className="w-full py-3 px-[15px] pl-[50px] rounded-xl border border-white/30 text-[16px] outline-none bg-white/90 transition-all text-[#333] font-bold box-border placeholder:text-gray-500"
+                  className="w-full py-3.5 px-[15px] pl-[50px] rounded-[20px] border border-white/40 text-[16px] outline-none bg-white/60 backdrop-blur-md transition-all text-[#333] font-bold box-border placeholder:text-gray-600 focus:bg-white/80 focus:border-white focus:shadow-[0_0_15px_rgba(255,255,255,0.5)]"
                 />
               </div>
               
               <button 
                 type="submit" 
                 disabled={!isButtonEnabled}
-                className={`p-3.5 border-none rounded-xl text-[16px] font-bold transition-all duration-300 w-full text-white ${isButtonEnabled ? 'bg-[#4CAF50] cursor-pointer hover:scale-[1.02] shadow-[0_4px_15px_rgba(76,175,80,0.5)]' : 'bg-[#757575] opacity-60 cursor-not-allowed'}`}
+                className={`p-3.5 border border-white/30 rounded-[20px] text-[16px] font-bold transition-all duration-300 w-full text-white backdrop-blur-md ${isButtonEnabled ? 'bg-[#4CAF50]/80 cursor-pointer hover:bg-[#4CAF50] hover:scale-[1.02] shadow-[0_4px_20px_rgba(76,175,80,0.4)]' : 'bg-white/10 opacity-50 cursor-not-allowed'}`}
               >
                 Get OTP
               </button>
@@ -158,33 +152,20 @@ export default function Login({ onLogin }) {
                 required 
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                className="w-full p-3 rounded-xl border border-white/30 text-[18px] outline-none bg-white/80 transition-all text-[#333] box-border text-center tracking-[4px]" 
+                className="w-full p-3.5 rounded-[20px] border border-white/40 text-[18px] outline-none bg-white/60 backdrop-blur-md transition-all text-[#333] box-border text-center tracking-[4px] font-bold focus:bg-white/80 focus:border-white focus:shadow-[0_0_15px_rgba(255,255,255,0.5)]" 
               />
               <button 
                 type="submit" 
-                className="p-3.5 bg-[#4CAF50] border-none rounded-xl text-[16px] font-bold transition-all duration-300 w-full text-white hover:scale-[1.02] shadow-[0_4px_15px_rgba(76,175,80,0.5)] cursor-pointer"
+                className="p-3.5 bg-[#4CAF50]/80 backdrop-blur-md border border-white/30 rounded-[20px] text-[16px] font-bold transition-all duration-300 w-full text-white hover:bg-[#4CAF50] hover:scale-[1.02] shadow-[0_4px_20px_rgba(76,175,80,0.4)] cursor-pointer"
               >
                 Verify OTP
               </button>
-              <p className="text-[12px] text-white mt-2 cursor-pointer" onClick={() => setConfirmationResult(null)}>
+              <p className="text-[12px] text-white/90 font-semibold mt-2 cursor-pointer hover:text-white transition-colors" onClick={() => setConfirmationResult(null)}>
                 Wrong number? Go back
               </p>
             </>
           )}
         </form>
-        
-        <div className="flex items-center justify-center mt-5 mb-1">
-          <input 
-            type="checkbox" 
-            id="terms-check" 
-            checked={termsAccepted}
-            onChange={(e) => setTermsAccepted(e.target.checked)}
-            className="mr-2 w-4 h-4 cursor-pointer"
-          />
-          <label htmlFor="terms-check" className="text-white/90 text-[13px] font-medium drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer">
-            I agree to the <span className="text-[#FFD700] cursor-pointer underline font-bold">T&C & Privacy Policy</span>
-          </label>
-        </div>
 
       </div>
     </div>
