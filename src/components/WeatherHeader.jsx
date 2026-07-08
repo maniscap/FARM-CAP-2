@@ -50,8 +50,7 @@ export default function WeatherHeader({ handleLogout }) {
     if (condition.includes('rain') || condition.includes('drizzle')) return <CloudRain className="w-10 h-10 text-white drop-shadow-md" />;
     if (condition.includes('thunder') || condition.includes('storm')) return <CloudLightning className="w-10 h-10 text-white drop-shadow-md" />;
     if (condition.includes('cloud') || condition.includes('overcast')) return <Cloud className="w-10 h-10 text-white drop-shadow-md" />;
-    if (condition.includes('partly')) return <CloudSun className="w-10 h-10 text-white drop-shadow-md" />;
-    return <Sun className="w-10 h-10 text-white drop-shadow-md" />;
+    return <CloudSun className="w-10 h-10 drop-shadow-md" color="#FCD34D" />;
   };
 
   return (
