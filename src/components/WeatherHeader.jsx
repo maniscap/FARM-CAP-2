@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { CloudRain, CloudSun, Sun, Cloud, CloudLightning, Navigation } from 'lucide-react';
+import { CloudRain, CloudSun, Sun, Cloud, CloudLightning, Navigation, ChevronDown } from 'lucide-react';
 import LocationModal from './LocationModal';
 
 export default function WeatherHeader({ handleLogout }) {
@@ -44,7 +44,7 @@ export default function WeatherHeader({ handleLogout }) {
 
   // Weather Icon Logic
   const AppleWeatherIcon = () => (
-    <svg width="45" height="45" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0px 6px 8px rgba(0,0,0,0.15))' }}>
+    <svg width="60" height="60" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0px 6px 8px rgba(0,0,0,0.15))' }}>
       <defs>
         <radialGradient id="sunGrad" cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor="#FFE872" />
@@ -197,25 +197,20 @@ export default function WeatherHeader({ handleLogout }) {
             </div>
           </div>
 
-          {/* Right Side Weather Logo (Replacing Profile Circle) */}
+          {/* Right Side Weather Logo (No Circle, Big Icon + Chevron) */}
           <div 
             onClick={() => navigate('/weather')}
-            className="cursor-pointer hover:bg-black/20 transition"
+            className="cursor-pointer hover:opacity-80 transition-opacity"
             style={{
-            width: '45px',
-            height: '45px',
-            borderRadius: '50%',
-            background: 'rgba(0,0,0,0.15)',
-            backdropFilter: 'blur(10px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            border: '1px solid rgba(255,255,255,0.1)',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+            gap: '2px'
           }}>
-            <div className="scale-75 flex items-center justify-center">
+            <div className="flex items-center justify-center">
               {getWeatherIcon()}
             </div>
+            <ChevronDown className="w-5 h-5 text-white/80" strokeWidth={2.5} />
           </div>
           
         </div>
