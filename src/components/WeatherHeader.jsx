@@ -180,22 +180,18 @@ export default function WeatherHeader({ handleLogout }) {
             onClick={() => navigate('/weather')}
             className="cursor-pointer hover:bg-black/20 transition"
             style={{
-            padding: '4px 10px',
-            borderRadius: '16px',
+            width: '45px',
+            height: '45px',
+            borderRadius: '50%',
             background: 'rgba(0,0,0,0.15)',
             backdropFilter: 'blur(10px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '8px',
             border: '1px solid rgba(255,255,255,0.1)',
             boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
           }}>
-            <div className="flex flex-col items-end text-white">
-              <span className="text-sm font-black leading-none drop-shadow-sm">{loading ? "--" : Math.round(weatherData?.current?.temp_c)}°</span>
-              <span className="text-[10px] font-bold opacity-80 leading-tight capitalize drop-shadow-sm">{loading ? "..." : weatherData?.current?.condition?.text}</span>
-            </div>
-            <div className="scale-75 origin-right">
+            <div className="scale-75 flex items-center justify-center">
               {getWeatherIcon()}
             </div>
           </div>
