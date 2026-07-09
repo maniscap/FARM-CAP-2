@@ -4,11 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Newspaper, ExternalLink, RefreshCw } from 'lucide-react';
 
 const FARMING_CATEGORIES = [
-  { id: 'agriculture', name: 'Agriculture', query: 'agriculture OR farming OR crops OR farmers' },
-  { id: 'market', name: 'Market Rates', query: 'agriculture prices OR market rates OR mandi' },
-  { id: 'weather', name: 'Weather', query: 'weather forecast India OR monsoon farming' },
-  { id: 'schemes', name: 'Schemes', query: 'PM-KISAN OR subsidy OR government scheme farmers' },
-  { id: 'equipment', name: 'Agri-Tech', query: 'agricultural equipment OR agri-tech OR drones' },
+  { id: 'agriculture', name: 'Agriculture', query: '"agriculture" OR "farming" OR "crops"' },
+  { id: 'market', name: 'Market Rates', query: '"mandi" OR "agriculture prices"' },
+  { id: 'weather', name: 'Weather', query: '"weather forecast" AND "farming"' },
+  { id: 'schemes', name: 'Schemes', query: '"pm-kisan" OR "farmer subsidy"' },
+  { id: 'equipment', name: 'Agri-Tech', query: '"agricultural equipment" OR "agri-tech"' },
 ];
 
 export default function NewsUpdates() {
@@ -19,7 +19,10 @@ export default function NewsUpdates() {
   const [activeCategory, setActiveCategory] = useState(FARMING_CATEGORIES[0]);
 
   useEffect(() => {
-    fetchNews(activeCategory.query);
+    const timer = setTimeout(() => {
+      fetchNews(activeCategory.query);
+    }, 100);
+    return () => clearTimeout(timer);
   }, [activeCategory]);
 
   const fetchNews = async (searchQuery) => {
