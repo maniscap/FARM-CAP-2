@@ -77,7 +77,7 @@ function App() {
                 <div className="absolute inset-0 bg-black/30 pointer-events-none"></div>
                 
                 {/* Dynamic Weather Header */}
-                <div className="relative z-10">
+                <div className="relative z-50">
                   <WeatherHeader handleLogout={handleLogout} />
                 </div>
 
