@@ -115,7 +115,7 @@ function CropExpenses() {
             setHarvestData(folder.harvestDetails);
         }
     } else {
-        navigate('/expenditure');
+        navigate('/expenses');
     }
   };
 
@@ -274,7 +274,7 @@ function CropExpenses() {
           const updatedBills = allBills.filter(b => b.folderId.toString() !== folderId);
           await idb.set('farmBuddy_bills', updatedBills);
 
-          navigate('/expenditure');
+          navigate('/expenses');
       }
   };
 
