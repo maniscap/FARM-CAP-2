@@ -59,8 +59,8 @@ function App() {
             
             {/* Dashboard Grid */}
             <div className="flex flex-col gap-6">
-              <HomeWeatherWidget />
               <SensorDashboard />
+              <HomeWeatherWidget />
             </div>
 
           </main>

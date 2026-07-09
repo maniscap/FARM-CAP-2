@@ -103,7 +103,7 @@ export default function HomeWeatherWidget() {
           {loading ? (
             // Skeleton loader
             Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="flex-shrink-0 w-16 h-24 bg-white/10 rounded-2xl animate-pulse"></div>
+              <div key={i} className="flex-shrink-0 w-20 h-28 bg-white/10 rounded-2xl animate-pulse"></div>
             ))
           ) : (
             hourlyData.map((hour, index) => {
@@ -113,7 +113,7 @@ export default function HomeWeatherWidget() {
                 <div 
                   key={index}
                   data-active={isCurrentHour}
-                  className={`flex-shrink-0 flex flex-col items-center justify-between p-3 rounded-2xl w-[72px] transition-all border ${
+                  className={`flex-shrink-0 flex flex-col items-center justify-between p-3 rounded-2xl w-20 min-h-[112px] transition-all border ${
                     isCurrentHour 
                       ? 'bg-white/20 border-white/50 shadow-[0_0_15px_rgba(255,255,255,0.2)]' 
                       : 'bg-white/5 border-white/10'
@@ -128,8 +128,12 @@ export default function HomeWeatherWidget() {
                     {getSmallWeatherIcon(hour.condition.text)}
                   </div>
                   
-                  <span className="text-sm font-bold">
+                  <span className="text-sm font-bold mb-1">
                     {Math.round(hour.temp_c)}°
+                  </span>
+
+                  <span className={`text-[9px] uppercase tracking-wider text-center leading-tight line-clamp-2 ${isCurrentHour ? 'text-white font-semibold' : 'text-white/60'}`}>
+                    {hour.condition.text}
                   </span>
                 </div>
               );
