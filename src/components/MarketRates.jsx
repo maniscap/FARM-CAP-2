@@ -20,7 +20,7 @@ export default function MarketRates() {
 
   return (
     <div 
-      className="min-h-screen bg-black text-slate-100 font-sans flex flex-col relative overflow-hidden bg-cover bg-center bg-fixed"
+      className="h-[100dvh] bg-black text-slate-100 font-sans flex flex-col relative overflow-hidden bg-cover bg-center"
       style={{ backgroundImage: `url('/assets/images/weather_defaultFallback.webp')` }}
     >
       <div className="absolute inset-0 bg-black/60 pointer-events-none z-0"></div>

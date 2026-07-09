@@ -51,7 +51,7 @@ function App() {
     <Routes>
       <Route path="/" element={
         <div 
-          className="min-h-screen bg-black text-slate-100 font-sans flex flex-col relative overflow-hidden bg-cover bg-center bg-fixed"
+          className="h-[100dvh] bg-black text-slate-100 font-sans flex flex-col relative overflow-hidden bg-cover bg-center"
           style={{ backgroundImage: `url('/assets/images/weather_defaultFallback.webp')` }}
         >
           {/* Subtle dark overlay for readability */}

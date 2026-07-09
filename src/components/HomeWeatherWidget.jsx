@@ -83,7 +83,7 @@ export default function HomeWeatherWidget() {
       ></div>
       
       {/* Liquid Glass Overlay */}
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-[15px] z-0 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-[15px] transform-gpu will-change-transform z-0 pointer-events-none"></div>
       
       {/* Content */}
       <div className="relative z-10 p-5 text-white">
