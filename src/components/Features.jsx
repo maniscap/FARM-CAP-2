@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Newspaper, TrendingUp, Wrench, Sprout, ChevronLeft } from 'lucide-react';
+import { Newspaper, TrendingUp, Wrench, Sprout, ChevronLeft, Radio as RadioIcon } from 'lucide-react';
 
 export default function Features() {
   const navigate = useNavigate();
@@ -73,6 +73,30 @@ export default function Features() {
                   <div>
                     <h3 className="font-bold text-lg text-white">Market Rates</h3>
                     <p className="text-xs text-white/60 font-medium mt-1">Daily prices & mandi info</p>
+                  </div>
+                </div>
+                <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
+                  <ChevronLeft size={16} className="text-white/50 rotate-180" />
+                </div>
+              </div>
+            </div>
+
+            {/* Radio Card */}
+            <div 
+              onClick={() => navigate('/radio')}
+              className="group relative overflow-hidden rounded-[28px] border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.25)] cursor-pointer transition-transform hover:scale-[1.02]"
+            >
+              <div className="absolute inset-0 bg-white/10 backdrop-blur-[25px] z-0 pointer-events-none"></div>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-purple-400/20 rounded-full blur-[40px] -mr-10 -mt-10 pointer-events-none transition-all group-hover:bg-purple-400/30"></div>
+              
+              <div className="relative z-10 p-6 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center shadow-inner">
+                    <RadioIcon size={24} className="text-purple-300" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg text-white">FarmCap Radio</h3>
+                    <p className="text-xs text-white/60 font-medium mt-1">Live agri & local stations</p>
                   </div>
                 </div>
                 <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">

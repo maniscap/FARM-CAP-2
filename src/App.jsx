@@ -12,6 +12,7 @@ import BottomNav from './components/BottomNav'
 import Features from './components/Features'
 import NewsUpdates from './components/NewsUpdates'
 import MarketRates from './components/MarketRates'
+import Radio from './components/Radio'
 import './App.css'
 
 function App() {
@@ -83,6 +84,7 @@ function App() {
 
       <Route path="/news" element={<NewsUpdates />} />
       <Route path="/market-rates" element={<MarketRates />} />
+      <Route path="/radio" element={<Radio />} />
       <Route path="/weather" element={<Weather />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
