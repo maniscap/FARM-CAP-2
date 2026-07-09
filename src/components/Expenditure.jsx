@@ -110,6 +110,7 @@ function Expenditure() {
     const leasePerAcre = parseFloat(formData.leaseAmount) || 0;
     const totalLease = formData.landType === 'lease' ? (acres * leasePerAcre) : 0;
 
+    let newFolderId = null;
     let updatedFolders;
     
     if (editingId) {
@@ -126,12 +127,18 @@ function Expenditure() {
             id: Date.now(), ...formData, 
             totalAmount: 0, itemCount: 0, status: 'running', leaseCostTotal: totalLease 
         };
+        newFolderId = newFolder.id;
         updatedFolders = [newFolder, ...folders];
     }
     
     setFolders(updatedFolders);
     await idb.set('farmBuddy_expenditure_folders', updatedFolders);
     closeModal();
+    
+    // Automatically open the folder to fill details if it was just created
+    if (newFolderId) {
+        navigate(`/expenditure/${newFolderId}`);
+    }
   };
 
   const exportData = async () => {
