@@ -6,6 +6,7 @@ import Login from './Login'
 import SplashScreen from './SplashScreen'
 import WeatherHeader from './components/WeatherHeader'
 import SensorDashboard from './components/SensorDashboard'
+import HomeWeatherWidget from './components/HomeWeatherWidget'
 import Weather from './components/Weather'
 import './App.css'
 
@@ -58,6 +59,7 @@ function App() {
             
             {/* Dashboard Grid */}
             <div className="flex flex-col gap-6">
+              <HomeWeatherWidget />
               <SensorDashboard />
             </div>
 
