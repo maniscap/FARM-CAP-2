@@ -47,9 +47,9 @@ export default function Features() {
             {/* Agri News Card */}
             <div 
               onClick={() => navigate('/news')}
-              className="group relative overflow-hidden rounded-[28px] border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.25)] cursor-pointer transition-transform hover:scale-[1.02]"
+              className="group relative overflow-hidden rounded-[28px] border border-white/30 border-b-white/5 border-r-white/5 shadow-[0_15px_35px_rgba(0,0,0,0.4)] cursor-pointer transition-all hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
             >
-              <div className="absolute inset-0 bg-white/10 backdrop-blur-[25px] transform-gpu will-change-transform z-0 pointer-events-none"></div>
+              <div className="absolute inset-0 bg-black/40 backdrop-blur-[25px] transform-gpu will-change-transform z-0 pointer-events-none shadow-[inset_0_0_30px_rgba(255,255,255,0.05)]"></div>
               <div className="absolute top-0 right-0 w-32 h-32 bg-green-400/20 rounded-full blur-[40px] -mr-10 -mt-10 pointer-events-none transition-all group-hover:bg-green-400/30"></div>
               
               <div className="relative z-10 p-6 flex items-center justify-between">
@@ -71,9 +71,9 @@ export default function Features() {
             {/* Market Rates Card */}
             <div 
               onClick={() => navigate('/market-rates')}
-              className="group relative overflow-hidden rounded-[28px] border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.25)] cursor-pointer transition-transform hover:scale-[1.02]"
+              className="group relative overflow-hidden rounded-[28px] border border-white/30 border-b-white/5 border-r-white/5 shadow-[0_15px_35px_rgba(0,0,0,0.4)] cursor-pointer transition-all hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
             >
-              <div className="absolute inset-0 bg-white/10 backdrop-blur-[25px] transform-gpu will-change-transform z-0 pointer-events-none"></div>
+              <div className="absolute inset-0 bg-black/40 backdrop-blur-[25px] transform-gpu will-change-transform z-0 pointer-events-none shadow-[inset_0_0_30px_rgba(255,255,255,0.05)]"></div>
               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-400/20 rounded-full blur-[40px] -mr-10 -mt-10 pointer-events-none transition-all group-hover:bg-blue-400/30"></div>
               
               <div className="relative z-10 p-6 flex items-center justify-between">
@@ -95,9 +95,9 @@ export default function Features() {
             {/* Radio Card */}
             <div 
               onClick={() => navigate('/radio')}
-              className="group relative overflow-hidden rounded-[28px] border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.25)] cursor-pointer transition-transform hover:scale-[1.02]"
+              className="group relative overflow-hidden rounded-[28px] border border-white/30 border-b-white/5 border-r-white/5 shadow-[0_15px_35px_rgba(0,0,0,0.4)] cursor-pointer transition-all hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
             >
-              <div className="absolute inset-0 bg-white/10 backdrop-blur-[25px] transform-gpu will-change-transform z-0 pointer-events-none"></div>
+              <div className="absolute inset-0 bg-black/40 backdrop-blur-[25px] transform-gpu will-change-transform z-0 pointer-events-none shadow-[inset_0_0_30px_rgba(255,255,255,0.05)]"></div>
               <div className="absolute top-0 right-0 w-32 h-32 bg-purple-400/20 rounded-full blur-[40px] -mr-10 -mt-10 pointer-events-none transition-all group-hover:bg-purple-400/30"></div>
               
               <div className="relative z-10 p-6 flex items-center justify-between">
@@ -130,9 +130,9 @@ export default function Features() {
             {/* GPS Area Card */}
             <div 
               onClick={() => navigate('/gps')}
-              className="group relative overflow-hidden rounded-[24px] border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.25)] cursor-pointer transition-transform hover:scale-[1.02]"
+              className="group relative overflow-hidden rounded-[24px] border border-white/30 border-b-white/5 border-r-white/5 shadow-[0_15px_35px_rgba(0,0,0,0.4)] cursor-pointer transition-all hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
             >
-              <div className="absolute inset-0 bg-white/10 backdrop-blur-[20px] transform-gpu will-change-transform z-0 pointer-events-none"></div>
+              <div className="absolute inset-0 bg-black/40 backdrop-blur-[20px] transform-gpu will-change-transform z-0 pointer-events-none shadow-[inset_0_0_30px_rgba(255,255,255,0.05)]"></div>
               <div className="absolute top-0 right-0 w-24 h-24 bg-orange-400/20 rounded-full blur-[30px] -mr-8 -mt-8 pointer-events-none transition-all group-hover:bg-orange-400/30"></div>
               
               <div className="relative z-10 p-5 flex flex-col items-center justify-center text-center gap-3">
@@ -149,9 +149,9 @@ export default function Features() {
             {/* Expense Calculator Card */}
             <div 
               onClick={() => navigate('/expenses')}
-              className="group relative overflow-hidden rounded-[24px] border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.25)] cursor-pointer transition-transform hover:scale-[1.02]"
+              className="group relative overflow-hidden rounded-[24px] border border-white/30 border-b-white/5 border-r-white/5 shadow-[0_15px_35px_rgba(0,0,0,0.4)] cursor-pointer transition-all hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
             >
-              <div className="absolute inset-0 bg-white/10 backdrop-blur-[20px] transform-gpu will-change-transform z-0 pointer-events-none"></div>
+              <div className="absolute inset-0 bg-black/40 backdrop-blur-[20px] transform-gpu will-change-transform z-0 pointer-events-none shadow-[inset_0_0_30px_rgba(255,255,255,0.05)]"></div>
               <div className="absolute top-0 right-0 w-24 h-24 bg-rose-400/20 rounded-full blur-[30px] -mr-8 -mt-8 pointer-events-none transition-all group-hover:bg-rose-400/30"></div>
               
               <div className="relative z-10 p-5 flex flex-col items-center justify-center text-center gap-3">
