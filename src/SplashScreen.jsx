@@ -1,14 +1,30 @@
-import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 
 export default function SplashScreen() {
-  const [mounted, setMounted] = useState(false);
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.1,
+      },
+    },
+  };
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setMounted(true);
-    }, 100);
-    return () => clearTimeout(timer);
-  }, []);
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30, scale: 0.9 },
+    show: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        type: 'spring',
+        stiffness: 300,
+        damping: 24,
+      },
+    },
+  };
 
   return (
     <div className="fixed inset-0 w-full h-full bg-black flex flex-col justify-between items-center py-12 z-[100] font-sans overflow-hidden">
@@ -17,33 +33,42 @@ export default function SplashScreen() {
       <div className="flex-1 flex flex-col justify-center items-center w-full px-6">
         
         {/* Logo and Name */}
-        <div className={`flex flex-col items-center transition-all duration-1000 ease-out ${mounted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'}`}>
-          <div className="text-6xl md:text-7xl mb-4 drop-shadow-[0_2px_10px_rgba(255,255,255,0.2)]">🧢</div>
-          <h1 className="text-white text-4xl md:text-5xl font-black tracking-widest text-center mb-2 drop-shadow-lg">
+        <motion.div 
+          className="flex flex-col items-center"
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+        >
+          <motion.div variants={itemVariants} className="text-6xl md:text-7xl mb-4 drop-shadow-[0_2px_10px_rgba(255,255,255,0.2)]">
+            🧢
+          </motion.div>
+          
+          <motion.h1 variants={itemVariants} className="text-white text-4xl md:text-5xl font-black tracking-widest text-center mb-2 drop-shadow-lg">
             FARM CAP
-          </h1>
+          </motion.h1>
           
-          {/* Quote */}
-          <p className="text-white/70 text-xs md:text-sm font-semibold tracking-widest text-center mb-6">
+          <motion.p variants={itemVariants} className="text-white/70 text-xs md:text-sm font-semibold tracking-widest text-center mb-6">
             - GROWING SMARTER TOGETHER -
-          </p>
+          </motion.p>
           
-          <div className="w-16 h-1 bg-white/30 rounded-full mb-8"></div>
+          <motion.div variants={itemVariants} className="w-16 h-1 bg-white/30 rounded-full mb-8"></motion.div>
           
-          {/* By */}
-          <p className="text-white/70 text-sm md:text-base font-semibold tracking-[0.3em] text-center mb-2 uppercase">
+          <motion.p variants={itemVariants} className="text-white/70 text-sm md:text-base font-semibold tracking-[0.3em] text-center mb-2 uppercase">
             by
-          </p>
+          </motion.p>
           
-          {/* Team Name */}
-          <p className="text-white/80 text-base md:text-lg tracking-[0.2em] text-center uppercase leading-relaxed" style={{ fontFamily: '"Times New Roman", Times, serif' }}>
+          <motion.p variants={itemVariants} className="text-white/80 text-base md:text-lg tracking-[0.2em] text-center uppercase leading-relaxed" style={{ fontFamily: '"Times New Roman", Times, serif' }}>
             Sathyabama Democratic<br/>Alliance
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
       </div>
       
       {/* Bottom Footer */}
-      <div className={`transition-all duration-1000 delay-700 ease-out ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.2, duration: 1, ease: "easeOut" }}
+      >
         <p className="text-white/40 text-xs font-bold tracking-[0.3em] uppercase flex items-center gap-2">
           <span>POWERED BY</span>
           <span className="flex items-center gap-1.5 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-red-400 font-extrabold">
@@ -53,7 +78,7 @@ export default function SplashScreen() {
             GEMINI
           </span>
         </p>
-      </div>
+      </motion.div>
       
     </div>
   );

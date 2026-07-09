@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { auth } from './firebase'
+import { AnimatePresence, motion } from 'framer-motion'
 import Login from './Login'
 import SplashScreen from './SplashScreen'
 import WeatherHeader from './components/WeatherHeader'
@@ -18,9 +19,24 @@ import Expenditure from './components/Expenditure'
 import CropExpenses from './components/CropExpenses'
 import './App.css'
 
+const PageWrapper = ({ children }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.98 }}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      className="absolute inset-0 w-full h-full"
+    >
+      {children}
+    </motion.div>
+  );
+};
+
 function App() {
   const [user, setUser] = useState(null)
   const [showSplash, setShowSplash] = useState(true)
+  const location = useLocation()
 
   // Splash Screen Timer
   useEffect(() => {
@@ -48,52 +64,58 @@ function App() {
   }
 
   return (
-    <Routes>
-      <Route path="/" element={
-        <div 
-          className="h-[100dvh] bg-black text-slate-100 font-sans flex flex-col relative overflow-hidden bg-cover bg-center"
-          style={{ backgroundImage: `url('/assets/images/weather_defaultFallback.webp')` }}
-        >
-          {/* Subtle dark overlay for readability */}
-          <div className="absolute inset-0 bg-black/30 pointer-events-none"></div>
+    <div className="relative w-full h-[100dvh] overflow-hidden bg-black">
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={
+            <PageWrapper>
+              <div 
+                className="h-[100dvh] bg-black text-slate-100 font-sans flex flex-col relative overflow-hidden bg-cover bg-center"
+                style={{ backgroundImage: `url('/assets/images/weather_defaultFallback.webp')` }}
+              >
+                {/* Subtle dark overlay for readability */}
+                <div className="absolute inset-0 bg-black/30 pointer-events-none"></div>
+                
+                {/* Dynamic Weather Header */}
+                <div className="relative z-10">
+                  <WeatherHeader handleLogout={handleLogout} />
+                </div>
+
+                {/* Main Dashboard Content */}
+                <main className="flex-1 w-full max-w-md mx-auto pt-4 px-4 pb-24 overflow-y-auto z-10 relative no-scrollbar">
+                  
+                  {/* Dashboard Grid */}
+                  <div className="flex flex-col gap-6">
+                    <SensorDashboard />
+                    <HomeWeatherWidget />
+                  </div>
+
+                </main>
+
+                {/* Bottom Navigation Bar */}
+                <BottomNav />
+              </div>
+            </PageWrapper>
+          } />
           
-          {/* Dynamic Weather Header */}
-          <div className="relative z-10">
-            <WeatherHeader handleLogout={handleLogout} />
-          </div>
+          <Route path="/features" element={
+            <PageWrapper>
+              <Features />
+              <BottomNav />
+            </PageWrapper>
+          } />
 
-          {/* Main Dashboard Content */}
-          <main className="flex-1 w-full max-w-md mx-auto pt-4 px-4 pb-24 overflow-y-auto z-10 relative no-scrollbar">
-            
-            {/* Dashboard Grid */}
-            <div className="flex flex-col gap-6">
-              <SensorDashboard />
-              <HomeWeatherWidget />
-            </div>
-
-          </main>
-
-          {/* Bottom Navigation Bar */}
-          <BottomNav />
-        </div>
-      } />
-      
-      <Route path="/features" element={
-        <>
-          <Features />
-          <BottomNav />
-        </>
-      } />
-
-      <Route path="/news" element={<NewsUpdates />} />
-      <Route path="/market-rates" element={<MarketRates />} />
-      <Route path="/radio" element={<Radio />} />
-      <Route path="/gps" element={<GPSMeasurement />} />
-      <Route path="/expenses" element={<Expenditure />} />
-      <Route path="/expenditure/:folderId" element={<CropExpenses />} />
-      <Route path="/weather" element={<Weather />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+          <Route path="/news" element={<PageWrapper><NewsUpdates /></PageWrapper>} />
+          <Route path="/market-rates" element={<PageWrapper><MarketRates /></PageWrapper>} />
+          <Route path="/radio" element={<PageWrapper><Radio /></PageWrapper>} />
+          <Route path="/gps" element={<PageWrapper><GPSMeasurement /></PageWrapper>} />
+          <Route path="/expenses" element={<PageWrapper><Expenditure /></PageWrapper>} />
+          <Route path="/expenditure/:folderId" element={<PageWrapper><CropExpenses /></PageWrapper>} />
+          <Route path="/weather" element={<PageWrapper><Weather /></PageWrapper>} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AnimatePresence>
+    </div>
   )
 }
 
