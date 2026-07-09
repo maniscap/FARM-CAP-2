@@ -49,7 +49,7 @@ export default function BottomNav() {
             <motion.button
               key={item.id}
               onClick={() => navigate(item.id)}
-              whileTap={{ scale: 0.9 }}
+              whileTap={{ scale: 0.85 }}
               className={`relative flex flex-col items-center justify-center w-full h-full py-1 ${isActive ? 'text-white' : 'text-white/50 hover:text-white/80'}`}
             >
               {isActive && (
@@ -59,8 +59,20 @@ export default function BottomNav() {
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
-              {item.icon(isActive)}
-              <span className="text-[10px] font-semibold tracking-wide relative z-10">{item.label}</span>
+              <motion.div
+                initial={false}
+                animate={isActive ? { y: -2, scale: 1.15 } : { y: 0, scale: 1 }}
+                transition={{ type: "spring", stiffness: 500, damping: 25 }}
+              >
+                {item.icon(isActive)}
+              </motion.div>
+              <motion.span 
+                className="text-[10px] font-semibold tracking-wide relative z-10 mt-0.5"
+                initial={false}
+                animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0.8, y: 0 }}
+              >
+                {item.label}
+              </motion.span>
             </motion.button>
           )
         })}

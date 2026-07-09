@@ -65,7 +65,7 @@ function App() {
 
   return (
     <div className="relative w-full h-[100dvh] overflow-hidden bg-black">
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={
             <PageWrapper>
