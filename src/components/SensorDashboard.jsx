@@ -63,7 +63,7 @@ export default function SensorDashboard() {
             <Droplets size={18} color="#38bdf8" />
           </div>
           <div className="text-xl font-bold tracking-tight">42%</div>
-          <div className="text-[10px] uppercase tracking-wider text-white/50 font-semibold mt-1">Moisture</div>
+          <div className="text-[10px] uppercase tracking-wider text-white/50 font-semibold mt-1 text-center leading-tight">Soil Moisture</div>
         </div>
 
         <div className="flex flex-col items-center bg-white/5 p-3 rounded-2xl border border-white/10 shadow-inner">
@@ -71,7 +71,7 @@ export default function SensorDashboard() {
             <ThermometerSun size={18} color="#fbbf24" />
           </div>
           <div className="text-xl font-bold tracking-tight">28°C</div>
-          <div className="text-[10px] uppercase tracking-wider text-white/50 font-semibold mt-1">Soil Temp</div>
+          <div className="text-[10px] uppercase tracking-wider text-white/50 font-semibold mt-1 text-center leading-tight">Field Temperature</div>
         </div>
 
         <div className="flex flex-col items-center bg-white/5 p-3 rounded-2xl border border-white/10 shadow-inner">
@@ -79,7 +79,7 @@ export default function SensorDashboard() {
             <Wind size={18} color="#a78bfa" />
           </div>
           <div className="text-xl font-bold tracking-tight">65%</div>
-          <div className="text-[10px] uppercase tracking-wider text-white/50 font-semibold mt-1">Humidity</div>
+          <div className="text-[10px] uppercase tracking-wider text-white/50 font-semibold mt-1 text-center leading-tight">Field Humidity</div>
         </div>
       </div>
 
