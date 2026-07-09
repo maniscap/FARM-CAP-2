@@ -14,7 +14,7 @@ export default function Features() {
       <div className="absolute inset-0 bg-black/40 pointer-events-none"></div>
 
       {/* Header */}
-      <div className="relative z-10 pt-12 px-4 pb-4">
+      <div className="relative z-10 pt-6 px-4 pb-2" style={{ paddingTop: 'max(24px, env(safe-area-inset-top))' }}>
         <div className="flex items-center justify-between bg-white/10 backdrop-blur-md border border-white/20 rounded-[32px] p-2 shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
           <button 
             onClick={() => navigate(-1)} 
