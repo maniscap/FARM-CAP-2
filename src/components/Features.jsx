@@ -14,20 +14,30 @@ export default function Features() {
       <div className="absolute inset-0 bg-black/40 pointer-events-none"></div>
 
       {/* Header */}
-      <div className="relative z-10 pt-12 px-6 pb-4">
-        <h1 className="text-3xl font-black tracking-tight text-white drop-shadow-md">
-          Features
-        </h1>
-        <p className="text-white/70 mt-1 font-medium text-sm">
-          Everything you need for smarter farming
-        </p>
+      <div className="relative z-10 pt-12 px-4 pb-4">
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => navigate(-1)} 
+            className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 active:scale-95 transition-transform shrink-0"
+          >
+            <ChevronLeft size={24} className="text-white" />
+          </button>
+          <div>
+            <h1 className="text-3xl font-black tracking-tight text-white drop-shadow-md">
+              Features
+            </h1>
+            <p className="text-white/70 mt-1 font-medium text-sm">
+              Everything you need for smarter farming
+            </p>
+          </div>
+        </div>
       </div>
 
       <main className="flex-1 w-full max-w-md mx-auto px-4 pb-24 overflow-y-auto z-10 relative no-scrollbar">
         
         {/* INSIGHTS SECTION */}
         <div className="mt-4 mb-8">
-          <h2 className="text-lg font-bold tracking-wide text-white/90 mb-4 px-2 uppercase text-xs">
+          <h2 className="text-sm font-bold tracking-widest text-white/90 mb-4 px-2 uppercase">
             Insights & Data
           </h2>
           
@@ -110,7 +120,7 @@ export default function Features() {
 
         {/* TOOLS SECTION */}
         <div>
-          <h2 className="text-lg font-bold tracking-wide text-white/90 mb-4 px-2 uppercase text-xs">
+          <h2 className="text-sm font-bold tracking-widest text-white/90 mb-4 px-2 uppercase">
             Tools
           </h2>
           
