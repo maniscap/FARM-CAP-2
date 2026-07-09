@@ -15,21 +15,22 @@ export default function Features() {
 
       {/* Header */}
       <div className="relative z-10 pt-12 px-4 pb-4">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between bg-white/10 backdrop-blur-md border border-white/20 rounded-[32px] p-2 shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
           <button 
             onClick={() => navigate(-1)} 
-            className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 active:scale-95 transition-transform shrink-0"
+            className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center border border-white/20 active:scale-95 transition-transform shrink-0 shadow-inner"
           >
-            <ChevronLeft size={24} className="text-white" />
+            <ChevronLeft size={24} className="text-white -ml-1" />
           </button>
-          <div>
-            <h1 className="text-3xl font-black tracking-tight text-white drop-shadow-md">
+          <div className="flex-1 text-center">
+            <h1 className="text-xl font-black tracking-tight text-white drop-shadow-md leading-tight">
               Features
             </h1>
-            <p className="text-white/70 mt-1 font-medium text-sm">
-              Everything you need for smarter farming
+            <p className="text-white/70 font-medium text-[10px] uppercase tracking-wider">
+              Smarter Farming Tools
             </p>
           </div>
+          <div className="w-12 h-12 shrink-0"></div> {/* Spacer for perfect centering */}
         </div>
       </div>
 
