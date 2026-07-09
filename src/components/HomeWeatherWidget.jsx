@@ -8,10 +8,8 @@ export default function HomeWeatherWidget() {
   const [hourlyData, setHourlyData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [locationName, setLocationName] = useState('Chennai');
+  const [currentHourIndex, setCurrentHourIndex] = useState(new Date().getHours());
   const scrollRef = useRef(null);
-  
-  // To identify current hour
-  const currentHourIndex = new Date().getHours();
 
   useEffect(() => {
     fetchForecast();
@@ -20,7 +18,7 @@ export default function HomeWeatherWidget() {
   const fetchForecast = async () => {
     try {
       // 1. Get location from localStorage
-      const savedLoc = localStorage.getItem('farmCap_userLocation');
+      const savedLoc = localStorage.getItem('farmBuddy_lastCity');
       let loc = { name: 'Chennai', region: 'TN', lat: null, lon: null };
       if (savedLoc) {
         loc = JSON.parse(savedLoc);
@@ -34,6 +32,12 @@ export default function HomeWeatherWidget() {
       
       const hours = res.data.forecast.forecastday[0].hour;
       setHourlyData(hours);
+      
+      const localTimeStr = res.data.location?.localtime;
+      if (localTimeStr) {
+          const hour = parseInt(localTimeStr.split(' ')[1].split(':')[0], 10);
+          setCurrentHourIndex(hour);
+      }
       
     } catch (err) {
       console.error("Failed to fetch forecast for widget:", err);
@@ -76,22 +80,10 @@ export default function HomeWeatherWidget() {
   return (
     <div 
       onClick={() => navigate('/weather')}
-      className="w-full relative overflow-hidden rounded-[30px] border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.25)] cursor-pointer transition-transform hover:scale-[1.02]"
+      className="relative z-10 p-5 pb-6 text-white w-full cursor-pointer hover:bg-white/5 transition-colors"
     >
-      {/* Background Image Wrapper */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center z-0"
-        style={{ backgroundImage: `url('/assets/images/weather_defaultFallback.webp')` }}
-      ></div>
-      
-      {/* Liquid Glass Overlay */}
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-[15px] transform-gpu will-change-transform z-0 pointer-events-none"></div>
-      
-      {/* Content */}
-      <div className="relative z-10 p-5 text-white">
-        
-        {/* Header */}
-        <div className="flex justify-between items-center mb-4">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-4">
           <div>
             <h3 className="font-bold text-lg tracking-wide drop-shadow-md">Hourly Forecast</h3>
             <p className="text-xs text-white/80 font-medium drop-shadow-md flex items-center gap-1 mt-0.5">
@@ -149,7 +141,6 @@ export default function HomeWeatherWidget() {
           )}
         </div>
 
-      </div>
     </div>
   );
 }

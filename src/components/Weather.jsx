@@ -8,7 +8,7 @@ import {
 import { 
   IoMdAdd, IoMdSearch, IoMdClose, IoMdNavigate, IoMdArrowBack, IoMdRefresh, IoMdTrendingUp
 } from 'react-icons/io';
-import { MdLocationOn, MdDelete, MdGpsFixed, MdLocationOff, MdVisibility, MdWaterDrop } from 'react-icons/md';
+import { MdLocationOn, MdDelete, MdGpsFixed, MdLocationOff, MdVisibility, MdWaterDrop, MdPushPin } from 'react-icons/md';
 import { FaMaskFace, FaLeaf } from 'react-icons/fa6'; 
 import { FaWind, FaEye } from 'react-icons/fa';
 
@@ -276,6 +276,15 @@ const Weather = () => {
                 hasLoadedCache = true;
                 // Turn off primary loading spinner so the user sees cached data instantly!
                 setLoading(false);
+                
+                const lastCityStr = localStorage.getItem('farmBuddy_lastCity');
+                if (lastCityStr) {
+                    try {
+                        const lastCity = JSON.parse(lastCityStr);
+                        const idx = parsed.findIndex(c => c.location.name === lastCity.name);
+                        if (idx !== -1) setCurrentIndex(idx);
+                    } catch(e) {}
+                }
             }
         } catch(e) {
             console.error("Failed to load cached weather list", e);
@@ -348,6 +357,15 @@ const Weather = () => {
             setWeatherStatus('live');
             localStorage.setItem('farmBuddy_cachedDetailedWeather', JSON.stringify(freshList));
             localStorage.setItem('farmBuddy_cachedDetailedWeatherTime', new Date().toISOString());
+            
+            const lastCityStr = localStorage.getItem('farmBuddy_lastCity');
+            if (lastCityStr) {
+                try {
+                    const lastCity = JSON.parse(lastCityStr);
+                    const idx = freshList.findIndex(c => c.location.name === lastCity.name);
+                    if (idx !== -1) setCurrentIndex(idx);
+                } catch(e) {}
+            }
         } else {
             // All API fetches failed (offline). Keep the cached list if we had one.
             if (hasLoadedCache) {

@@ -8,6 +8,7 @@ import SplashScreen from './SplashScreen'
 import WeatherHeader from './components/WeatherHeader'
 import SensorDashboard from './components/SensorDashboard'
 import HomeWeatherWidget from './components/HomeWeatherWidget'
+import FarmSecurityCard from './components/FarmSecurityCard'
 import Weather from './components/Weather'
 import BottomNav from './components/BottomNav'
 import Features from './components/Features'
@@ -17,6 +18,7 @@ import Radio from './components/Radio'
 import GPSMeasurement from './components/GPSMeasurement'
 import Expenditure from './components/Expenditure'
 import CropExpenses from './components/CropExpenses'
+import ChatBot from './components/ChatBot'
 import './App.css'
 
 const PageWrapper = ({ children }) => {
@@ -84,10 +86,27 @@ function App() {
                 {/* Main Dashboard Content */}
                 <main className="flex-1 w-full max-w-md mx-auto pt-4 px-4 pb-24 overflow-y-auto z-10 relative no-scrollbar">
                   
-                  {/* Dashboard Grid */}
-                  <div className="flex flex-col gap-6">
-                    <SensorDashboard />
-                    <HomeWeatherWidget />
+                  {/* Dashboard Grid - Unified Card */}
+                  <div className="w-full relative overflow-hidden rounded-[30px] border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.25)] transition-all">
+                    {/* Unified Background Image */}
+                    <div 
+                      className="absolute inset-0 bg-cover bg-center z-0"
+                      style={{ backgroundImage: `url('/assets/images/cinematic_farm_bg.png')` }}
+                    ></div>
+                    
+                    {/* Liquid Glass Overlay */}
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-[15px] transform-gpu will-change-transform z-0 pointer-events-none"></div>
+
+                    {/* Unified Content */}
+                    <div className="flex flex-col relative z-10">
+                      <SensorDashboard />
+                      <HomeWeatherWidget />
+                    </div>
+                  </div>
+
+                  {/* Security Dashboard Card */}
+                  <div className="mt-6">
+                    <FarmSecurityCard />
                   </div>
 
                 </main>
@@ -115,6 +134,7 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AnimatePresence>
+      <ChatBot />
     </div>
   )
 }

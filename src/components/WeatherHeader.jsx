@@ -179,7 +179,7 @@ export default function WeatherHeader({ handleLogout }) {
       </div>
 
       {/* Foreground UI - EXACT MATCH TO MY FIRST APP */}
-      <div className="relative z-20 w-full" style={{ padding: '25px 20px 20px 20px', paddingTop: 'max(25px, env(safe-area-inset-top))' }}>
+      <div className="relative z-20 w-full" style={{ padding: '15px 20px 15px 20px', paddingTop: 'max(15px, env(safe-area-inset-top))' }}>
         <div className="flex justify-between items-start w-full mb-2">
           
           {/* Location Area - EXACTLY like old app */}

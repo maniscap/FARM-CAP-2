@@ -42,8 +42,7 @@ export default function SensorDashboard() {
   const areaData = `${pathData} L 100,50 L 0,50 Z`;
 
   return (
-    <div className="w-full bg-[rgba(255,255,255,0.05)] backdrop-blur-[25px] backdrop-saturate-[180%] transform-gpu will-change-transform border-t border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.25)] rounded-[30px] p-6 relative overflow-hidden text-white transition-all">
-      
+    <div className="relative z-10 p-5 pt-6 text-white w-full border-b border-white/10">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-2">
