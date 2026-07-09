@@ -68,25 +68,28 @@ function App() {
             <div className="flex justify-around items-center h-16 max-w-md mx-auto">
               
               {/* Home Nav Item */}
-              <button className="flex flex-col items-center justify-center w-full h-full text-[#4CAF50] drop-shadow-[0_0_8px_rgba(76,175,80,0.6)] transition-all">
-                <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+              <button className="flex flex-col items-center justify-center w-full h-full text-white transition-all">
+                <svg className="w-6 h-6 mb-[2px]" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M11.47 3.84a.75.75 0 011.06 0l8.99 9a.75.75 0 11-1.06 1.06l-1.21-1.21v7.56a2.25 2.25 0 01-2.25 2.25h-3v-6a.75.75 0 00-.75-.75h-2.5a.75.75 0 00-.75.75v6h-3a2.25 2.25 0 01-2.25-2.25v-7.56L3.54 13.9a.75.75 0 11-1.06-1.06l8.99-9z" />
                 </svg>
-                <span className="text-[10px] font-bold tracking-wide">Home</span>
+                <span className="text-[10px] font-semibold tracking-wide">Home</span>
               </button>
 
               {/* Features Nav Item */}
-              <button className="flex flex-col items-center justify-center w-full h-full text-white/60 hover:text-white/90 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.4)] transition-all">
-                <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+              <button className="flex flex-col items-center justify-center w-full h-full text-white/50 hover:text-white/80 transition-all">
+                <svg className="w-6 h-6 mb-[2px]" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="4" y="4" width="6" height="6" rx="1.5" />
+                  <rect x="14" y="4" width="6" height="6" rx="1.5" />
+                  <rect x="4" y="14" width="6" height="6" rx="1.5" />
+                  <rect x="14" y="14" width="6" height="6" rx="1.5" />
                 </svg>
                 <span className="text-[10px] font-medium tracking-wide">Features</span>
               </button>
 
               {/* Profile Nav Item */}
-              <button className="flex flex-col items-center justify-center w-full h-full text-white/60 hover:text-white/90 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.4)] transition-all">
-                <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              <button className="flex flex-col items-center justify-center w-full h-full text-white/50 hover:text-white/80 transition-all">
+                <svg className="w-6 h-6 mb-[2px]" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                 </svg>
                 <span className="text-[10px] font-medium tracking-wide">Profile</span>
               </button>
