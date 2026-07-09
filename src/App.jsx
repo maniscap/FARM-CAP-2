@@ -15,6 +15,7 @@ import MarketRates from './components/MarketRates'
 import Radio from './components/Radio'
 import GPSMeasurement from './components/GPSMeasurement'
 import Expenditure from './components/Expenditure'
+import CropExpenses from './components/CropExpenses'
 import './App.css'
 
 function App() {
@@ -89,6 +90,7 @@ function App() {
       <Route path="/radio" element={<Radio />} />
       <Route path="/gps" element={<GPSMeasurement />} />
       <Route path="/expenses" element={<Expenditure />} />
+      <Route path="/expenditure/:id" element={<CropExpenses />} />
       <Route path="/weather" element={<Weather />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

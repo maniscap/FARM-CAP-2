@@ -234,7 +234,7 @@ function Expenditure() {
           <motion.button 
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            onClick={() => navigate('/Consumer_HomePage')} 
+            onClick={() => navigate(-1)} 
             style={styles.backBtn}
           >
             <IoMdArrowBack size={24} />
@@ -444,7 +444,7 @@ function Expenditure() {
 const styles = {
   page: { 
     minHeight: '100vh', 
-    background: '#111111', 
+    background: 'transparent', 
     color: 'white', 
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', 
     padding: '20px', 
@@ -468,9 +468,9 @@ const styles = {
     display: 'flex', 
     justifyContent: 'space-between', 
     alignItems: 'center', 
-    background: 'transparent',
-    backdropFilter: 'blur(12px) saturate(120%) brightness(110%)',
-    WebkitBackdropFilter: 'blur(12px) saturate(120%) brightness(110%)',
+    background: 'rgba(255, 255, 255, 0.1)',
+    backdropFilter: 'blur(10px)',
+    WebkitBackdropFilter: 'blur(10px)',
     border: '1px solid rgba(255, 255, 255, 0.1)',
     borderTop: '1px solid rgba(255, 255, 255, 0.3)',
     borderLeft: '1px solid rgba(255, 255, 255, 0.2)',
@@ -496,9 +496,9 @@ const styles = {
   emptyTitle: { fontSize:'20px', fontWeight:'bold', color:'white', marginBottom:'10px' },
   emptyText: { fontSize:'14px', lineHeight:'1.5', maxWidth:'280px' },
   card: { 
-    background: 'transparent', 
-    backdropFilter: 'blur(12px) saturate(120%) brightness(110%)',
-    WebkitBackdropFilter: 'blur(12px) saturate(120%) brightness(110%)',
+    background: 'rgba(255, 255, 255, 0.1)', 
+    backdropFilter: 'blur(10px)',
+    WebkitBackdropFilter: 'blur(10px)',
     borderRadius: '20px', 
     padding: '20px', 
     position: 'relative', 
@@ -512,9 +512,9 @@ const styles = {
     transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
   },
   cardProfit: { 
-    background: 'transparent',
-    backdropFilter: 'blur(12px) saturate(120%) brightness(110%)',
-    WebkitBackdropFilter: 'blur(12px) saturate(120%) brightness(110%)',
+    background: 'rgba(76, 175, 80, 0.1)',
+    backdropFilter: 'blur(10px)',
+    WebkitBackdropFilter: 'blur(10px)',
     borderRadius: '20px', 
     padding: '20px', 
     position: 'relative', 
@@ -528,9 +528,9 @@ const styles = {
     transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
   },
   cardLoss: { 
-    background: 'transparent',
-    backdropFilter: 'blur(12px) saturate(120%) brightness(110%)',
-    WebkitBackdropFilter: 'blur(12px) saturate(120%) brightness(110%)',
+    background: 'rgba(255, 107, 107, 0.1)',
+    backdropFilter: 'blur(10px)',
+    WebkitBackdropFilter: 'blur(10px)',
     borderRadius: '20px', 
     padding: '20px', 
     position: 'relative', 
@@ -568,9 +568,9 @@ const styles = {
     position:'absolute', 
     top:'50px', 
     right:'20px', 
-    background: 'transparent',
-    backdropFilter: 'blur(12px) saturate(120%) brightness(110%)',
-    WebkitBackdropFilter: 'blur(12px) saturate(120%) brightness(110%)',
+    background: 'rgba(0, 0, 0, 0.5)',
+    backdropFilter: 'blur(10px)',
+    WebkitBackdropFilter: 'blur(10px)',
     padding:'8px', 
     borderRadius:'12px', 
     boxShadow:'inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 8px 32px rgba(0, 0, 0, 0.15)',
@@ -595,18 +595,18 @@ const styles = {
     left: 0, 
     width: '100%', 
     height: '100%', 
-    background: 'rgba(0,0,0,0.2)', 
-    backdropFilter:'blur(30px) saturate(150%) brightness(115%)',
-    WebkitBackdropFilter:'blur(30px) saturate(150%) brightness(115%)',
+    background: 'rgba(0,0,0,0.5)', 
+    backdropFilter:'blur(10px)',
+    WebkitBackdropFilter:'blur(10px)',
     display: 'flex', 
     alignItems: 'center', 
     justifyContent: 'center', 
     zIndex: 100
   },
   modalContent: { 
-    background: 'rgba(0, 0, 0, 0.2)', 
-    backdropFilter:'blur(30px) saturate(150%) brightness(115%)',
-    WebkitBackdropFilter:'blur(30px) saturate(150%) brightness(115%)',
+    background: 'rgba(25, 25, 25, 0.7)', 
+    backdropFilter:'blur(10px)',
+    WebkitBackdropFilter:'blur(10px)',
     padding: '25px', 
     borderRadius: '28px', 
     width: '90%', 
