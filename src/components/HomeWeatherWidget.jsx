@@ -7,6 +7,7 @@ export default function HomeWeatherWidget() {
   const navigate = useNavigate();
   const [hourlyData, setHourlyData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [locationName, setLocationName] = useState('Chennai');
   const scrollRef = useRef(null);
   
   // To identify current hour
@@ -24,6 +25,7 @@ export default function HomeWeatherWidget() {
       if (savedLoc) {
         loc = JSON.parse(savedLoc);
       }
+      setLocationName(loc.name || 'Unknown Location');
 
       // 2. Fetch forecast
       const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
@@ -90,7 +92,13 @@ export default function HomeWeatherWidget() {
         
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
-          <h3 className="font-bold text-lg tracking-wide drop-shadow-md">Hourly Forecast</h3>
+          <div>
+            <h3 className="font-bold text-lg tracking-wide drop-shadow-md">Hourly Forecast</h3>
+            <p className="text-xs text-white/80 font-medium drop-shadow-md flex items-center gap-1 mt-0.5">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+              {locationName}
+            </p>
+          </div>
           <ChevronRight size={20} className="text-white/70" />
         </div>
 
