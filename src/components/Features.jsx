@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Newspaper, TrendingUp, Wrench, Sprout, ChevronLeft, Radio as RadioIcon } from 'lucide-react';
+import { Newspaper, TrendingUp, Wrench, Sprout, ChevronLeft, Radio as RadioIcon, Map, Calculator } from 'lucide-react';
 
 export default function Features() {
   const navigate = useNavigate();
@@ -127,32 +127,40 @@ export default function Features() {
           
           <div className="grid grid-cols-2 gap-4">
             
-            {/* Coming Soon Tool 1 */}
-            <div className="relative overflow-hidden rounded-[24px] border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.25)] opacity-60">
-              <div className="absolute inset-0 bg-white/5 backdrop-blur-[20px] z-0 pointer-events-none"></div>
+            {/* GPS Area Card */}
+            <div 
+              onClick={() => navigate('/gps')}
+              className="group relative overflow-hidden rounded-[24px] border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.25)] cursor-pointer transition-transform hover:scale-[1.02]"
+            >
+              <div className="absolute inset-0 bg-white/10 backdrop-blur-[20px] z-0 pointer-events-none"></div>
+              <div className="absolute top-0 right-0 w-24 h-24 bg-orange-400/20 rounded-full blur-[30px] -mr-8 -mt-8 pointer-events-none transition-all group-hover:bg-orange-400/30"></div>
               
               <div className="relative z-10 p-5 flex flex-col items-center justify-center text-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                  <Sprout size={20} className="text-white/70" />
+                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shadow-inner border border-white/10">
+                  <Map size={20} className="text-orange-300" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-sm text-white">Crop Doctor</h3>
-                  <p className="text-[10px] text-white/40 mt-1 uppercase tracking-wider font-bold">Coming Soon</p>
+                  <h3 className="font-semibold text-sm text-white">GPS Area</h3>
+                  <p className="text-[10px] text-white/60 mt-1">Measure Fields</p>
                 </div>
               </div>
             </div>
 
-            {/* Coming Soon Tool 2 */}
-            <div className="relative overflow-hidden rounded-[24px] border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.25)] opacity-60">
-              <div className="absolute inset-0 bg-white/5 backdrop-blur-[20px] z-0 pointer-events-none"></div>
+            {/* Expense Calculator Card */}
+            <div 
+              onClick={() => navigate('/expenses')}
+              className="group relative overflow-hidden rounded-[24px] border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.25)] cursor-pointer transition-transform hover:scale-[1.02]"
+            >
+              <div className="absolute inset-0 bg-white/10 backdrop-blur-[20px] z-0 pointer-events-none"></div>
+              <div className="absolute top-0 right-0 w-24 h-24 bg-rose-400/20 rounded-full blur-[30px] -mr-8 -mt-8 pointer-events-none transition-all group-hover:bg-rose-400/30"></div>
               
               <div className="relative z-10 p-5 flex flex-col items-center justify-center text-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                  <Wrench size={20} className="text-white/70" />
+                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shadow-inner border border-white/10">
+                  <Calculator size={20} className="text-rose-300" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-sm text-white">Irrigation</h3>
-                  <p className="text-[10px] text-white/40 mt-1 uppercase tracking-wider font-bold">Coming Soon</p>
+                  <h3 className="font-semibold text-sm text-white">Expenses</h3>
+                  <p className="text-[10px] text-white/60 mt-1">Track Costs</p>
                 </div>
               </div>
             </div>
