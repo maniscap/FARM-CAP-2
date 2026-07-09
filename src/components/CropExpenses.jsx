@@ -105,8 +105,8 @@ function CropExpenses() {
   }, [showReportModal]);
 
   // --- DATA LOADING ---
-  const loadFolderData = () => {
-    const allFolders = JSON.parse(localStorage.getItem('farmBuddy_expenditure_folders') || '[]');
+  const loadFolderData = async () => {
+    const allFolders = (await idb.get('farmBuddy_expenditure_folders')) || [];
     const folder = allFolders.find(f => f.id.toString() === folderId);
     if (folder) {
         setCurrentFolder(folder);
