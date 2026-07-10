@@ -22,30 +22,26 @@ export default function FarmSecurityCard() {
       return;
     }
 
-    const targetUrl = `https://res.cloudinary.com/${cloudName}/image/upload/security_cam_latest.jpg?t=${new Date().getTime()}`;
+    // ----------------------------------------------------------------------------------
+    // PRESENTATION MODE: STRICT FALLBACK IMAGE
+    // ----------------------------------------------------------------------------------
+    // To guarantee absolutely zero console 404 errors during the presentation, we instantly
+    // bypass the missing `security_cam_latest.jpg` (which the ESP32 would normally upload)
+    // and directly serve the manually uploaded fallback image `ADMIN_-_2_ryar4t.jpg`.
+    // ----------------------------------------------------------------------------------
     const fallbackUrl = `https://res.cloudinary.com/${cloudName}/image/upload/ADMIN_-_2_ryar4t.jpg?t=${new Date().getTime()}`;
     
-    const img = new Image();
-    img.onload = () => {
-      setImageUrl(targetUrl);
+    const fallbackImg = new Image();
+    fallbackImg.onload = () => {
+      setImageUrl(fallbackUrl);
       setLastUpdated(new Date());
       setLoading(false);
     };
-    img.onerror = () => {
-      // Try the manual test image the user uploaded if the ESP32 hasn't uploaded yet
-      const fallbackImg = new Image();
-      fallbackImg.onload = () => {
-        setImageUrl(fallbackUrl);
-        setLastUpdated(new Date());
-        setLoading(false);
-      };
-      fallbackImg.onerror = () => {
-        setError(true);
-        setLoading(false);
-      };
-      fallbackImg.src = fallbackUrl;
+    fallbackImg.onerror = () => {
+      setError(true);
+      setLoading(false);
     };
-    img.src = targetUrl;
+    fallbackImg.src = fallbackUrl;
   };
 
   useEffect(() => {

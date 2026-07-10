@@ -29,21 +29,18 @@ export default function NewsUpdates() {
     setLoading(true);
     setError(null);
     try {
-      const apiKey = import.meta.env.VITE_GNEWS_API_KEY;
-      if (!apiKey) throw new Error("API Key missing");
-
-      const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(searchQuery)}&country=in&lang=en&max=10&apikey=${apiKey}`;
+      // ----------------------------------------------------------------------------------
+      // PRESENTATION MODE: STRICT MOCK DATA
+      // ----------------------------------------------------------------------------------
+      // To guarantee absolutely zero console errors (CORS, 500s, Rate Limits) during the 
+      // live presentation, we instantly bypass the fragile GNews API and serve the 
+      // high-quality fallback data. 
+      // ----------------------------------------------------------------------------------
       
-      // Use AllOrigins proxy to bypass strict CORS blocking on Firebase
-      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-      const response = await axios.get(proxyUrl);
+      throw new Error("Simulated API failure to trigger clean presentation fallback");
       
-      // AllOrigins returns the actual JSON string inside the 'contents' property
-      const parsedData = JSON.parse(response.data.contents);
-      
-      setArticles(parsedData.articles || []);
     } catch (err) {
-      console.error("News API Error:", err);
+      console.log("News API bypassed for clean presentation.");
       // Fallback mock data for presentation safety if API limits are reached
       setArticles([
         {
