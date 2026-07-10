@@ -171,14 +171,8 @@ const Radio = () => {
 
       if (view === 'player') {
         setIsPlayerExpanded(true);
-        setHasFetched(true);
-      } else if (view === 'list') {
-        setIsPlayerExpanded(false);
-        setHasFetched(true);
       } else {
-        // Base state: Calibrate
         setIsPlayerExpanded(false);
-        setHasFetched(false);
       }
     };
 
@@ -207,11 +201,7 @@ const Radio = () => {
 
   // --- BACK NAVIGATION LOGIC ---
   const handleBack = () => {
-    if (hasFetched) {
-      window.history.back();
-    } else {
-      navigate('/features');
-    }
+    navigate(-1);
   };
 
   const handleFullPlayerBack = () => {
@@ -470,10 +460,6 @@ const Radio = () => {
         finalStations.sort((a, b) => (a.type === 'Govt' ? -1 : 1));
         setAllStations(finalStations);
 
-        if (window.history.state?.radioView !== 'list') {
-            window.history.pushState({ radioView: 'list' }, '');
-        }
-        
         setHasFetched(true);
         setLoading(false);
       } catch (err) { 
