@@ -101,12 +101,12 @@ export default function SensorDashboard() {
           <path d={areaData} fill="url(#gradientGreen)" className="transition-all duration-1000 ease-linear" />
           
           {/* Line Chart */}
-          <path d={pathData} fill="none" stroke="#4CAF50" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-all duration-1000 ease-linear drop-shadow-[0_0_5px_rgba(76,175,80,0.8)]" />
+          <path d={pathData} fill="none" stroke="#4CAF50" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="transition-all duration-1000 ease-linear" />
         </svg>
 
         {/* Scanning highlight overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent w-[200%] animate-[scan_3s_linear_infinite]" 
-             style={{ animation: 'scan 3s linear infinite' }} 
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent w-[200%] transform-gpu" 
+             style={{ animation: 'scan 3s linear infinite', willChange: 'transform' }} 
         />
         <style>{`
           @keyframes scan {

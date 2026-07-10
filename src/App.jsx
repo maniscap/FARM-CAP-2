@@ -75,8 +75,13 @@ function App() {
                 className="h-[100dvh] bg-black text-slate-100 font-sans flex flex-col relative overflow-hidden bg-cover bg-center"
                 style={{ backgroundImage: `url('/assets/images/weather_defaultFallback.webp')` }}
               >
-                {/* Subtle dark overlay for readability */}
-                <div className="absolute inset-0 bg-black/30 pointer-events-none"></div>
+                {/* Subtle dark overlay for readability and pixelation masking */}
+                <div className="absolute inset-0 bg-black/40 pointer-events-none z-0"></div>
+                
+                {/* CSS SVG Noise overlay to dither low-res background pixels */}
+                <div className="absolute inset-0 pointer-events-none z-0 mix-blend-overlay opacity-30" 
+                     style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}>
+                </div>
                 
                 {/* Dynamic Weather Header */}
                 <div className="relative z-50">
@@ -94,8 +99,8 @@ function App() {
                       style={{ backgroundImage: `url('/assets/images/cinematic_farm_bg.png')` }}
                     ></div>
                     
-                    {/* Liquid Glass Overlay */}
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-[15px] transform-gpu will-change-transform z-0 pointer-events-none"></div>
+                    {/* Liquid Glass Overlay - Optimized for mobile performance */}
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-md z-0 pointer-events-none"></div>
 
                     {/* Unified Content */}
                     <div className="flex flex-col relative z-10">
