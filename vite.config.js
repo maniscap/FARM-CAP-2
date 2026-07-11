@@ -11,6 +11,9 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
+      workbox: {
+        maximumFileSizeToCacheInBytes: 5000000 // 5 MB
+      },
       manifest: {
         name: 'FarmCap Dashboard',
         short_name: 'FarmCap',
