@@ -1,15 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { Droplets, ThermometerSun, Wind, Activity } from 'lucide-react';
+import { db } from '../firebase';
+import { ref, onValue } from 'firebase/database';
+import { Droplets, ThermometerSun, Wind, Activity, Sparkles, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function SensorDashboard() {
+  const navigate = useNavigate();
   // Live graph data state
   const [dataPoints, setDataPoints] = useState(Array.from({ length: 20 }, () => 20));
+  const [insight, setInsight] = useState(null);
+  const [sensorData, setSensorData] = useState({
+    soilMoisture: '--',
+    temperature: '--',
+    humidity: '--'
+  });
+
+  useEffect(() => {
+    // Listen to the most recent AI insight and sensor data
+    const insightRef = ref(db, 'ai_insights/latest');
+    const unsubscribe = onValue(insightRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        if (data.analysis) {
+          setInsight(data.analysis);
+          setSensorData({
+            soilMoisture: data.analysis.soilMoisture || '32',
+            temperature: data.analysis.fieldTemp || '28',
+            humidity: data.analysis.fieldHumidity || '65'
+          });
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setDataPoints(prev => {
         const newData = [...prev.slice(1)];
-        // Generate a new random data point between 10 and 40
         const lastVal = newData[newData.length - 1];
         const variance = Math.floor(Math.random() * 15) - 7;
         let nextVal = lastVal + variance;
@@ -18,21 +47,17 @@ export default function SensorDashboard() {
         newData.push(nextVal);
         return newData;
       });
-    }, 1000); // Ticks every second
+    }, 1000);
 
     return () => clearInterval(interval);
   }, []);
 
-  // Generate SVG path for the live data
-  // Map 20 points across 100 SVG units width (5 units per point)
-  // Y goes from 0 to 50 SVG units
   const generatePath = () => {
     if (dataPoints.length === 0) return "";
     let d = `M 0,${50 - dataPoints[0]}`;
     for (let i = 1; i < dataPoints.length; i++) {
       const x = i * (100 / (dataPoints.length - 1));
       const y = 50 - dataPoints[i];
-      // Use smooth bezier curves if possible, but straight lines are fine for live tickers
       d += ` L ${x},${y}`;
     }
     return d;
@@ -42,16 +67,22 @@ export default function SensorDashboard() {
   const areaData = `${pathData} L 100,50 L 0,50 Z`;
 
   return (
-    <div className="relative z-10 p-5 pt-6 text-white w-full border-b border-white/10">
+    <div 
+      onClick={() => navigate('/sensor-report')}
+      className="relative z-10 p-5 pt-6 text-white w-full cursor-pointer hover:bg-white/5 transition-colors group"
+    >
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-2">
           <Activity size={20} className="text-[#4CAF50] animate-pulse" />
-          <h2 className="text-lg font-bold tracking-wide">Live Field Sensors</h2>
+          <h2 className="text-lg font-bold tracking-wide flex items-center gap-1">
+            Live Field Sensors
+            <ChevronRight size={16} className="text-white/30 group-hover:text-white/80 transition-colors opacity-0 group-hover:opacity-100 -ml-2 group-hover:ml-0" />
+          </h2>
         </div>
-        <div className="bg-[#4CAF50]/20 text-[#4CAF50] px-3 py-1 rounded-full text-xs font-bold border border-[#4CAF50]/30 shadow-[0_0_10px_rgba(76,175,80,0.3)] flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-[#4CAF50] animate-ping inline-block"></span>
-          Optimal
+        <div className={`px-3 py-1 rounded-full text-xs font-bold border flex items-center gap-2 ${insight?.isCritical ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'bg-[#4CAF50]/20 text-[#4CAF50] border-[#4CAF50]/30 shadow-[0_0_10px_rgba(76,175,80,0.3)]'}`}>
+          <span className={`w-2 h-2 rounded-full animate-ping inline-block ${insight?.isCritical ? 'bg-red-400' : 'bg-[#4CAF50]'}`}></span>
+          {insight?.isCritical ? 'Critical' : 'Optimal'}
         </div>
       </div>
 
@@ -61,7 +92,7 @@ export default function SensorDashboard() {
           <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mb-2 shadow-[inset_0_2px_4px_rgba(255,255,255,0.1)]">
             <Droplets size={18} color="#38bdf8" />
           </div>
-          <div className="text-xl font-bold tracking-tight">42%</div>
+          <div className="text-xl font-bold tracking-tight">{sensorData.soilMoisture}%</div>
           <div className="text-[10px] uppercase tracking-wider text-white/50 font-semibold mt-1 text-center leading-tight">Soil Moisture</div>
         </div>
 
@@ -69,7 +100,7 @@ export default function SensorDashboard() {
           <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mb-2 shadow-[inset_0_2px_4px_rgba(255,255,255,0.1)]">
             <ThermometerSun size={18} color="#fbbf24" />
           </div>
-          <div className="text-xl font-bold tracking-tight">28°C</div>
+          <div className="text-xl font-bold tracking-tight">{sensorData.temperature}°C</div>
           <div className="text-[10px] uppercase tracking-wider text-white/50 font-semibold mt-1 text-center leading-tight">Field Temperature</div>
         </div>
 
@@ -77,7 +108,7 @@ export default function SensorDashboard() {
           <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mb-2 shadow-[inset_0_2px_4px_rgba(255,255,255,0.1)]">
             <Wind size={18} color="#a78bfa" />
           </div>
-          <div className="text-xl font-bold tracking-tight">65%</div>
+          <div className="text-xl font-bold tracking-tight">{sensorData.humidity}%</div>
           <div className="text-[10px] uppercase tracking-wider text-white/50 font-semibold mt-1 text-center leading-tight">Field Humidity</div>
         </div>
       </div>

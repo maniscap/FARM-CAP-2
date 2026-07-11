@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { CloudRain, CloudSun, Sun, Cloud, CloudLightning, ChevronRight } from 'lucide-react';
+import { CloudRain, CloudSun, Sun, Moon, Cloud, CloudLightning, ChevronRight } from 'lucide-react';
 
 export default function HomeWeatherWidget() {
   const navigate = useNavigate();
@@ -59,12 +59,16 @@ export default function HomeWeatherWidget() {
     }
   }, [loading, hourlyData]);
 
-  const getSmallWeatherIcon = (conditionText) => {
+  const getSmallWeatherIcon = (conditionText, isDay) => {
     const text = conditionText.toLowerCase();
     if (text.includes('rain') || text.includes('drizzle')) return <CloudRain size={20} className="text-blue-300 drop-shadow" />;
     if (text.includes('thunder') || text.includes('storm')) return <CloudLightning size={20} className="text-purple-300 drop-shadow" />;
-    if (text.includes('sun') || text.includes('clear')) return <Sun size={20} className="text-yellow-400 drop-shadow" />;
-    if (text.includes('partly')) return <CloudSun size={20} className="text-gray-200 drop-shadow" />;
+    if (text.includes('sun') || text.includes('clear')) {
+      return isDay ? <Sun size={20} className="text-yellow-400 drop-shadow" /> : <Moon size={20} className="text-indigo-200 drop-shadow" />;
+    }
+    if (text.includes('partly')) {
+      return isDay ? <CloudSun size={20} className="text-gray-200 drop-shadow" /> : <Cloud size={20} className="text-gray-300 drop-shadow" />;
+    }
     return <Cloud size={20} className="text-gray-300 drop-shadow" />;
   };
 
@@ -98,7 +102,7 @@ export default function HomeWeatherWidget() {
         <div 
           ref={scrollRef}
           className="flex overflow-x-auto gap-3 pb-2 no-scrollbar"
-          style={{ scrollSnapType: 'x mandatory' }}
+          style={{ scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch', willChange: 'scroll-position' }}
         >
           {loading ? (
             // Skeleton loader
@@ -113,19 +117,19 @@ export default function HomeWeatherWidget() {
                 <div 
                   key={index}
                   data-active={isCurrentHour}
-                  className={`flex-shrink-0 flex flex-col items-center justify-between p-3 rounded-2xl w-20 min-h-[112px] transition-all border ${
+                  className={`flex-shrink-0 flex flex-col items-center justify-between p-3 rounded-2xl w-20 min-h-[112px] transition-all border transform-gpu ${
                     isCurrentHour 
                       ? 'bg-white/20 border-white/50 shadow-[0_0_15px_rgba(255,255,255,0.2)]' 
                       : 'bg-white/5 border-white/10'
                   }`}
-                  style={{ scrollSnapAlign: 'center' }}
+                  style={{ scrollSnapAlign: 'center', transform: 'translateZ(0)' }}
                 >
                   <span className={`text-xs font-semibold ${isCurrentHour ? 'text-white' : 'text-white/70'}`}>
                     {isCurrentHour ? 'Now' : formatTime(hour.time)}
                   </span>
                   
                   <div className="my-2">
-                    {getSmallWeatherIcon(hour.condition.text)}
+                    {getSmallWeatherIcon(hour.condition.text, hour.is_day)}
                   </div>
                   
                   <span className="text-sm font-bold mb-1">

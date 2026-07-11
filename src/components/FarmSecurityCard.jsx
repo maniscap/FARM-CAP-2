@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Camera, ShieldCheck, AlertTriangle, RefreshCw, Maximize2, ArrowLeft } from 'lucide-react';
+import { db } from '../firebase';
+import { ref, onValue, query, limitToLast } from 'firebase/database';
+import { Camera, ShieldCheck, AlertTriangle, RefreshCw, Maximize2, ArrowLeft, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function FarmSecurityCard() {
@@ -9,53 +10,46 @@ export default function FarmSecurityCard() {
   const [error, setError] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
-
-  const fetchLatestImage = () => {
-    setLoading(true);
-    setError(false);
-
-    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-    if (!cloudName) {
-      console.error("Cloudinary configuration missing");
-      setError(true);
-      setLoading(false);
-      return;
-    }
-
-    // ----------------------------------------------------------------------------------
-    // PRESENTATION MODE: STRICT FALLBACK IMAGE
-    // ----------------------------------------------------------------------------------
-    // To guarantee absolutely zero console 404 errors during the presentation, we instantly
-    // bypass the missing `security_cam_latest.jpg` (which the ESP32 would normally upload)
-    // and directly serve the manually uploaded fallback image `ADMIN_-_2_ryar4t.jpg`.
-    // ----------------------------------------------------------------------------------
-    const fallbackUrl = `https://res.cloudinary.com/${cloudName}/image/upload/ADMIN_-_2_ryar4t.jpg?t=${new Date().getTime()}`;
-    
-    const fallbackImg = new Image();
-    fallbackImg.onload = () => {
-      setImageUrl(fallbackUrl);
-      setLastUpdated(new Date());
-      setLoading(false);
-    };
-    fallbackImg.onerror = () => {
-      setError(true);
-      setLoading(false);
-    };
-    fallbackImg.src = fallbackUrl;
-  };
+  const [alertInfo, setAlertInfo] = useState(null);
 
   useEffect(() => {
-    fetchLatestImage();
+    setLoading(true);
     
-    // Poll for new images every 30 seconds
-    const interval = setInterval(fetchLatestImage, 30000);
-    return () => clearInterval(interval);
+    // Listen to the most recent security alert
+    const alertsRef = query(ref(db, 'security_alerts'), limitToLast(1));
+    
+    const unsubscribe = onValue(alertsRef, (snapshot) => {
+      setLoading(false);
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        // Since limitToLast(1) returns an object with a random push ID key, we extract the values
+        const latestAlert = Object.values(data)[0];
+        
+        setImageUrl(latestAlert.imageUrl);
+        setLastUpdated(new Date(latestAlert.timestamp));
+        setAlertInfo(latestAlert);
+        setError(false);
+      } else {
+        // No alerts yet
+        setError(false);
+        setImageUrl(null);
+        setAlertInfo({ description: "System Active. No threats detected." });
+      }
+    }, (err) => {
+      console.error("Firebase Security Card Error:", err);
+      setError(true);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const formatTime = (date) => {
     if (!date) return "--:--";
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   };
+
+  const isVideo = imageUrl?.match(/\.(mp4|webm|mov)$/i);
 
   return (
     <>
@@ -77,13 +71,6 @@ export default function FarmSecurityCard() {
               </p>
             </div>
           </div>
-          <button 
-            onClick={fetchLatestImage} 
-            className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
-            disabled={loading}
-          >
-            <RefreshCw size={18} className={`text-white/70 ${loading ? 'animate-spin' : ''}`} />
-          </button>
         </div>
 
         {/* Camera Feed Area */}
@@ -105,11 +92,22 @@ export default function FarmSecurityCard() {
 
           {imageUrl && (
             <>
-              <img 
-                src={imageUrl} 
-                alt="Security Feed" 
-                className={`w-full h-full object-cover transition-opacity duration-500 ${loading ? 'opacity-70' : 'opacity-100'}`}
-              />
+              {isVideo ? (
+                <video 
+                  src={imageUrl} 
+                  autoPlay 
+                  loop 
+                  muted 
+                  playsInline
+                  className={`w-full h-full object-cover transition-opacity duration-500 ${loading ? 'opacity-70' : 'opacity-100'}`}
+                />
+              ) : (
+                <img 
+                  src={imageUrl} 
+                  alt="Security Feed" 
+                  className={`w-full h-full object-cover transition-opacity duration-500 ${loading ? 'opacity-70' : 'opacity-100'}`}
+                />
+              )}
               
               {/* Overlay controls */}
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
@@ -132,6 +130,19 @@ export default function FarmSecurityCard() {
         </div>
       </div>
 
+      {/* AI Threat Analysis Banner */}
+      {alertInfo && alertInfo.threatLevel !== undefined && (
+        <div className={`p-3 text-sm font-medium border-t ${alertInfo.threatLevel > 5 ? 'bg-red-500/20 border-red-500/30 text-red-100' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-100'}`}>
+          <div className="flex items-start gap-2">
+            <Sparkles size={16} className={`mt-0.5 ${alertInfo.threatLevel > 5 ? 'text-red-400' : 'text-emerald-400'}`} />
+            <div>
+              <span className={`font-bold ${alertInfo.threatLevel > 5 ? 'text-red-400' : 'text-emerald-400'}`}>AI Analysis: </span>
+              {alertInfo.description}
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Fullscreen Modal */}
       <AnimatePresence>
         {isFullscreen && (
@@ -161,11 +172,21 @@ export default function FarmSecurityCard() {
             </div>
             <div className="flex-1 w-full h-full flex items-center justify-center p-4">
                {imageUrl && (
-                 <img 
-                   src={imageUrl} 
-                   alt="Fullscreen Security Feed" 
-                   className="w-full h-auto max-h-full object-contain rounded-2xl shadow-2xl border border-white/10"
-                 />
+                 isVideo ? (
+                   <video 
+                     src={imageUrl} 
+                     autoPlay 
+                     controls
+                     playsInline
+                     className="w-full h-auto max-h-full object-contain rounded-2xl shadow-2xl border border-white/10"
+                   />
+                 ) : (
+                   <img 
+                     src={imageUrl} 
+                     alt="Fullscreen Security Feed" 
+                     className="w-full h-auto max-h-full object-contain rounded-2xl shadow-2xl border border-white/10"
+                   />
+                 )
                )}
             </div>
             <div className="p-6 text-center border-t border-white/10">

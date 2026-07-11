@@ -10,8 +10,8 @@ export default function BottomNav() {
     {
       id: '/',
       label: 'Home',
-      icon: (isActive) => (
-        <svg className="w-6 h-6 mb-[2px] relative z-10" fill={isActive ? "currentColor" : "none"} stroke={isActive ? "none" : "currentColor"} strokeWidth="1.75" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      icon: (
+        <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
         </svg>
       )
@@ -19,8 +19,8 @@ export default function BottomNav() {
     {
       id: '/features',
       label: 'Features',
-      icon: (isActive) => (
-        <svg className="w-6 h-6 mb-[2px] relative z-10" fill={isActive ? "currentColor" : "none"} stroke={isActive ? "none" : "currentColor"} strokeWidth="1.75" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      icon: (
+        <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <rect x="4" y="4" width="6" height="6" rx="1.5" />
           <rect x="14" y="4" width="6" height="6" rx="1.5" />
           <rect x="4" y="14" width="6" height="6" rx="1.5" />
@@ -29,54 +29,58 @@ export default function BottomNav() {
       )
     },
     {
-      id: '/profile',
-      label: 'Profile',
-      icon: (isActive) => (
-        <svg className="w-6 h-6 mb-[2px] relative z-10" fill={isActive ? "currentColor" : "none"} stroke={isActive ? "none" : "currentColor"} strokeWidth="1.75" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+      id: '/notifications',
+      label: 'Alerts',
+      icon: (
+        <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
         </svg>
       )
     }
   ];
 
   return (
-    <nav className="w-full bg-transparent backdrop-blur-[30px] backdrop-saturate-[200%] border-t border-white/20 shadow-[0_-8px_30px_rgba(0,0,0,0.4)] fixed bottom-0 left-0 z-50 pb-safe">
-      <div className="flex justify-around items-center h-16 max-w-md mx-auto px-2">
+    <div className="fixed bottom-1 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none pb-safe">
+      {/* 3D Liquid Glass Navigation Bar */}
+      <nav className="pointer-events-auto flex items-center justify-between w-full max-w-[320px] bg-gradient-to-b from-white/30 via-white/10 to-white/5 backdrop-blur-2xl backdrop-saturate-200 border border-white/40 shadow-[inset_0_2px_4px_rgba(255,255,255,0.6),0_10px_20px_rgba(0,0,0,0.5),0_0_15px_rgba(255,255,255,0.1)] rounded-full px-2 py-2 relative overflow-hidden">
+        
+        {/* Inner glow/reflection for the 3D liquid look */}
+        <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/80 to-transparent shadow-[0_1px_10px_rgba(255,255,255,0.9)]"></div>
+        
         {navItems.map((item) => {
           const isActive = location.pathname === item.id;
           
           return (
-            <motion.button
+            <button
               key={item.id}
               onClick={() => navigate(item.id)}
-              whileTap={{ scale: 0.85 }}
-              className={`relative flex flex-col items-center justify-center w-full h-full py-1 ${isActive ? 'text-white' : 'text-white/50 hover:text-white/80'}`}
+              className="relative flex items-center justify-center h-12 rounded-full transition-all duration-300 ease-out flex-shrink-0"
+              style={{ width: isActive ? '120px' : '60px' }}
             >
-              {isActive && (
-                <motion.div
-                  layoutId="nav-pill"
-                  className="absolute inset-1.5 bg-white/10 rounded-xl z-0 border border-white/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                />
-              )}
-              <motion.div
-                initial={false}
-                animate={isActive ? { y: -2, scale: 1.15 } : { y: 0, scale: 1 }}
-                transition={{ type: "spring", stiffness: 500, damping: 25 }}
-              >
-                {item.icon(isActive)}
-              </motion.div>
-              <motion.span 
-                className="text-[10px] font-semibold tracking-wide relative z-10 mt-0.5"
-                initial={false}
-                animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0.8, y: 0 }}
-              >
-                {item.label}
-              </motion.span>
-            </motion.button>
+              {/* Active Background Pill */}
+              <div 
+                className={`absolute inset-0 rounded-full transition-all duration-300 ${isActive ? 'bg-gradient-to-tr from-white/20 to-white/10 shadow-[inset_0_1px_2px_rgba(255,255,255,0.4),0_4px_10px_rgba(0,0,0,0.2)] opacity-100 scale-100' : 'opacity-0 scale-90'}`}
+              ></div>
+
+              <div className="relative z-10 flex items-center justify-center gap-2 overflow-hidden w-full px-2">
+                {/* Icon Wrapper - Prevent squishing */}
+                <div className={`flex-shrink-0 min-w-[22px] flex items-center justify-center transition-colors duration-300 ${isActive ? 'text-white' : 'text-white/60 hover:text-white'}`}>
+                  {item.icon}
+                </div>
+
+                {/* Label Wrapper - Absolute position or constrained width to avoid pushing the icon out of shape */}
+                <div 
+                  className={`flex flex-col justify-center overflow-hidden transition-all duration-300 ${isActive ? 'w-auto opacity-100 max-w-[80px]' : 'w-0 opacity-0 max-w-0'}`}
+                >
+                  <span className="text-xs font-bold text-white tracking-wide block truncate">
+                    {item.label}
+                  </span>
+                </div>
+              </div>
+            </button>
           )
         })}
-      </div>
-    </nav>
+      </nav>
+    </div>
   );
 }

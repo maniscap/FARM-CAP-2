@@ -12,13 +12,15 @@ import FarmSecurityCard from './components/FarmSecurityCard'
 import Weather from './components/Weather'
 import BottomNav from './components/BottomNav'
 import Features from './components/Features'
-import NewsUpdates from './components/NewsUpdates'
 import MarketRates from './components/MarketRates'
 import Radio from './components/Radio'
 import GPSMeasurement from './components/GPSMeasurement'
 import Expenditure from './components/Expenditure'
 import CropExpenses from './components/CropExpenses'
 import ChatBot from './components/ChatBot'
+import Notifications from './components/Notifications'
+import SensorReportView from './components/SensorReportView'
+import { initializePushNotifications, setupForegroundMessageListener } from './utils/PushNotifications'
 import './App.css'
 
 const PageWrapper = ({ children }) => {
@@ -40,11 +42,16 @@ function App() {
   const [showSplash, setShowSplash] = useState(true)
   const location = useLocation()
 
-  // Splash Screen Timer
+  // Splash Screen Timer & Push Notifications
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
     }, 4000);
+
+    // Setup push notifications when the app loads
+    initializePushNotifications();
+    setupForegroundMessageListener();
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -78,11 +85,6 @@ function App() {
                 {/* Subtle dark overlay for readability and pixelation masking */}
                 <div className="absolute inset-0 bg-black/40 pointer-events-none z-0"></div>
                 
-                {/* CSS SVG Noise overlay to dither low-res background pixels */}
-                <div className="absolute inset-0 pointer-events-none z-0 mix-blend-overlay opacity-30" 
-                     style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}>
-                </div>
-                
                 {/* Dynamic Weather Header */}
                 <div className="relative z-50">
                   <WeatherHeader handleLogout={handleLogout} />
@@ -99,8 +101,8 @@ function App() {
                       style={{ backgroundImage: `url('/assets/images/cinematic_farm_bg.png')` }}
                     ></div>
                     
-                    {/* Liquid Glass Overlay - Optimized for mobile performance */}
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-md z-0 pointer-events-none"></div>
+                    {/* Background Overlay - Optimized for mobile performance (removed blur) */}
+                    <div className="absolute inset-0 bg-black/70 z-0 pointer-events-none"></div>
 
                     {/* Unified Content */}
                     <div className="flex flex-col relative z-10">
@@ -129,13 +131,14 @@ function App() {
             </PageWrapper>
           } />
 
-          <Route path="/news" element={<PageWrapper><NewsUpdates /></PageWrapper>} />
           <Route path="/market-rates" element={<PageWrapper><MarketRates /></PageWrapper>} />
           <Route path="/radio" element={<PageWrapper><Radio /></PageWrapper>} />
           <Route path="/gps" element={<PageWrapper><GPSMeasurement /></PageWrapper>} />
           <Route path="/expenses" element={<PageWrapper><Expenditure /></PageWrapper>} />
           <Route path="/expenditure/:folderId" element={<PageWrapper><CropExpenses /></PageWrapper>} />
           <Route path="/weather" element={<PageWrapper><Weather /></PageWrapper>} />
+          <Route path="/notifications" element={<PageWrapper><Notifications /><BottomNav /></PageWrapper>} />
+          <Route path="/sensor-report" element={<PageWrapper><SensorReportView /></PageWrapper>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AnimatePresence>

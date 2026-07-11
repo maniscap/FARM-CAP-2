@@ -44,34 +44,6 @@ export default function Features() {
           
           <div className="flex flex-col gap-4">
             
-            {/* Agri News Card */}
-            <div 
-              onClick={() => navigate('/news')}
-              className="group relative overflow-hidden rounded-[28px] border border-white/30 border-b-white/5 border-r-white/5 shadow-[0_15px_35px_rgba(0,0,0,0.4)] cursor-pointer transition-all hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
-            >
-              <div 
-                className="absolute inset-0 bg-cover bg-center z-0 transition-transform duration-700 group-hover:scale-110 opacity-60" 
-                style={{ backgroundImage: "url('/assets/images/agri-news.webp')" }}
-              ></div>
-              <div className="absolute inset-0 bg-black/50 backdrop-blur-[8px] transform-gpu will-change-transform z-0 pointer-events-none shadow-[inset_0_0_30px_rgba(255,255,255,0.05)]"></div>
-              <div className="absolute top-0 right-0 w-32 h-32 bg-green-400/20 rounded-full blur-[40px] -mr-10 -mt-10 pointer-events-none transition-all group-hover:bg-green-400/30"></div>
-              
-              <div className="relative z-10 p-6 flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center shadow-inner">
-                    <Newspaper size={24} className="text-green-300" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg text-white">Agri News</h3>
-                    <p className="text-xs text-white/60 font-medium mt-1">Live updates & schemes</p>
-                  </div>
-                </div>
-                <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
-                  <ChevronLeft size={16} className="text-white/50 rotate-180" />
-                </div>
-              </div>
-            </div>
-
             {/* Market Rates Card */}
             <div 
               onClick={() => navigate('/market-rates')}
