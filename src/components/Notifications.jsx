@@ -65,6 +65,12 @@ export default function Notifications() {
     }
   };
 
+  const getAlertStyle = (level = 0) => {
+    if (level > 5) return { bg: 'bg-red-500/10 border-red-500/30', text: 'text-red-400', iconBg: 'bg-red-500/20' };
+    if (level > 0) return { bg: 'bg-yellow-500/10 border-yellow-500/30', text: 'text-yellow-400', iconBg: 'bg-yellow-500/20' };
+    return { bg: 'bg-emerald-500/10 border-emerald-500/30', text: 'text-emerald-400', iconBg: 'bg-emerald-500/20' };
+  };
+
   return (
     <div className="min-h-screen bg-[#050505] text-white pb-24">
       {/* Header */}
@@ -93,18 +99,20 @@ export default function Notifications() {
             <p className="text-sm">You're all caught up!</p>
           </div>
         ) : (
-          alerts.map((alert) => (
+          alerts.map((alert) => {
+            const style = getAlertStyle(alert.threatLevel);
+            return (
             <div 
               key={alert.id} 
               onClick={() => handleAlertClick(alert)}
-              className={`p-4 rounded-2xl border transition-all ${alert.type === 'sensor' ? 'cursor-pointer hover:bg-white/10' : ''} ${alert.threatLevel > 5 ? 'bg-red-500/10 border-red-500/30' : 'bg-white/5 border-white/10'}`}
+              className={`p-4 rounded-2xl border transition-all ${alert.type === 'sensor' ? 'cursor-pointer hover:bg-white/10' : ''} ${style.bg}`}
             >
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <div className={`p-2 rounded-full ${alert.threatLevel > 5 ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
+                  <div className={`p-2 rounded-full ${style.iconBg} ${style.text}`}>
                     {alert.type === 'security' ? <ShieldCheck size={18} /> : <Droplets size={18} />}
                   </div>
-                  <span className={`font-bold ${alert.threatLevel > 5 ? 'text-red-400' : 'text-emerald-400'}`}>
+                  <span className={`font-bold ${style.text}`}>
                     {alert.type === 'security' ? 'Security Alert' : 'Sensor Alert'}
                   </span>
                 </div>
@@ -123,7 +131,8 @@ export default function Notifications() {
                 </div>
               )}
             </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>

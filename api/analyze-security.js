@@ -134,6 +134,23 @@ export default async function handler(req, res) {
             title: '🚨 INTRUDER DETECTED',
             body: aiResult.description,
           },
+          android: {
+            priority: 'high',
+            notification: {
+              sound: 'default',
+              defaultVibrateTimings: true,
+              defaultSound: true,
+              channelId: 'high_priority_alerts'
+            }
+          },
+          apns: {
+            payload: {
+              aps: {
+                sound: 'default',
+                'interruption-level': 'time-sensitive'
+              }
+            }
+          },
           data: {
             type: 'security_alert',
             imageUrl: imageUrl

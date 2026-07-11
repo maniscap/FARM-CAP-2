@@ -148,6 +148,23 @@ Forecast Today: ${wxData.forecast?.forecastday?.[0]?.day?.condition?.text}, Chan
             title: '⚠️ Farm Condition Alert',
             body: aiResult.reason,
           },
+          android: {
+            priority: 'high',
+            notification: {
+              sound: 'default',
+              defaultVibrateTimings: true,
+              defaultSound: true,
+              channelId: 'high_priority_alerts'
+            }
+          },
+          apns: {
+            payload: {
+              aps: {
+                sound: 'default',
+                'interruption-level': 'time-sensitive'
+              }
+            }
+          },
           data: {
             type: 'sensor_alert',
             recommendation: aiResult.actionRecommendation
