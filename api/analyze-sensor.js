@@ -1,16 +1,18 @@
 import { GoogleGenAI } from '@google/genai';
-import admin from 'firebase-admin';
+import { initializeApp, getApps } from 'firebase-admin/app';
+import { getDatabase } from 'firebase-admin/database';
+import { getMessaging } from 'firebase-admin/messaging';
 
 // Initialize Firebase Admin if it hasn't been initialized yet
-if (!admin.apps.length) {
-  admin.initializeApp({
+if (getApps().length === 0) {
+  initializeApp({
     projectId: process.env.VITE_FIREBASE_PROJECT_ID,
     databaseURL: process.env.VITE_FIREBASE_DATABASE_URL
   });
 }
 
-const db = admin.database();
-const messaging = admin.messaging();
+const db = getDatabase();
+const messaging = getMessaging();
 
 export default async function handler(req, res) {
   // This endpoint can be triggered by a GET request (e.g. from cron-job.org)
