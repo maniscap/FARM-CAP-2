@@ -174,7 +174,7 @@ export default function SensorReportView() {
       
       {/* Header */}
       <div className="sticky top-0 z-50 pt-6 px-4 pb-2" style={{ paddingTop: 'max(24px, env(safe-area-inset-top))' }}>
-        <div className="flex items-center justify-between bg-white/10 backdrop-blur-md border border-white/20 rounded-[32px] p-2 shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
+        <div className="flex items-center justify-between bg-black/40 backdrop-blur-sm border border-white/10 rounded-[32px] p-2 shadow-lg transform-gpu" style={{ transform: 'translateZ(0)', willChange: 'transform' }}>
           <button 
             onClick={() => navigate(-1)} 
             className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center border border-white/20 active:scale-95 transition-transform shrink-0 shadow-inner"
