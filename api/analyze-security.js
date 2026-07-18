@@ -4,6 +4,8 @@ import { getDatabase } from 'firebase-admin/database';
 import { getMessaging } from 'firebase-admin/messaging';
 
 // Initialize Firebase Admin if it hasn't been initialized yet
+export const maxDuration = 60; // Max allowed on Vercel Hobby tier to prevent 504 Timeouts
+
 if (getApps().length === 0) {
   // We use the environment variables stored in Vercel to connect to the database
   initializeApp({
@@ -89,8 +91,13 @@ export default async function handler(req, res) {
         usedModel = 'openrouter-llama3.2-vision';
         console.log("Attempting OpenRouter...");
         console.log("OR Key present:", !!process.env.VITE_OPENROUTER_API_KEY);
+        
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15-second timeout for OpenRouter
+        
         const orRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
           method: "POST",
+          signal: controller.signal,
           headers: {
             "Authorization": `Bearer ${process.env.VITE_OPENROUTER_API_KEY}`,
             "Content-Type": "application/json"
@@ -107,6 +114,8 @@ export default async function handler(req, res) {
             response_format: { type: "json_object" }
           })
         });
+        
+        clearTimeout(timeoutId);
         
         const orText = await orRes.text();
         console.log("OpenRouter status:", orRes.status, "body:", orText.substring(0, 500));
