@@ -61,11 +61,13 @@ export default async function handler(req, res) {
     let usedModel = 'gemini-2.5-pro';
 
     try {
-      // 1st Attempt: Gemini 2.5 Pro (Vision)
+      // 1st Attempt: Gemini 2.0 Flash (Vision - fastest and most reliable)
       console.log("Attempting Gemini AI...");
+      console.log("API Key present:", !!process.env.VITE_GEMINI_API_KEY);
+      console.log("API Key length:", process.env.VITE_GEMINI_API_KEY?.length || 0);
       const ai = new GoogleGenAI({ apiKey: process.env.VITE_GEMINI_API_KEY });
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-pro',
+        model: 'gemini-2.0-flash',
         contents: [
           prompt,
           {
@@ -78,12 +80,15 @@ export default async function handler(req, res) {
         config: { responseMimeType: "application/json" }
       });
       aiResult = JSON.parse(response.text);
+      console.log("✅ Gemini AI succeeded!", JSON.stringify(aiResult));
     } catch (geminiError) {
-      console.warn("Gemini Failed. Falling back to OpenRouter Vision...", geminiError.message);
+      console.error("❌ Gemini Failed:", geminiError.message, geminiError.status || '', geminiError.code || '');
       
       try {
         // 2nd Attempt: OpenRouter (Llama 3.2 11B Vision Free)
         usedModel = 'openrouter-llama3.2-vision';
+        console.log("Attempting OpenRouter...");
+        console.log("OR Key present:", !!process.env.VITE_OPENROUTER_API_KEY);
         const orRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
           method: "POST",
           headers: {
@@ -103,11 +108,14 @@ export default async function handler(req, res) {
           })
         });
         
-        if (!orRes.ok) throw new Error("OpenRouter API Error");
-        const orData = await orRes.json();
+        const orText = await orRes.text();
+        console.log("OpenRouter status:", orRes.status, "body:", orText.substring(0, 500));
+        if (!orRes.ok) throw new Error(`OpenRouter API Error: ${orRes.status} - ${orText.substring(0, 200)}`);
+        const orData = JSON.parse(orText);
         aiResult = JSON.parse(orData.choices[0].message.content);
+        console.log("✅ OpenRouter succeeded!", JSON.stringify(aiResult));
       } catch (orError) {
-        console.warn("OpenRouter Failed too.", orError.message);
+        console.error("❌ OpenRouter Failed:", orError.message);
       }
     }
 
