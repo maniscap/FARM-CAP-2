@@ -112,7 +112,13 @@ export default async function handler(req, res) {
     }
 
     if (!aiResult) {
-      throw new Error("All AI Vision Fallbacks Failed!");
+      // ⚠️ FALLBACK: If AI fails, still send the image to the phone!
+      console.error("All AI Vision Fallbacks Failed! Sending image to phone anyway.");
+      aiResult = {
+        threatDetected: true,
+        threatLevel: 6, // Level 6 triggers the Firebase push notification below
+        description: "⚠️ Motion detected, but the AI failed to analyze the image (Check Vercel API Keys)."
+      };
     }
 
     // 4. If a threat is detected, save to Firebase and send Push Notification
