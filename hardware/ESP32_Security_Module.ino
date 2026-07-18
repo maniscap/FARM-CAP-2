@@ -26,7 +26,7 @@ const char* uploadPreset = "esp32cam"; // MUST BE AN UNSIGNED PRESET
 const char* vercelApiUrl = "https://farm-cap-2.vercel.app/api/analyze-security";
 
 // ================= HARDWARE PINS =================
-#define PIR_PIN    13
+#define PIR_PIN    12
 #define BUZZER_PIN 14
 
 // AI Thinker Camera Pins

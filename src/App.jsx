@@ -20,6 +20,7 @@ import CropExpenses from './components/CropExpenses'
 import ChatBot from './components/ChatBot'
 import Notifications from './components/Notifications'
 import SensorReportView from './components/SensorReportView'
+import SecurityReportView from './components/SecurityReportView'
 import { initializePushNotifications, setupForegroundMessageListener } from './utils/PushNotifications'
 import './App.css'
 
@@ -139,6 +140,7 @@ function App() {
           <Route path="/weather" element={<PageWrapper><Weather /></PageWrapper>} />
           <Route path="/notifications" element={<PageWrapper><Notifications /><BottomNav /></PageWrapper>} />
           <Route path="/sensor-report" element={<PageWrapper><SensorReportView /></PageWrapper>} />
+          <Route path="/security-report" element={<PageWrapper><SecurityReportView /></PageWrapper>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AnimatePresence>

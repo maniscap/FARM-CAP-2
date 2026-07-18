@@ -4,6 +4,7 @@ import { ref, onValue, set } from 'firebase/database';
 import { Activity, ChevronLeft, Droplets, ThermometerSun, Wind, Zap, Clock, Sparkles, WifiOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import HomeWeatherWidget from './HomeWeatherWidget';
+import { idb } from '../utils/idb';
 
 const WaterFlowAnimation = () => {
   return (
@@ -82,6 +83,17 @@ export default function SensorReportView() {
   const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
+    // Load cached data first for instant display
+    const loadCache = async () => {
+      const cached = await idb.get('sensor_data_cache');
+      if (cached) {
+        if (cached.insight) setInsight(cached.insight);
+        if (cached.sensorData) setSensorData(cached.sensorData);
+        if (cached.lastUpdated) setLastUpdated(cached.lastUpdated);
+      }
+    };
+    loadCache();
+
     // 1. Listen to AI Insights
     const insightRef = ref(db, 'ai_insights/latest');
     const unsubscribeInsight = onValue(insightRef, (snapshot) => {
@@ -89,10 +101,17 @@ export default function SensorReportView() {
         const data = snapshot.val();
         if (data.analysis) {
           setInsight(data.analysis);
-          setSensorData({
+          const newSensorData = {
             soilMoisture: data.analysis.soilMoisture || '32',
             temperature: data.analysis.fieldTemp || '28',
             humidity: data.analysis.fieldHumidity || '65'
+          };
+          setSensorData(newSensorData);
+          // Cache to IndexedDB
+          idb.set('sensor_data_cache', {
+            insight: data.analysis,
+            sensorData: newSensorData,
+            lastUpdated: data.timestamp || Date.now()
           });
         }
         if (data.timestamp) {

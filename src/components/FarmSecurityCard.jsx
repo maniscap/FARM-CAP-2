@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { ref, onValue, query, limitToLast } from 'firebase/database';
-import { Camera, ShieldCheck, AlertTriangle, RefreshCw, Maximize2, ArrowLeft, Sparkles } from 'lucide-react';
+import { Camera, ShieldCheck, AlertTriangle, RefreshCw, Maximize2, ArrowLeft, Sparkles, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 export default function FarmSecurityCard() {
+  const navigate = useNavigate();
   const [imageUrl, setImageUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -53,7 +55,7 @@ export default function FarmSecurityCard() {
 
   return (
     <>
-      <div className="w-full relative overflow-hidden rounded-[30px] border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.25)] transition-all bg-black/60 backdrop-blur-xl">
+      <div onClick={() => navigate('/security-report')} className="w-full relative overflow-hidden rounded-[30px] border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.25)] transition-all bg-black/60 backdrop-blur-xl cursor-pointer hover:bg-black/50 group">
         {/* Header */}
         <div className="relative z-10 p-5 pb-3 flex justify-between items-center border-b border-white/10">
           <div className="flex items-center gap-3">
@@ -61,7 +63,7 @@ export default function FarmSecurityCard() {
               <ShieldCheck size={20} className="text-red-400" />
             </div>
             <div>
-              <h3 className="font-bold text-lg tracking-wide text-white drop-shadow-md">Farm Security</h3>
+              <h3 className="font-bold text-lg tracking-wide text-white drop-shadow-md flex items-center gap-1">Farm Security<ChevronRight size={16} className="text-white/30 group-hover:text-white/80 transition-colors opacity-0 group-hover:opacity-100 -ml-1 group-hover:ml-0" /></h3>
               <p className="text-xs text-white/70 font-medium flex items-center gap-1">
                 {error ? (
                   <span className="text-yellow-400 flex items-center gap-1"><AlertTriangle size={12}/> Disconnected</span>
