@@ -64,10 +64,10 @@ export default async function handler(req, res) {
 
     try {
       // 1st Attempt: Gemini 2.0 Flash (Vision - fastest and most reliable)
+      const geminiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
       console.log("Attempting Gemini AI...");
-      console.log("API Key present:", !!process.env.VITE_GEMINI_API_KEY);
-      console.log("API Key length:", process.env.VITE_GEMINI_API_KEY?.length || 0);
-      const ai = new GoogleGenAI({ apiKey: process.env.VITE_GEMINI_API_KEY });
+      console.log("API Key present:", !!geminiKey);
+      const ai = new GoogleGenAI({ apiKey: geminiKey });
       const response = await ai.models.generateContent({
         model: 'gemini-2.0-flash',
         contents: [
@@ -89,8 +89,9 @@ export default async function handler(req, res) {
       try {
         // 2nd Attempt: OpenRouter (Llama 3.2 11B Vision Free)
         usedModel = 'openrouter-llama3.2-vision';
+        const orKey = process.env.OPENROUTER_API_KEY || process.env.VITE_OPENROUTER_API_KEY;
         console.log("Attempting OpenRouter...");
-        console.log("OR Key present:", !!process.env.VITE_OPENROUTER_API_KEY);
+        console.log("OR Key present:", !!orKey);
         
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 15000); // 15-second timeout for OpenRouter
@@ -99,7 +100,7 @@ export default async function handler(req, res) {
           method: "POST",
           signal: controller.signal,
           headers: {
-            "Authorization": `Bearer ${process.env.VITE_OPENROUTER_API_KEY}`,
+            "Authorization": `Bearer ${orKey}`,
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
