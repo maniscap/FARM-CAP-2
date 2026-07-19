@@ -1,4 +1,3 @@
-import { GoogleGenAI } from '@google/genai';
 import { initializeApp, getApps } from 'firebase/app';
 import { getDatabase, ref, push, set } from 'firebase/database';
 
@@ -30,9 +29,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 1. Initialize Gemini
-    const ai = new GoogleGenAI({ apiKey: process.env.VITE_GEMINI_API_KEY });
-
     // 2. We need to fetch the image from the URL to send it to Gemini
     const imageResponse = await fetch(imageUrl);
     const imageBuffer = await imageResponse.arrayBuffer();
