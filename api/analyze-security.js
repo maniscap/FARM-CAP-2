@@ -60,35 +60,38 @@ export default async function handler(req, res) {
     let usedModel = 'gemini-2.5-pro';
 
     try {
-      // 1st Attempt: Gemini 2.0 Flash (Vision - fastest and most reliable)
+      // 1st Attempt: Gemini 2.0 Flash (Vision) via Raw REST API (to support AbortController)
       const geminiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
       console.log("Attempting Gemini AI...");
       console.log("API Key present:", !!geminiKey);
-      const ai = new GoogleGenAI({ apiKey: geminiKey });
       
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error("Gemini API Timeout (10s)")), 10000)
-      );
+      const geminiController = new AbortController();
+      const geminiTimeout = setTimeout(() => geminiController.abort(), 10000); // Strict 10s kill switch
 
-      const response = await Promise.race([
-        ai.models.generateContent({
-          model: 'gemini-2.0-flash',
-          contents: [
-            prompt,
-            {
-              inlineData: {
-                data: base64Image,
-                mimeType: imageResponse.headers.get('content-type') || 'image/jpeg',
-              }
-            }
-          ],
-          config: { responseMimeType: "application/json" }
-        }),
-        timeoutPromise
-      ]);
+      const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
+        method: "POST",
+        signal: geminiController.signal,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              { text: prompt },
+              { inline_data: { mime_type: imageResponse.headers.get('content-type') || 'image/jpeg', data: base64Image } }
+            ]
+          }],
+          generationConfig: { responseMimeType: "application/json" }
+        })
+      });
       
-      aiResult = JSON.parse(response.text);
-      console.log("✅ Gemini AI succeeded!", JSON.stringify(aiResult));
+      clearTimeout(geminiTimeout);
+
+      const geminiData = await geminiRes.json();
+      if (!geminiRes.ok) throw new Error(geminiData.error?.message || "Gemini HTTP Error");
+      
+      // Parse the JSON block returned inside the text response
+      const rawText = geminiData.candidates[0].content.parts[0].text;
+      aiResult = JSON.parse(rawText.replace(/```json/g, '').replace(/```/g, '').trim());
+      console.log("✅ Gemini AI succeeded!");
     } catch (geminiError) {
       console.error("❌ Gemini Failed:", geminiError.message, geminiError.status || '', geminiError.code || '');
       
@@ -110,7 +113,7 @@ export default async function handler(req, res) {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            model: "qwen/qwen-vl-plus:free",
+            model: "google/gemini-2.5-flash-free",
             messages: [{ 
               role: "user", 
               content: [
