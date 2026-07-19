@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { ref, onValue, query, orderByChild } from 'firebase/database';
+import { ref, onValue, query, orderByChild, remove } from 'firebase/database';
 import { idb } from '../utils/idb';
 import { useNavigate } from 'react-router-dom';
 import { 
   ChevronLeft, ShieldCheck, AlertTriangle, Camera, Sparkles, 
-  Maximize2, ArrowLeft, WifiOff, Clock, Eye 
+  Maximize2, ArrowLeft, WifiOff, Clock, Eye, Trash2, X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -18,6 +18,8 @@ export default function SecurityReportView() {
   const [isOffline, setIsOffline] = useState(false);
   const [selectedAlert, setSelectedAlert] = useState(null);
   const [fullscreenImage, setFullscreenImage] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(null); // alert id or 'all'
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     // Load cached data first for instant display
@@ -41,11 +43,14 @@ export default function SecurityReportView() {
         // Convert object to array and sort newest first
         const alertsArray = Object.entries(data)
           .map(([id, val]) => ({ id, ...val }))
-          .sort((a, b) => b.timestamp - a.timestamp);
+          .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
         
         setAlerts(alertsArray);
         // Cache to IndexedDB
         idb.set(CACHE_KEY, alertsArray);
+      } else {
+        setAlerts([]);
+        idb.set(CACHE_KEY, []);
       }
     }, (err) => {
       console.error("Firebase Security Error:", err);
@@ -55,6 +60,31 @@ export default function SecurityReportView() {
 
     return () => unsubscribe();
   }, []);
+
+  // Delete single alert
+  const handleDeleteAlert = async (alertId) => {
+    setDeleting(true);
+    try {
+      await remove(ref(db, `security_alerts/${alertId}`));
+      setDeleteConfirm(null);
+      setSelectedAlert(null);
+    } catch (err) {
+      console.error("Delete failed:", err);
+    }
+    setDeleting(false);
+  };
+
+  // Delete all alerts
+  const handleDeleteAll = async () => {
+    setDeleting(true);
+    try {
+      await remove(ref(db, 'security_alerts'));
+      setDeleteConfirm(null);
+    } catch (err) {
+      console.error("Delete all failed:", err);
+    }
+    setDeleting(false);
+  };
 
   const formatTime = (timestamp) => {
     if (!timestamp) return '--:--';
@@ -90,7 +120,7 @@ export default function SecurityReportView() {
   }, {});
 
   return (
-    <div className="min-h-[100dvh] bg-black text-white">
+    <div className="h-full overflow-y-auto bg-black text-white">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/10">
         <div className="flex items-center justify-between p-4 max-w-md mx-auto">
@@ -114,18 +144,31 @@ export default function SecurityReportView() {
             </div>
           </div>
 
-          {/* Status Badge */}
-          {isOffline ? (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-yellow-500/20 border border-yellow-500/30">
-              <WifiOff size={12} className="text-yellow-400" />
-              <span className="text-[10px] font-bold text-yellow-400 uppercase tracking-wider">Offline</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/30">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Live</span>
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            {/* Clear All Button */}
+            {alerts.length > 0 && (
+              <button
+                onClick={() => setDeleteConfirm('all')}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-500/20 border border-red-500/30 hover:bg-red-500/30 transition-colors"
+              >
+                <Trash2 size={12} className="text-red-400" />
+                <span className="text-[10px] font-bold text-red-400 uppercase tracking-wider">Clear All</span>
+              </button>
+            )}
+
+            {/* Status Badge */}
+            {isOffline ? (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-yellow-500/20 border border-yellow-500/30">
+                <WifiOff size={12} className="text-yellow-400" />
+                <span className="text-[10px] font-bold text-yellow-400 uppercase tracking-wider">Offline</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/30">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Live</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -160,9 +203,17 @@ export default function SecurityReportView() {
                 {/* Enlarge button */}
                 <button 
                   onClick={() => setFullscreenImage(alerts[0].imageUrl)}
-                  className="absolute top-3 right-3 p-2 rounded-full bg-black/40 hover:bg-black/60 border border-white/20 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute top-3 right-14 p-2 rounded-full bg-black/40 hover:bg-black/60 border border-white/20 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <Maximize2 size={16} />
+                </button>
+
+                {/* Delete button on hero */}
+                <button 
+                  onClick={() => setDeleteConfirm(alerts[0].id)}
+                  className="absolute top-3 right-3 p-2 rounded-full bg-red-500/40 hover:bg-red-500/60 border border-red-400/30 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <Trash2 size={16} className="text-red-300" />
                 </button>
 
                 {/* Latest badge */}
@@ -252,11 +303,12 @@ export default function SecurityReportView() {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.05 }}
-                        onClick={() => setSelectedAlert(selectedAlert?.id === alert.id ? null : alert)}
-                        className="flex gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/8 transition-colors cursor-pointer active:scale-[0.98]"
+                        className="flex gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/8 transition-colors cursor-pointer active:scale-[0.98] group/card"
                       >
                         {/* Thumbnail */}
-                        <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-black/40 border border-white/10">
+                        <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-black/40 border border-white/10"
+                          onClick={() => setSelectedAlert(selectedAlert?.id === alert.id ? null : alert)}
+                        >
                           {alert.imageUrl ? (
                             <img 
                               src={alert.imageUrl} 
@@ -272,7 +324,9 @@ export default function SecurityReportView() {
                         </div>
 
                         {/* Info */}
-                        <div className="flex-1 min-w-0">
+                        <div className="flex-1 min-w-0"
+                          onClick={() => setSelectedAlert(selectedAlert?.id === alert.id ? null : alert)}
+                        >
                           <div className="flex items-center justify-between mb-1">
                             <span className="text-xs font-mono text-white/50">{formatTime(alert.timestamp)}</span>
                             <div className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border ${threat.bg} ${threat.text} ${threat.border}`}>
@@ -283,6 +337,14 @@ export default function SecurityReportView() {
                             {alert.description || 'Motion detected — no AI analysis available.'}
                           </p>
                         </div>
+
+                        {/* Delete button */}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setDeleteConfirm(alert.id); }}
+                          className="flex-shrink-0 self-center p-2 rounded-full opacity-0 group-hover/card:opacity-100 hover:bg-red-500/20 transition-all"
+                        >
+                          <Trash2 size={14} className="text-red-400/70" />
+                        </button>
                       </motion.div>
                     );
                   })}
@@ -316,11 +378,20 @@ export default function SecurityReportView() {
                           <p className="text-sm text-white/80 leading-relaxed">
                             {selectedAlert.description || 'No analysis available for this alert.'}
                           </p>
-                          <div className="mt-3 flex items-center gap-2 text-white/40">
-                            <Clock size={12} />
-                            <span className="text-[10px] font-mono">
-                              {new Date(selectedAlert.timestamp).toLocaleString()}
-                            </span>
+                          <div className="mt-3 flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-white/40">
+                              <Clock size={12} />
+                              <span className="text-[10px] font-mono">
+                                {new Date(selectedAlert.timestamp).toLocaleString()}
+                              </span>
+                            </div>
+                            <button
+                              onClick={() => setDeleteConfirm(selectedAlert.id)}
+                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-500/20 border border-red-500/30 hover:bg-red-500/30 transition-colors"
+                            >
+                              <Trash2 size={12} className="text-red-400" />
+                              <span className="text-[10px] font-bold text-red-400">Delete</span>
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -332,6 +403,66 @@ export default function SecurityReportView() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {deleteConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[998] bg-black/80 backdrop-blur-xl flex items-center justify-center p-6"
+            onClick={() => !deleting && setDeleteConfirm(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-[#1a1a1a] rounded-3xl border border-white/15 p-6 max-w-sm w-full shadow-2xl"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center border border-red-500/30">
+                  <Trash2 size={24} className="text-red-400" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg">
+                    {deleteConfirm === 'all' ? 'Clear All Alerts?' : 'Delete Alert?'}
+                  </h3>
+                  <p className="text-xs text-white/50">
+                    {deleteConfirm === 'all' 
+                      ? `This will permanently delete all ${alerts.length} alerts.` 
+                      : 'This alert will be permanently removed.'}
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setDeleteConfirm(null)}
+                  disabled={deleting}
+                  className="flex-1 py-3 rounded-2xl bg-white/10 border border-white/15 font-bold text-sm hover:bg-white/15 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => deleteConfirm === 'all' ? handleDeleteAll() : handleDeleteAlert(deleteConfirm)}
+                  disabled={deleting}
+                  className="flex-1 py-3 rounded-2xl bg-red-500/80 border border-red-400/30 font-bold text-sm hover:bg-red-500 transition-colors flex items-center justify-center gap-2"
+                >
+                  {deleting ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <>
+                      <Trash2 size={14} />
+                      Delete
+                    </>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Fullscreen Image Modal */}
       <AnimatePresence>

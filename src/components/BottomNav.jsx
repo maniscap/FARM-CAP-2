@@ -1,10 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { db } from '../firebase';
+import { ref, onValue, query, limitToLast } from 'firebase/database';
 
 export default function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    // Listen to security_alerts for badge count
+    const alertsRef = query(ref(db, 'security_alerts'), limitToLast(50));
+    const unsubscribe = onValue(alertsRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const alerts = Object.values(data);
+        // Count alerts from the last 24 hours as "unread"
+        const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+        const recentCount = alerts.filter(a => new Date(a.timestamp).getTime() > oneDayAgo).length;
+        setUnreadCount(recentCount);
+      } else {
+        setUnreadCount(0);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Reset badge when visiting notifications
+  useEffect(() => {
+    if (location.pathname === '/notifications') {
+      setUnreadCount(0);
+    }
+  }, [location.pathname]);
   
   const navItems = [
     {
@@ -31,6 +59,7 @@ export default function BottomNav() {
     {
       id: '/notifications',
       label: 'Alerts',
+      badge: unreadCount,
       icon: (
         <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
@@ -63,12 +92,18 @@ export default function BottomNav() {
               ></div>
 
               <div className="relative z-10 flex items-center justify-center gap-2 overflow-hidden w-full px-2">
-                {/* Icon Wrapper - Prevent squishing */}
-                <div className={`flex-shrink-0 min-w-[22px] flex items-center justify-center transition-colors duration-300 ${isActive ? 'text-white' : 'text-white/60 hover:text-white'}`}>
+                {/* Icon Wrapper with Badge */}
+                <div className={`flex-shrink-0 min-w-[22px] flex items-center justify-center transition-colors duration-300 relative ${isActive ? 'text-white' : 'text-white/60 hover:text-white'}`}>
                   {item.icon}
+                  {/* Notification Badge */}
+                  {item.badge > 0 && (
+                    <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-black px-1 shadow-[0_0_8px_rgba(239,68,68,0.6)] animate-pulse">
+                      {item.badge > 99 ? '99+' : item.badge}
+                    </span>
+                  )}
                 </div>
 
-                {/* Label Wrapper - Absolute position or constrained width to avoid pushing the icon out of shape */}
+                {/* Label Wrapper */}
                 <div 
                   className={`flex flex-col justify-center overflow-hidden transition-all duration-300 ${isActive ? 'w-auto opacity-100 max-w-[80px]' : 'w-0 opacity-0 max-w-0'}`}
                 >
@@ -84,3 +119,4 @@ export default function BottomNav() {
     </div>
   );
 }
+

@@ -68,23 +68,29 @@ export const setupDatabaseNotificationListener = () => {
     
     const data = snapshot.val();
     if (data && data.threatDetected) {
+      // Play SOS alarm siren sound
+      playSOSAlarm();
+      
       if (Notification.permission === 'granted') {
         const title = `🚨 FARM THREAT (Level ${data.threatLevel})`;
         const options = {
           body: data.description,
           icon: '/android-chrome-192x192.png',
           image: data.imageUrl,
-          vibrate: [200, 100, 200, 100, 200]
+          vibrate: [200, 100, 200, 100, 200, 100, 200],
+          tag: 'farm-security-alert',
+          requireInteraction: true // Stay until user dismisses
         };
         
-        // Show native notification
-        new Notification(title, options);
-        
-        // Play an alarm sound if the browser allows it
-        try {
-          const audio = new Audio('/alarm.mp3'); // Fallback if exists, else silent
-          audio.play().catch(e => console.log("Audio play blocked by browser:", e));
-        } catch (e) {}
+        // Use Service Worker notification for PWA (works in background too)
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.ready.then(reg => {
+            reg.showNotification(title, options);
+          });
+        } else {
+          // Fallback to regular notification
+          new Notification(title, options);
+        }
       }
     }
   });
