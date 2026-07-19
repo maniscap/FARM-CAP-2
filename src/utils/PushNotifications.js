@@ -67,30 +67,35 @@ export const setupDatabaseNotificationListener = () => {
     }
     
     const data = snapshot.val();
-    if (data && data.threatDetected) {
-      // Play SOS alarm siren sound
+    if (!data) return;
+    
+    const isDanger = data.threatDetected && data.threatLevel > 5;
+    
+    // Only play alarm siren for DANGEROUS threats (level > 5)
+    if (isDanger) {
       playSOSAlarm();
+    }
+    
+    // Show notification for ALL detections (safe or dangerous)
+    if (Notification.permission === 'granted') {
+      const title = isDanger 
+        ? `🚨 DANGER! Threat Level ${data.threatLevel}` 
+        : `✅ Safe — ${data.description?.substring(0, 40) || 'No threat'}`;
+      const options = {
+        body: data.description,
+        icon: '/android-chrome-192x192.png',
+        image: data.imageUrl,
+        vibrate: isDanger ? [200, 100, 200, 100, 200, 100, 200] : [100],
+        tag: 'farm-security-' + Date.now(),
+        requireInteraction: isDanger // Only persist for danger alerts
+      };
       
-      if (Notification.permission === 'granted') {
-        const title = `🚨 FARM THREAT (Level ${data.threatLevel})`;
-        const options = {
-          body: data.description,
-          icon: '/android-chrome-192x192.png',
-          image: data.imageUrl,
-          vibrate: [200, 100, 200, 100, 200, 100, 200],
-          tag: 'farm-security-alert',
-          requireInteraction: true // Stay until user dismisses
-        };
-        
-        // Use Service Worker notification for PWA (works in background too)
-        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-          navigator.serviceWorker.ready.then(reg => {
-            reg.showNotification(title, options);
-          });
-        } else {
-          // Fallback to regular notification
-          new Notification(title, options);
-        }
+      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.ready.then(reg => {
+          reg.showNotification(title, options);
+        });
+      } else {
+        new Notification(title, options);
       }
     }
   });

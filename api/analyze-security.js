@@ -183,27 +183,18 @@ export default async function handler(req, res) {
       };
     }
 
-    // 4. If a threat is detected, save to Firebase
-    if (aiResult.threatDetected && aiResult.threatLevel > 5) {
-      console.log("Saving report to Firebase...");
-      // Using standard Firebase SDK push/set instead of Admin SDK
-      const reportsRef = ref(db, 'security_alerts');
-      const newReportRef = push(reportsRef);
-      await set(newReportRef, {
-        timestamp: new Date().toISOString(),
-        imageUrl: imageUrl,
-        threatDetected: aiResult.threatDetected,
-        threatLevel: aiResult.threatLevel,
-        description: aiResult.description,
-        modelUsed: usedModel
-      });
-
-      /* (Push notifications via Admin SDK removed to fix credentials issue on Vercel)
-      if (aiResult.threatDetected) {
-        // ... (removed)
-      }
-      */
-    }
+    // 4. Save EVERY detection to Firebase (so all images show in the app)
+    console.log("Saving report to Firebase...");
+    const reportsRef = ref(db, 'security_alerts');
+    const newReportRef = push(reportsRef);
+    await set(newReportRef, {
+      timestamp: new Date().toISOString(),
+      imageUrl: imageUrl,
+      threatDetected: aiResult.threatDetected,
+      threatLevel: aiResult.threatLevel,
+      description: aiResult.description,
+      modelUsed: usedModel
+    });
 
     // Return the result
     return res.status(200).json({ success: true, result: aiResult });
