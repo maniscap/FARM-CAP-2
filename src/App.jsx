@@ -21,7 +21,7 @@ import ChatBot from './components/ChatBot'
 import Notifications from './components/Notifications'
 import SensorReportView from './components/SensorReportView'
 import SecurityReportView from './components/SecurityReportView'
-import { initializePushNotifications, setupForegroundMessageListener } from './utils/PushNotifications'
+import { initializePushNotifications, setupForegroundMessageListener, setupDatabaseNotificationListener } from './utils/PushNotifications'
 import './App.css'
 
 const PageWrapper = ({ children }) => {
@@ -53,7 +53,12 @@ function App() {
     initializePushNotifications();
     setupForegroundMessageListener();
 
-    return () => clearTimeout(timer);
+    // Listen for database updates directly as a fallback for push notifications
+    setupDatabaseNotificationListener();
+
+    return () => {
+      clearTimeout(timer);
+    }
   }, []);
 
   const handleLogout = async () => {

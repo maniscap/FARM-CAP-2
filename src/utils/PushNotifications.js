@@ -1,4 +1,5 @@
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { getDatabase, ref, onChildAdded, query, orderByChild, limitToLast } from "firebase/database";
 import { app } from "../firebase";
 
 // Ensure messaging is only initialized if supported by the browser
@@ -42,19 +43,50 @@ export const initializePushNotifications = async () => {
 };
 
 // Listen for foreground messages (when the app is actively open)
-export const setupForegroundMessageListener = () => {
+export const setupForegroundMessageListener = (onMessageReceived) => {
   if (!messaging) return;
-
   onMessage(messaging, (payload) => {
     console.log('Message received in foreground: ', payload);
-    
-    // Play SOS Sound if it's a security alert
-    if (payload.data?.type === 'security_alert') {
-      playSOSAlarm();
+    onMessageReceived(payload);
+  });
+};
+
+// Listen directly to the database for new security threats (Bypasses Vercel Admin SDK requirements)
+export const setupDatabaseNotificationListener = () => {
+  if (typeof window === "undefined" || !("Notification" in window)) return;
+  
+  const db = getDatabase(app);
+  const reportsRef = query(ref(db, 'security_reports'), limitToLast(1));
+  
+  let isInitialLoad = true;
+  
+  onChildAdded(reportsRef, (snapshot) => {
+    if (isInitialLoad) {
+      isInitialLoad = false;
+      return; // Ignore old data on first load
     }
     
-    // You can also show a toast notification here
-    alert(`🚨 ALARM: ${payload.notification?.body}`);
+    const data = snapshot.val();
+    if (data && data.threatDetected) {
+      if (Notification.permission === 'granted') {
+        const title = `🚨 FARM THREAT (Level ${data.threatLevel})`;
+        const options = {
+          body: data.description,
+          icon: '/android-chrome-192x192.png',
+          image: data.imageUrl,
+          vibrate: [200, 100, 200, 100, 200]
+        };
+        
+        // Show native notification
+        new Notification(title, options);
+        
+        // Play an alarm sound if the browser allows it
+        try {
+          const audio = new Audio('/alarm.mp3'); // Fallback if exists, else silent
+          audio.play().catch(e => console.log("Audio play blocked by browser:", e));
+        } catch (e) {}
+      }
+    }
   });
 };
 
