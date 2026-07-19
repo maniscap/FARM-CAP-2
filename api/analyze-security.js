@@ -68,19 +68,28 @@ export default async function handler(req, res) {
       console.log("Attempting Gemini AI...");
       console.log("API Key present:", !!geminiKey);
       const ai = new GoogleGenAI({ apiKey: geminiKey });
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.0-flash',
-        contents: [
-          prompt,
-          {
-            inlineData: {
-              data: base64Image,
-              mimeType: imageResponse.headers.get('content-type') || 'image/jpeg',
+      
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error("Gemini API Timeout (10s)")), 10000)
+      );
+
+      const response = await Promise.race([
+        ai.models.generateContent({
+          model: 'gemini-2.0-flash',
+          contents: [
+            prompt,
+            {
+              inlineData: {
+                data: base64Image,
+                mimeType: imageResponse.headers.get('content-type') || 'image/jpeg',
+              }
             }
-          }
-        ],
-        config: { responseMimeType: "application/json" }
-      });
+          ],
+          config: { responseMimeType: "application/json" }
+        }),
+        timeoutPromise
+      ]);
+      
       aiResult = JSON.parse(response.text);
       console.log("✅ Gemini AI succeeded!", JSON.stringify(aiResult));
     } catch (geminiError) {
@@ -94,7 +103,7 @@ export default async function handler(req, res) {
         console.log("OR Key present:", !!orKey);
         
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15-second timeout for OpenRouter
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10-second timeout for OpenRouter
         
         const orRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
           method: "POST",
