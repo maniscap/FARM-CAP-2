@@ -72,7 +72,7 @@ export default function Notifications() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white pb-24">
+    <div className="absolute inset-0 overflow-y-auto bg-[#050505] text-white pb-24">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/10 px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">

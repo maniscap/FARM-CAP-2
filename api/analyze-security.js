@@ -56,50 +56,44 @@ export default async function handler(req, res) {
     let usedModel = 'gemini-2.5-pro';
 
     try {
-      // 1st Attempt: Gemini 2.0 Flash (Vision) via Raw REST API (to support AbortController)
+      // 1st Attempt: Gemini 2.0 Flash via direct REST API
       const geminiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
       console.log("Attempting Gemini AI...");
-      console.log("API Key present:", !!geminiKey);
       
       const geminiController = new AbortController();
-      const geminiTimeout = setTimeout(() => geminiController.abort(), 10000); // Strict 10s kill switch
+      const geminiTimeout = setTimeout(() => geminiController.abort(), 12000);
 
       const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
         method: "POST",
         signal: geminiController.signal,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: [{
-            parts: [
-              { text: prompt },
-              { inline_data: { mime_type: imageResponse.headers.get('content-type') || 'image/jpeg', data: base64Image } }
-            ]
-          }],
+          contents: [{ parts: [
+            { text: prompt },
+            { inline_data: { mime_type: imageResponse.headers.get('content-type') || 'image/jpeg', data: base64Image } }
+          ]}],
           generationConfig: { responseMimeType: "application/json" }
         })
       });
       
       clearTimeout(geminiTimeout);
-
       const geminiData = await geminiRes.json();
       if (!geminiRes.ok) throw new Error(geminiData.error?.message || "Gemini HTTP Error");
       
-      // Parse the JSON block returned inside the text response
       const rawText = geminiData.candidates[0].content.parts[0].text;
       aiResult = JSON.parse(rawText.replace(/```json/g, '').replace(/```/g, '').trim());
+      usedModel = 'gemini-2.0-flash';
       console.log("✅ Gemini AI succeeded!");
     } catch (geminiError) {
-      console.error("❌ Gemini Failed:", geminiError.message, geminiError.status || '', geminiError.code || '');
+      console.error("❌ Gemini Failed:", geminiError.message);
       
       try {
-        // 2nd Attempt: OpenRouter (Llama 3.2 11B Vision Free)
-        usedModel = 'openrouter-llama3.2-vision';
+        // 2nd Attempt: OpenRouter Auto-Free Router (picks best available free vision model)
         const orKey = process.env.OPENROUTER_API_KEY || process.env.VITE_OPENROUTER_API_KEY;
-        console.log("Attempting OpenRouter...");
-        console.log("OR Key present:", !!orKey);
+        console.log("Attempting OpenRouter free router...");
         
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10-second timeout for OpenRouter
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
         
         const orRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
           method: "POST",
@@ -109,11 +103,11 @@ export default async function handler(req, res) {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            model: "google/gemini-2.5-flash-free",
+            model: "openrouter/free",
             messages: [{ 
               role: "user", 
               content: [
-                { type: "text", text: prompt },
+                { type: "text", text: prompt + "\n\nRespond ONLY with valid JSON, no markdown." },
                 { type: "image_url", image_url: { url: imageUrl } }
               ] 
             }]
@@ -123,13 +117,59 @@ export default async function handler(req, res) {
         clearTimeout(timeoutId);
         
         const orText = await orRes.text();
-        console.log("OpenRouter status:", orRes.status, "body:", orText.substring(0, 500));
-        if (!orRes.ok) throw new Error(`OpenRouter API Error: ${orRes.status} - ${orText.substring(0, 200)}`);
+        console.log("OpenRouter status:", orRes.status);
+        if (!orRes.ok) throw new Error(`OpenRouter Error: ${orRes.status} - ${orText.substring(0, 200)}`);
         const orData = JSON.parse(orText);
-        aiResult = JSON.parse(orData.choices[0].message.content);
-        console.log("✅ OpenRouter succeeded!", JSON.stringify(aiResult));
+        const orContent = orData.choices[0].message.content;
+        aiResult = JSON.parse(orContent.replace(/```json/g, '').replace(/```/g, '').trim());
+        usedModel = orData.model || 'openrouter-free';
+        console.log("✅ OpenRouter succeeded! Model:", usedModel);
       } catch (orError) {
         console.error("❌ OpenRouter Failed:", orError.message);
+        
+        try {
+          // 3rd Attempt: Groq (Llama 3.2 Vision - extremely fast)
+          const groqKey = process.env.GROQ_API_KEY || process.env.VITE_GROQ_API_KEY;
+          if (!groqKey) throw new Error("No Groq key");
+          console.log("Attempting Groq Vision...");
+          
+          const groqController = new AbortController();
+          const groqTimeout = setTimeout(() => groqController.abort(), 10000);
+          
+          const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            signal: groqController.signal,
+            headers: {
+              "Authorization": `Bearer ${groqKey}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              model: "llama-3.2-11b-vision-preview",
+              messages: [{ 
+                role: "user", 
+                content: [
+                  { type: "text", text: prompt + "\n\nRespond ONLY with valid JSON." },
+                  { type: "image_url", image_url: { url: imageUrl } }
+                ] 
+              }],
+              temperature: 0.1,
+              max_tokens: 300
+            })
+          });
+          
+          clearTimeout(groqTimeout);
+          
+          const groqText = await groqRes.text();
+          console.log("Groq status:", groqRes.status);
+          if (!groqRes.ok) throw new Error(`Groq Error: ${groqRes.status} - ${groqText.substring(0, 200)}`);
+          const groqData = JSON.parse(groqText);
+          const groqContent = groqData.choices[0].message.content;
+          aiResult = JSON.parse(groqContent.replace(/```json/g, '').replace(/```/g, '').trim());
+          usedModel = 'groq-llama-vision';
+          console.log("✅ Groq succeeded!");
+        } catch (groqError) {
+          console.error("❌ Groq Failed:", groqError.message);
+        }
       }
     }
 

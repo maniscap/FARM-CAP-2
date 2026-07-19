@@ -120,7 +120,7 @@ export default function SecurityReportView() {
   }, {});
 
   return (
-    <div className="h-full overflow-y-auto bg-black text-white">
+    <div className="absolute inset-0 overflow-y-auto bg-black text-white">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/10">
         <div className="flex items-center justify-between p-4 max-w-md mx-auto">
