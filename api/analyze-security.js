@@ -1,24 +1,21 @@
 import { GoogleGenAI } from '@google/genai';
-import { initializeApp, getApps } from 'firebase-admin/app';
-import { getDatabase } from 'firebase-admin/database';
-import { getMessaging } from 'firebase-admin/messaging';
+import { initializeApp, getApps } from 'firebase/app';
+import { getDatabase, ref, push, set } from 'firebase/database';
 
-// Initialize Firebase Admin if it hasn't been initialized yet
-export const maxDuration = 60; // Max allowed on Vercel Hobby tier to prevent 504 Timeouts
-
+// Initialize Firebase Client (Not Admin, to avoid Service Account requirements in Vercel)
 if (getApps().length === 0) {
-  // We use the environment variables stored in Vercel to connect to the database
   initializeApp({
-    // In production on Vercel, to use Firebase Admin securely, you usually need a Service Account Key.
-    // However, to keep this simple for the university project without generating new keys,
-    // we initialize with the databaseURL.
+    apiKey: process.env.VITE_FIREBASE_API_KEY,
+    authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN,
+    databaseURL: process.env.VITE_FIREBASE_DATABASE_URL,
     projectId: process.env.VITE_FIREBASE_PROJECT_ID,
-    databaseURL: process.env.VITE_FIREBASE_DATABASE_URL
+    storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.VITE_FIREBASE_APP_ID
   });
 }
 
 const db = getDatabase();
-const messaging = getMessaging();
 
 export default async function handler(req, res) {
   // Only allow POST requests
@@ -113,15 +110,14 @@ export default async function handler(req, res) {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            model: "meta-llama/llama-3.2-11b-vision-instruct:free",
+            model: "qwen/qwen-vl-plus:free",
             messages: [{ 
               role: "user", 
               content: [
                 { type: "text", text: prompt },
                 { type: "image_url", image_url: { url: imageUrl } }
               ] 
-            }],
-            response_format: { type: "json_object" }
+            }]
           })
         });
         
@@ -148,53 +144,26 @@ export default async function handler(req, res) {
       };
     }
 
-    // 4. If a threat is detected, save to Firebase and send Push Notification
+    // 4. If a threat is detected, save to Firebase
     if (aiResult.threatDetected && aiResult.threatLevel > 5) {
-      const alertData = {
-        timestamp: Date.now(),
+      console.log("Saving report to Firebase...");
+      // Using standard Firebase SDK push/set instead of Admin SDK
+      const reportsRef = ref(db, 'security_reports');
+      const newReportRef = push(reportsRef);
+      await set(newReportRef, {
+        timestamp: new Date().toISOString(),
         imageUrl: imageUrl,
-        description: aiResult.description,
+        threatDetected: aiResult.threatDetected,
         threatLevel: aiResult.threatLevel,
-        status: 'UNRESOLVED'
-      };
+        description: aiResult.description,
+        modelUsed: usedModel
+      });
 
-      // Save to Realtime Database
-      await db.ref('security_alerts').push(alertData);
-
-      // Send Push Notification (FCM) to the topic 'security_alerts'
-      try {
-        await messaging.send({
-          topic: 'security_alerts',
-          notification: {
-            title: '🚨 INTRUDER DETECTED',
-            body: aiResult.description,
-          },
-          android: {
-            priority: 'high',
-            notification: {
-              sound: 'default',
-              defaultVibrateTimings: true,
-              defaultSound: true,
-              channelId: 'high_priority_alerts'
-            }
-          },
-          apns: {
-            payload: {
-              aps: {
-                sound: 'default',
-                'interruption-level': 'time-sensitive'
-              }
-            }
-          },
-          data: {
-            type: 'security_alert',
-            imageUrl: imageUrl
-          }
-        });
-        console.log("Push notification sent!");
-      } catch (fcmError) {
-        console.error("FCM Error (User might not have topics configured yet):", fcmError);
+      /* (Push notifications via Admin SDK removed to fix credentials issue on Vercel)
+      if (aiResult.threatDetected) {
+        // ... (removed)
       }
+      */
     }
 
     // Return the result
