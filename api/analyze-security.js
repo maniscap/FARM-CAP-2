@@ -151,7 +151,7 @@ export default async function handler(req, res) {
     if (aiResult.threatDetected && aiResult.threatLevel > 5) {
       console.log("Saving report to Firebase...");
       // Using standard Firebase SDK push/set instead of Admin SDK
-      const reportsRef = ref(db, 'security_reports');
+      const reportsRef = ref(db, 'security_alerts');
       const newReportRef = push(reportsRef);
       await set(newReportRef, {
         timestamp: new Date().toISOString(),

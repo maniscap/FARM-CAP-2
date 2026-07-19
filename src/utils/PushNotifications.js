@@ -56,7 +56,7 @@ export const setupDatabaseNotificationListener = () => {
   if (typeof window === "undefined" || !("Notification" in window)) return;
   
   const db = getDatabase(app);
-  const reportsRef = query(ref(db, 'security_reports'), limitToLast(1));
+  const reportsRef = query(ref(db, 'security_alerts'), limitToLast(1));
   
   let isInitialLoad = true;
   
