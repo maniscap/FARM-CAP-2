@@ -28,6 +28,7 @@ const char* vercelApiUrl = "https://farm-cap-2.vercel.app/api/analyze-security";
 // ================= HARDWARE PINS =================
 #define PIR_PIN    12
 #define BUZZER_PIN 14
+#define FLASH_PIN  4
 
 // AI Thinker Camera Pins
 #define PWDN_GPIO_NUM     32
@@ -62,9 +63,11 @@ void setup() {
   Serial.println("  FARM CAP 2 - Security Module");
   Serial.println("================================\n");
 
-  pinMode(PIR_PIN, INPUT);
+  pinMode(PIR_PIN, INPUT_PULLDOWN); // Pull LOW to prevent false triggers
   pinMode(BUZZER_PIN, OUTPUT);
+  pinMode(FLASH_PIN, OUTPUT);
   digitalWrite(BUZZER_PIN, LOW);
+  digitalWrite(FLASH_PIN, LOW);
 
   // Initialize Camera with extreme power-saving settings
   camera_config_t cameraConfig;
@@ -86,7 +89,7 @@ void setup() {
   cameraConfig.pin_sccb_scl = SIOC_GPIO_NUM;
   cameraConfig.pin_pwdn = PWDN_GPIO_NUM;
   cameraConfig.pin_reset = RESET_GPIO_NUM;
-  cameraConfig.xclk_freq_hz = 5000000; // 5MHz Ultra-low clock speed to save power
+  cameraConfig.xclk_freq_hz = 20000000; // 20MHz (5MHz is too slow and causes FB-OVF errors)
   cameraConfig.pixel_format = PIXFORMAT_JPEG;
   cameraConfig.grab_mode = CAMERA_GRAB_WHEN_EMPTY; // Required for Core 3.x
 
@@ -104,11 +107,11 @@ void setup() {
     cameraConfig.fb_count = 2;
     cameraConfig.fb_location = CAMERA_FB_IN_PSRAM;
   } else {
-    Serial.println("⚠️ No PSRAM detected - using QQVGA ultra-low memory mode");
-    cameraConfig.frame_size = FRAMESIZE_QQVGA;
-    cameraConfig.jpeg_quality = 20;
+    Serial.println("⚠️ No PSRAM detected - using HVGA memory mode");
+    cameraConfig.frame_size = FRAMESIZE_HVGA; // 480x320
+    cameraConfig.jpeg_quality = 12; // 12 avoids Frame Buffer Overflows in DRAM
     cameraConfig.fb_count = 1;
-    cameraConfig.fb_location = CAMERA_FB_IN_DRAM; // CRITICAL for Core 3.x!
+    cameraConfig.fb_location = CAMERA_FB_IN_DRAM;
   }
 
   esp_err_t err = esp_camera_init(&cameraConfig);
@@ -141,22 +144,33 @@ void loop() {
 
   // If motion is detected AND 15 seconds have passed since the last photo
   if (pirValue == HIGH && (millis() - lastCaptureTime > COOLDOWN_MS)) {
+    // ⚠️ SOFTWARE DEBOUNCE: Since PIR is on 3.3V, we MUST wait 500ms and check again
+    // to filter out the WiFi power drops.
+    delay(500);
+    if (digitalRead(PIR_PIN) == LOW) {
+      return; // It was just WiFi noise, ignore it!
+    }
+
     Serial.println("🚨 MOTION DETECTED! SOUNDING ALARM!");
     lastCaptureTime = millis();
 
-    // Sound the buzzer (3 quick beeps)
+    // Step 1: Turn on flash and let camera auto-exposure adjust
+    digitalWrite(FLASH_PIN, HIGH);
+    delay(1000); // 1 full second for the camera lens to adjust to the bright light
+    camera_fb_t *fb = esp_camera_fb_get();
+    digitalWrite(FLASH_PIN, LOW); // Turn off flash
+    
+    if (!fb) {
+      Serial.println("❌ Camera capture failed!");
+      return;
+    }
+
+    // Step 2: Sound the buzzer (3 quick beeps) AFTER the photo is taken
     for(int i=0; i<3; i++) {
       digitalWrite(BUZZER_PIN, HIGH);
       delay(200);
       digitalWrite(BUZZER_PIN, LOW);
       delay(100);
-    }
-
-    // Step 1: Capture photo
-    camera_fb_t *fb = esp_camera_fb_get();
-    if (!fb) {
-      Serial.println("❌ Camera capture failed!");
-      return;
     }
 
     // Step 2: Upload to Cloudinary
@@ -229,6 +243,7 @@ void triggerAiAnalysis(String imageUrl) {
   HTTPClient http;
   http.begin(vercelApiUrl);
   http.addHeader("Content-Type", "application/json");
+  http.setTimeout(25000); // ⚠️ Wait up to 25 seconds for Vercel AI to reply
 
   String payload = "{\"imageUrl\":\"" + imageUrl + "\"}";
   int httpResponseCode = http.POST(payload);
