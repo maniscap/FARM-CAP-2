@@ -1,5 +1,5 @@
 import { initializeApp, getApps } from 'firebase/app';
-import { getDatabase, ref, push, set } from 'firebase/database';
+import { getDatabase, ref, push, set, update } from 'firebase/database';
 
 // Initialize Firebase Client (Not Admin, to avoid Service Account requirements in Vercel)
 if (getApps().length === 0) {
@@ -22,7 +22,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { imageUrl } = req.body;
+  const { imageUrl, alertId } = req.body;
 
   if (!imageUrl) {
     return res.status(400).json({ error: 'Missing imageUrl in request body' });
@@ -185,16 +185,26 @@ export default async function handler(req, res) {
 
     // 4. Save EVERY detection to Firebase (so all images show in the app)
     console.log("Saving report to Firebase...");
-    const reportsRef = ref(db, 'security_alerts');
-    const newReportRef = push(reportsRef);
-    await set(newReportRef, {
-      timestamp: new Date().toISOString(),
-      imageUrl: imageUrl,
-      threatDetected: aiResult.threatDetected,
-      threatLevel: aiResult.threatLevel,
-      description: aiResult.description,
-      modelUsed: usedModel
-    });
+    if (alertId) {
+      const targetRef = ref(db, `security_alerts/${alertId}`);
+      await update(targetRef, {
+        threatDetected: aiResult.threatDetected,
+        threatLevel: aiResult.threatLevel,
+        description: aiResult.description,
+        modelUsed: usedModel
+      });
+    } else {
+      const reportsRef = ref(db, 'security_alerts');
+      const newReportRef = push(reportsRef);
+      await set(newReportRef, {
+        timestamp: new Date().toISOString(),
+        imageUrl: imageUrl,
+        threatDetected: aiResult.threatDetected,
+        threatLevel: aiResult.threatLevel,
+        description: aiResult.description,
+        modelUsed: usedModel
+      });
+    }
 
     // Return the result
     return res.status(200).json({ success: true, result: aiResult });

@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../firebase';
-import { ref, onValue, query, orderByChild, remove } from 'firebase/database';
+import { ref, onValue, query, orderByChild, remove, update } from 'firebase/database';
 import { idb } from '../utils/idb';
 import { useNavigate } from 'react-router-dom';
 import { 
   ChevronLeft, ShieldCheck, AlertTriangle, Camera, Sparkles, 
-  Maximize2, ArrowLeft, WifiOff, Clock, Eye, Trash2, X
+  Maximize2, ArrowLeft, WifiOff, Clock, Eye, Trash2, X, RefreshCw, Loader2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -13,6 +13,7 @@ const CACHE_KEY = 'security_alerts_cache';
 
 export default function SecurityReportView() {
   const navigate = useNavigate();
+  const containerRef = useRef(null);
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isOffline, setIsOffline] = useState(false);
@@ -20,6 +21,7 @@ export default function SecurityReportView() {
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null); // alert id or 'all'
   const [deleting, setDeleting] = useState(false);
+  const [analyzingId, setAnalyzingId] = useState(null);
 
   useEffect(() => {
     // Load cached data first for instant display
@@ -60,6 +62,47 @@ export default function SecurityReportView() {
 
     return () => unsubscribe();
   }, []);
+
+  // Run AI Vision Analysis on any alert
+  const handleRunAIAnalysis = async (alert) => {
+    if (!alert || !alert.imageUrl || analyzingId) return;
+    setAnalyzingId(alert.id);
+    try {
+      const res = await fetch('/api/analyze-security', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageUrl: alert.imageUrl,
+          alertId: alert.id
+        })
+      });
+      const data = await res.json();
+      if (data.success && data.result) {
+        // Update local state immediately
+        const updated = {
+          ...alert,
+          threatDetected: data.result.threatDetected,
+          threatLevel: data.result.threatLevel,
+          description: data.result.description
+        };
+        setAlerts(prev => prev.map(a => a.id === alert.id ? updated : a));
+        if (selectedAlert && selectedAlert.id === alert.id) {
+          setSelectedAlert(updated);
+        }
+      }
+    } catch (err) {
+      console.error("AI Analysis failed:", err);
+    }
+    setAnalyzingId(null);
+  };
+
+  // Select alert and scroll to top
+  const handleSelectAlert = (alert) => {
+    setSelectedAlert(alert);
+    if (containerRef.current) {
+      containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   // Delete single alert
   const handleDeleteAlert = async (alertId) => {
@@ -119,8 +162,10 @@ export default function SecurityReportView() {
     return groups;
   }, {});
 
+  const activeAlert = selectedAlert || alerts[0] || null;
+
   return (
-    <div className="absolute inset-0 overflow-y-auto bg-black text-white">
+    <div ref={containerRef} className="absolute inset-0 overflow-y-auto bg-black text-white">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/10">
         <div className="flex items-center justify-between p-4 max-w-md mx-auto">
@@ -175,21 +220,23 @@ export default function SecurityReportView() {
       {/* Content */}
       <div className="max-w-md mx-auto px-4 pb-32 pt-4">
         
-        {/* Latest Alert - Hero Card */}
-        {alerts.length > 0 && (
+        {/* Active Alert - Hero Card */}
+        {activeAlert && (
           <motion.div 
-            initial={{ opacity: 0, y: 20 }} 
+            key={activeAlert.id}
+            initial={{ opacity: 0, y: 15 }} 
             animate={{ opacity: 1, y: 0 }}
             className="mb-6"
           >
-            <div className="relative overflow-hidden rounded-3xl border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+            <div className="relative overflow-hidden rounded-3xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.5)] bg-[#111]">
               {/* Image */}
-              <div className="relative w-full h-56 bg-black/80 group">
-                {alerts[0].imageUrl ? (
+              <div className="relative w-full h-64 bg-black group">
+                {activeAlert.imageUrl ? (
                   <img 
-                    src={alerts[0].imageUrl} 
-                    alt="Latest Security Capture" 
-                    className="w-full h-full object-cover"
+                    src={activeAlert.imageUrl} 
+                    alt="Security Capture" 
+                    className="w-full h-full object-cover cursor-pointer"
+                    onClick={() => setFullscreenImage(activeAlert.imageUrl)}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
@@ -198,61 +245,101 @@ export default function SecurityReportView() {
                 )}
                 
                 {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-black/20 pointer-events-none"></div>
                 
-                {/* Enlarge button */}
-                <button 
-                  onClick={() => setFullscreenImage(alerts[0].imageUrl)}
-                  className="absolute top-3 right-14 p-2 rounded-full bg-black/40 hover:bg-black/60 border border-white/20 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <Maximize2 size={16} />
-                </button>
+                {/* Top Action Buttons */}
+                <div className="absolute top-3 right-3 flex items-center gap-2">
+                  <button 
+                    onClick={() => setFullscreenImage(activeAlert.imageUrl)}
+                    className="p-2 rounded-full bg-black/60 hover:bg-black/80 border border-white/20 backdrop-blur-md transition-colors"
+                    title="Fullscreen View"
+                  >
+                    <Maximize2 size={16} />
+                  </button>
 
-                {/* Delete button on hero */}
-                <button 
-                  onClick={() => setDeleteConfirm(alerts[0].id)}
-                  className="absolute top-3 right-3 p-2 rounded-full bg-red-500/40 hover:bg-red-500/60 border border-red-400/30 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <Trash2 size={16} className="text-red-300" />
-                </button>
+                  <button 
+                    onClick={() => setDeleteConfirm(activeAlert.id)}
+                    className="p-2 rounded-full bg-red-500/50 hover:bg-red-500/70 border border-red-400/40 backdrop-blur-md transition-colors"
+                    title="Delete this capture"
+                  >
+                    <Trash2 size={16} className="text-white" />
+                  </button>
+                </div>
 
-                {/* Latest badge */}
-                <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-red-500/80 backdrop-blur-md border border-red-400/30">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white">Latest Capture</span>
+                {/* Badge (Latest vs Selected Snapshot) */}
+                <div className="absolute top-3 left-3 flex items-center gap-2">
+                  {selectedAlert && selectedAlert.id !== alerts[0]?.id ? (
+                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-600/90 backdrop-blur-md border border-blue-400/40 shadow-lg">
+                      <Eye size={12} className="text-white" />
+                      <span className="text-[10px] font-black uppercase tracking-wider text-white">Selected Snapshot</span>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); setSelectedAlert(null); }}
+                        className="ml-1 hover:bg-white/20 rounded-full p-0.5"
+                        title="Back to latest"
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="px-3 py-1 rounded-full bg-red-500/90 backdrop-blur-md border border-red-400/40 shadow-lg">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-white">Latest Capture</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Bottom info overlay */}
                 <div className="absolute bottom-0 left-0 right-0 p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Clock size={12} className="text-white/60" />
-                      <span className="text-xs font-mono text-white/80">
-                        {formatTime(alerts[0].timestamp)} · {formatDate(alerts[0].timestamp)}
+                      <Clock size={14} className="text-white/70" />
+                      <span className="text-xs font-mono text-white font-semibold">
+                        {formatTime(activeAlert.timestamp)} · {formatDate(activeAlert.timestamp)}
                       </span>
                     </div>
-                    {alerts[0].threatLevel !== undefined && (
-                      <div className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${getThreatColor(alerts[0].threatLevel).bg} ${getThreatColor(alerts[0].threatLevel).text} ${getThreatColor(alerts[0].threatLevel).border}`}>
-                        Level {alerts[0].threatLevel} · {getThreatColor(alerts[0].threatLevel).label}
+                    {activeAlert.threatLevel !== undefined && (
+                      <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border shadow-md ${getThreatColor(activeAlert.threatLevel).bg} ${getThreatColor(activeAlert.threatLevel).text} ${getThreatColor(activeAlert.threatLevel).border}`}>
+                        Level {activeAlert.threatLevel} · {getThreatColor(activeAlert.threatLevel).label}
                       </div>
                     )}
                   </div>
                 </div>
               </div>
 
-              {/* AI Analysis */}
-              {alerts[0].description && (
-                <div className={`p-4 border-t ${alerts[0].threatLevel > 5 ? 'bg-red-500/10 border-red-500/20' : 'bg-emerald-500/5 border-emerald-500/15'}`}>
-                  <div className="flex items-start gap-2.5">
-                    <Sparkles size={16} className={`mt-0.5 flex-shrink-0 ${alerts[0].threatLevel > 5 ? 'text-red-400' : 'text-emerald-400'}`} />
-                    <div>
-                      <span className={`font-bold text-xs uppercase tracking-wider ${alerts[0].threatLevel > 5 ? 'text-red-400' : 'text-emerald-400'}`}>
-                        AI Analysis
+              {/* AI Analysis Section */}
+              <div className={`p-4 border-t ${activeAlert.threatLevel > 5 ? 'bg-red-500/10 border-red-500/25' : 'bg-emerald-500/10 border-emerald-500/20'}`}>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-2.5 flex-1 min-w-0">
+                    <Sparkles size={18} className={`mt-0.5 flex-shrink-0 ${activeAlert.threatLevel > 5 ? 'text-red-400' : 'text-emerald-400'}`} />
+                    <div className="flex-1 min-w-0">
+                      <span className={`font-bold text-xs uppercase tracking-wider ${activeAlert.threatLevel > 5 ? 'text-red-400' : 'text-emerald-400'}`}>
+                        AI Threat Analysis
                       </span>
-                      <p className="text-sm text-white/80 mt-1 leading-relaxed">{alerts[0].description}</p>
+                      <p className="text-sm text-white/90 mt-1 leading-relaxed">
+                        {activeAlert.description || 'Motion detected. Click below to analyze with AI vision.'}
+                      </p>
                     </div>
                   </div>
+
+                  {/* Re-analyze with AI button */}
+                  <button
+                    onClick={() => handleRunAIAnalysis(activeAlert)}
+                    disabled={analyzingId === activeAlert.id}
+                    className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-[10px] font-bold tracking-wider text-white active:scale-95 transition-all disabled:opacity-50"
+                  >
+                    {analyzingId === activeAlert.id ? (
+                      <>
+                        <Loader2 size={12} className="animate-spin text-emerald-400" />
+                        <span>Analyzing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles size={12} className="text-emerald-400" />
+                        <span>Run AI</span>
+                      </>
+                    )}
+                  </button>
                 </div>
-              )}
+              </div>
             </div>
           </motion.div>
         )}
@@ -277,127 +364,95 @@ export default function SecurityReportView() {
         {/* Alert History Timeline */}
         {Object.keys(groupedAlerts).length > 0 && (
           <div>
-            <h2 className="text-sm font-bold uppercase tracking-widest text-white/40 mb-4 flex items-center gap-2">
-              <Eye size={14} /> Alert History
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-white/50 flex items-center gap-2">
+                <Eye size={14} /> Gallery & History ({alerts.length})
+              </h2>
+              {selectedAlert && (
+                <button
+                  onClick={() => setSelectedAlert(null)}
+                  className="text-[10px] text-blue-400 hover:text-blue-300 font-bold uppercase tracking-wider"
+                >
+                  Reset to Latest
+                </button>
+              )}
+            </div>
 
-            {Object.entries(groupedAlerts).map(([dateKey, dateAlerts], groupIndex) => (
+            {Object.entries(groupedAlerts).map(([dateKey, dateAlerts]) => (
               <div key={dateKey} className="mb-6">
                 {/* Date Header */}
                 <div className="flex items-center gap-3 mb-3">
                   <span className="text-xs font-bold text-white/50 uppercase tracking-wider">{dateKey}</span>
                   <div className="flex-1 h-px bg-white/10"></div>
-                  <span className="text-[10px] text-white/30 font-mono">{dateAlerts.length} alert{dateAlerts.length !== 1 ? 's' : ''}</span>
+                  <span className="text-[10px] text-white/30 font-mono">{dateAlerts.length} snapshot{dateAlerts.length !== 1 ? 's' : ''}</span>
                 </div>
 
                 {/* Alert Cards */}
                 <div className="space-y-3">
                   {dateAlerts.map((alert, index) => {
                     const threat = getThreatColor(alert.threatLevel);
-                    // Skip the first alert if it's the first group (already shown as hero)
-                    if (groupIndex === 0 && index === 0) return null;
+                    const isSelected = activeAlert?.id === alert.id;
                     
                     return (
                       <motion.div
                         key={alert.id}
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                        className="flex gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/8 transition-colors cursor-pointer active:scale-[0.98] group/card"
+                        transition={{ delay: Math.min(index * 0.03, 0.3) }}
+                        onClick={() => handleSelectAlert(alert)}
+                        className={`flex gap-3 p-3 rounded-2xl border transition-all cursor-pointer active:scale-[0.98] group/card ${
+                          isSelected 
+                            ? 'bg-white/15 border-emerald-500/60 ring-2 ring-emerald-500/20 shadow-lg' 
+                            : 'bg-white/5 border-white/10 hover:bg-white/10'
+                        }`}
                       >
                         {/* Thumbnail */}
-                        <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-black/40 border border-white/10"
-                          onClick={() => setSelectedAlert(selectedAlert?.id === alert.id ? null : alert)}
-                        >
+                        <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-black/40 border border-white/10 relative">
                           {alert.imageUrl ? (
                             <img 
                               src={alert.imageUrl} 
                               alt="Alert" 
                               className="w-full h-full object-cover"
-                              onClick={(e) => { e.stopPropagation(); setFullscreenImage(alert.imageUrl); }}
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
                               <Camera size={16} className="text-white/20" />
                             </div>
                           )}
+                          {isSelected && (
+                            <div className="absolute inset-0 bg-emerald-500/20 flex items-center justify-center">
+                              <Eye size={16} className="text-emerald-300 drop-shadow" />
+                            </div>
+                          )}
                         </div>
 
                         {/* Info */}
-                        <div className="flex-1 min-w-0"
-                          onClick={() => setSelectedAlert(selectedAlert?.id === alert.id ? null : alert)}
-                        >
+                        <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between mb-1">
-                            <span className="text-xs font-mono text-white/50">{formatTime(alert.timestamp)}</span>
+                            <span className="text-xs font-mono text-white/70 font-semibold">{formatTime(alert.timestamp)}</span>
                             <div className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border ${threat.bg} ${threat.text} ${threat.border}`}>
                               {threat.label}
                             </div>
                           </div>
-                          <p className="text-xs text-white/70 leading-relaxed line-clamp-2">
-                            {alert.description || 'Motion detected — no AI analysis available.'}
+                          <p className="text-xs text-white/80 leading-relaxed line-clamp-2">
+                            {alert.description || 'Motion detected.'}
                           </p>
                         </div>
 
-                        {/* Delete button */}
-                        <button
-                          onClick={(e) => { e.stopPropagation(); setDeleteConfirm(alert.id); }}
-                          className="flex-shrink-0 self-center p-2 rounded-full opacity-0 group-hover/card:opacity-100 hover:bg-red-500/20 transition-all"
-                        >
-                          <Trash2 size={14} className="text-red-400/70" />
-                        </button>
+                        {/* Quick Action Buttons */}
+                        <div className="flex flex-col items-center justify-center gap-1">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setDeleteConfirm(alert.id); }}
+                            className="p-1.5 rounded-full text-white/30 hover:text-red-400 hover:bg-red-500/20 transition-all"
+                            title="Delete"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
                       </motion.div>
                     );
                   })}
                 </div>
-
-                {/* Expanded Detail */}
-                <AnimatePresence>
-                  {selectedAlert && dateAlerts.find(a => a.id === selectedAlert.id) && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden mt-3"
-                    >
-                      <div className="rounded-2xl border border-white/15 overflow-hidden bg-white/5">
-                        {selectedAlert.imageUrl && (
-                          <img 
-                            src={selectedAlert.imageUrl} 
-                            alt="Full Alert" 
-                            className="w-full h-48 object-cover cursor-pointer"
-                            onClick={() => setFullscreenImage(selectedAlert.imageUrl)}
-                          />
-                        )}
-                        <div className="p-4">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Sparkles size={14} className={getThreatColor(selectedAlert.threatLevel).text} />
-                            <span className={`text-xs font-bold uppercase tracking-wider ${getThreatColor(selectedAlert.threatLevel).text}`}>
-                              Threat Level: {selectedAlert.threatLevel || 0} / 10
-                            </span>
-                          </div>
-                          <p className="text-sm text-white/80 leading-relaxed">
-                            {selectedAlert.description || 'No analysis available for this alert.'}
-                          </p>
-                          <div className="mt-3 flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-white/40">
-                              <Clock size={12} />
-                              <span className="text-[10px] font-mono">
-                                {new Date(selectedAlert.timestamp).toLocaleString()}
-                              </span>
-                            </div>
-                            <button
-                              onClick={() => setDeleteConfirm(selectedAlert.id)}
-                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-500/20 border border-red-500/30 hover:bg-red-500/30 transition-colors"
-                            >
-                              <Trash2 size={12} className="text-red-400" />
-                              <span className="text-[10px] font-bold text-red-400">Delete</span>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </div>
             ))}
           </div>
