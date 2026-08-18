@@ -56,14 +56,14 @@ export default async function handler(req, res) {
     let usedModel = 'gemini-2.5-pro';
 
     try {
-      // 1st Attempt: Gemini 2.0 Flash via direct REST API
+      // 1st Attempt: Gemini 2.5 Flash via direct REST API
       const geminiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
-      console.log("Attempting Gemini AI...");
+      console.log("Attempting Gemini 2.5 Flash AI...");
       
       const geminiController = new AbortController();
       const geminiTimeout = setTimeout(() => geminiController.abort(), 12000);
 
-      const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
+      const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
         method: "POST",
         signal: geminiController.signal,
         headers: { "Content-Type": "application/json" },
@@ -82,94 +82,42 @@ export default async function handler(req, res) {
       
       const rawText = geminiData.candidates[0].content.parts[0].text;
       aiResult = JSON.parse(rawText.replace(/```json/g, '').replace(/```/g, '').trim());
-      usedModel = 'gemini-2.0-flash';
+      usedModel = 'gemini-2.5-flash';
       console.log("✅ Gemini AI succeeded!");
     } catch (geminiError) {
-      console.error("❌ Gemini Failed:", geminiError.message);
+      console.error("❌ Gemini 2.5 Flash Failed:", geminiError.message);
       
       try {
-        // 2nd Attempt: OpenRouter Auto-Free Router (picks best available free vision model)
-        const orKey = process.env.OPENROUTER_API_KEY || process.env.VITE_OPENROUTER_API_KEY;
-        console.log("Attempting OpenRouter free router...");
+        // 2nd Attempt: Gemini 2.5 Flash Lite
+        const geminiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
+        console.log("Attempting Gemini 2.5 Flash Lite...");
         
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000);
-        
-        const orRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        const liteController = new AbortController();
+        const liteTimeout = setTimeout(() => liteController.abort(), 12000);
+
+        const liteRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${geminiKey}`, {
           method: "POST",
-          signal: controller.signal,
-          headers: {
-            "Authorization": `Bearer ${orKey}`,
-            "Content-Type": "application/json"
-          },
+          signal: liteController.signal,
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            model: "openrouter/free",
-            messages: [{ 
-              role: "user", 
-              content: [
-                { type: "text", text: prompt + "\n\nRespond ONLY with valid JSON, no markdown." },
-                { type: "image_url", image_url: { url: imageUrl } }
-              ] 
-            }]
+            contents: [{ parts: [
+              { text: prompt },
+              { inline_data: { mime_type: imageResponse.headers.get('content-type') || 'image/jpeg', data: base64Image } }
+            ]}],
+            generationConfig: { responseMimeType: "application/json" }
           })
         });
-        
-        clearTimeout(timeoutId);
-        
-        const orText = await orRes.text();
-        console.log("OpenRouter status:", orRes.status);
-        if (!orRes.ok) throw new Error(`OpenRouter Error: ${orRes.status} - ${orText.substring(0, 200)}`);
-        const orData = JSON.parse(orText);
-        const orContent = orData.choices[0].message.content;
-        aiResult = JSON.parse(orContent.replace(/```json/g, '').replace(/```/g, '').trim());
-        usedModel = orData.model || 'openrouter-free';
-        console.log("✅ OpenRouter succeeded! Model:", usedModel);
-      } catch (orError) {
-        console.error("❌ OpenRouter Failed:", orError.message);
-        
-        try {
-          // 3rd Attempt: Groq (Llama 3.2 Vision - extremely fast)
-          const groqKey = process.env.GROQ_API_KEY || process.env.VITE_GROQ_API_KEY;
-          if (!groqKey) throw new Error("No Groq key");
-          console.log("Attempting Groq Vision...");
-          
-          const groqController = new AbortController();
-          const groqTimeout = setTimeout(() => groqController.abort(), 10000);
-          
-          const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            signal: groqController.signal,
-            headers: {
-              "Authorization": `Bearer ${groqKey}`,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              model: "llama-3.2-11b-vision-preview",
-              messages: [{ 
-                role: "user", 
-                content: [
-                  { type: "text", text: prompt + "\n\nRespond ONLY with valid JSON." },
-                  { type: "image_url", image_url: { url: imageUrl } }
-                ] 
-              }],
-              temperature: 0.1,
-              max_tokens: 300
-            })
-          });
-          
-          clearTimeout(groqTimeout);
-          
-          const groqText = await groqRes.text();
-          console.log("Groq status:", groqRes.status);
-          if (!groqRes.ok) throw new Error(`Groq Error: ${groqRes.status} - ${groqText.substring(0, 200)}`);
-          const groqData = JSON.parse(groqText);
-          const groqContent = groqData.choices[0].message.content;
-          aiResult = JSON.parse(groqContent.replace(/```json/g, '').replace(/```/g, '').trim());
-          usedModel = 'groq-llama-vision';
-          console.log("✅ Groq succeeded!");
-        } catch (groqError) {
-          console.error("❌ Groq Failed:", groqError.message);
-        }
+
+        clearTimeout(liteTimeout);
+        const liteData = await liteRes.json();
+        if (!liteRes.ok) throw new Error(liteData.error?.message || "Gemini Lite HTTP Error");
+
+        const rawText = liteData.candidates[0].content.parts[0].text;
+        aiResult = JSON.parse(rawText.replace(/```json/g, '').replace(/```/g, '').trim());
+        usedModel = 'gemini-2.5-flash-lite';
+        console.log("✅ Gemini Lite succeeded!");
+      } catch (liteError) {
+        console.error("❌ Gemini Lite Failed:", liteError.message);
       }
     }
 
