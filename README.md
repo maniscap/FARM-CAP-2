@@ -1,7 +1,7 @@
-<div align="center">
+ï»¿<div align="center">
 
-# ?? FARMCAP 2 — SMART AGRITECH & IOT ECOSYSTEM
-### *AI-Powered Farm Intelligence • Real-Time IoT Telemetry • GPS Land Surveyor • Live CCTV*
+# ?? FARMCAP 2 â€” SMART AGRITECH & IOT ECOSYSTEM
+### *AI-Powered Farm Intelligence â€¢ Real-Time IoT Telemetry â€¢ GPS Land Surveyor â€¢ Live CCTV*
 
 [![React 19](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![Vite](https://img.shields.io/badge/Vite-8.1-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -14,10 +14,10 @@
 <br/>
 
 <p align="center">
-  <a href="#-system-architecture"><b>Architecture</b></a> •
-  <a href="#-core-modules"><b>Core Modules</b></a> •
-  <a href="#-iot-sensors--security"><b>IoT & Security</b></a> •
-  <a href="#-quick-start"><b>Quick Start</b></a> •
+  <a href="#-system-architecture"><b>Architecture</b></a> â€¢
+  <a href="#-core-modules"><b>Core Modules</b></a> â€¢
+  <a href="#-iot-sensors--security"><b>IoT & Security</b></a> â€¢
+  <a href="#-quick-start"><b>Quick Start</b></a> â€¢
   <a href="#-project-structure"><b>Structure</b></a>
 </p>
 
@@ -144,23 +144,23 @@ Open **`http://localhost:5173`** in your browser to launch the farm dashboard!
 FARM-CAP-2/
 +-- public/                     # ?? Static assets & PWA manifest
 +-- src/
-¦   +-- components/
-¦   ¦   +-- BottomNav.jsx       # ?? Mobile bottom navigation bar
-¦   ¦   +-- ChatBot.jsx         # ?? Gemini AI Farm Assistant interface
-¦   ¦   +-- CropExpenses.jsx    # ?? Crop expenditure ledger & balance sheet
-¦   ¦   +-- FarmSecurityCard.jsx# ?? Live HLS video surveillance viewer
-¦   ¦   +-- GPSMeasurement.jsx  # ??? GPS field boundary surveyor & acreage calculator
-¦   ¦   +-- MarketRates.jsx     # ?? State-wise Mandi market pricing board
-¦   ¦   +-- Radio.jsx           # ?? Agricultural Kisan radio player
-¦   ¦   +-- SensorDashboard.jsx # ?? Real-time IoT sensor telemetry & graphs
-¦   ¦   +-- Weather.jsx         # ? Doppler weather forecasts & rain alerts
-¦   +-- services/
-¦   ¦   +-- AiBrain.js          # ?? Gemini API integration & prompt engine
-¦   ¦   +-- idb.js              # ?? IndexedDB offline caching service
-¦   ¦   +-- PushNotifications.js# ?? Real-time browser push notifications
-¦   +-- firebase.js             # ?? Cloud Firestore initialization
-¦   +-- App.jsx                 # ?? Root component & state management
-¦   +-- index.css               # ?? Tailwind CSS v4 design tokens
+Â¦   +-- components/
+Â¦   Â¦   +-- BottomNav.jsx       # ?? Mobile bottom navigation bar
+Â¦   Â¦   +-- ChatBot.jsx         # ?? Gemini AI Farm Assistant interface
+Â¦   Â¦   +-- CropExpenses.jsx    # ?? Crop expenditure ledger & balance sheet
+Â¦   Â¦   +-- FarmSecurityCard.jsx# ?? Live HLS video surveillance viewer
+Â¦   Â¦   +-- GPSMeasurement.jsx  # ??? GPS field boundary surveyor & acreage calculator
+Â¦   Â¦   +-- MarketRates.jsx     # ?? State-wise Mandi market pricing board
+Â¦   Â¦   +-- Radio.jsx           # ?? Agricultural Kisan radio player
+Â¦   Â¦   +-- SensorDashboard.jsx # ?? Real-time IoT sensor telemetry & graphs
+Â¦   Â¦   +-- Weather.jsx         # ? Doppler weather forecasts & rain alerts
+Â¦   +-- services/
+Â¦   Â¦   +-- AiBrain.js          # ?? Gemini API integration & prompt engine
+Â¦   Â¦   +-- idb.js              # ?? IndexedDB offline caching service
+Â¦   Â¦   +-- PushNotifications.js# ?? Real-time browser push notifications
+Â¦   +-- firebase.js             # ?? Cloud Firestore initialization
+Â¦   +-- App.jsx                 # ?? Root component & state management
+Â¦   +-- index.css               # ?? Tailwind CSS v4 design tokens
 +-- index.html
 +-- package.json
 +-- vite.config.js
