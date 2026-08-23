@@ -1,6 +1,6 @@
 ﻿<div align="center">
 
-<img src="./public/farmcap2_snowfall.gif" width="100%" alt="FarmCap 2 Banner" />
+<img src="./public/winter_atmosphere_snowfall.gif" width="100%" alt="Winter Atmosphere Snowfall" />
 
 
 # FARMCAP 2 — SMART AGRITECH & IOT ECOSYSTEM
