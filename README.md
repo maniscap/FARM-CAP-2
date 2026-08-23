@@ -166,16 +166,8 @@ FARM-CAP-2/
 
 ---
 
-<div align="center">
-  <sub>Engineered with precision for precision agriculture. FarmCap Agritech Suite &copy; 2026 Mani.</sub>
-</div>
-
 ---
 
 <div align="center">
-  <img src="./public/footer_aurora_clean.gif" width="100%" alt="Aesthetic Horizon Aurora" />
-  <br/>
-  <p align="center">
-    <sub>Engineered with precision for modern agritech intelligence. FarmCap 2 IoT Suite © 2026 Mani.</sub>
-  </p>
+  <sub>Precision agritech IoT sensor telemetry & AI agronomy advisory. MIT Licensed.</sub>
 </div>
