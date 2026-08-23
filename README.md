@@ -1,5 +1,8 @@
 ﻿<div align="center">
 
+<img src="./public/farmcap2_snowfall.gif" width="100%" alt="FarmCap 2 Banner" />
+
+
 # FARMCAP 2 — SMART AGRITECH & IOT ECOSYSTEM
 ### *AI-Powered Farm Intelligence • Real-Time IoT Telemetry • GPS Land Surveyor • Live CCTV*
 
@@ -25,16 +28,14 @@
 
 </div>
 
-## Overview
-
+## 📡 Overview
 **FarmCap 2** is an all-in-one Smart Agriculture & IoT Management Platform engineered to modernize precision farming for rural agriculturists. 
 
 By combining **ESP32 IoT sensor telemetry**, **Google Gemini AI agronomy advisory**, **sub-meter GPS perimeter land surveying**, **live HLS camera surveillance**, and **real-time Mandi market rates**, FarmCap 2 equips farmers with actionable data to maximize crop yields and cut operational expenditures.
 
 ---
 
-## System Architecture
-
+## 🏗️ System Architecture
 ```mermaid
 flowchart TD
     classDef iot fill:#14532d,stroke:#22c55e,stroke-width:2px,color:#fff;
@@ -42,20 +43,20 @@ flowchart TD
     classDef client fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff;
     classDef cloud fill:#451a03,stroke:#f59e0b,stroke-width:2px,color:#fff;
 
-    subgraph FarmSensors["Farm IoT Hardware & Cameras"]
-        ESP32["ESP32 Sensor Hub (Moisture, Temp, Humidity)"]:::iot
-        CCTV["Live HLS Video Stream (Farm Security)"]:::iot
-        GPSNode["GPS Geolocation Satellite Stream"]:::iot
+    subgraph FarmSensors["📡 Farm IoT Hardware & Cameras"]
+        ESP32["🌡️ ESP32 Sensor Hub (Moisture, Temp, Humidity)"]:::iot
+        CCTV["📹 Live HLS Video Stream (Farm Security)"]:::iot
+        GPSNode["📍 GPS Geolocation Satellite Stream"]:::iot
     end
 
-    subgraph BackendCloud["Cloud Data & AI Engine"]
+    subgraph BackendCloud["☁️ Cloud Data & AI Engine"]
         Firebase["Cloud Firestore & Realtime DB"]:::cloud
         Gemini["Google Gemini 2.5 Agritech Model"]:::ai
-        MandiAPI["National Mandi Market Rate Index"]:::cloud
+        MandiAPI["💰 National Mandi Market Rate Index"]:::cloud
         WeatherAPI["Live Doppler Weather Radar"]:::cloud
     end
 
-    subgraph Dashboard["FarmCap 2 Central Command PWA"]
+    subgraph Dashboard["🖥️ FarmCap 2 Central Command PWA"]
         SensorDash["Live Sensor Dashboard & Threshold Alerts"]:::client
         AIChat["AI Crop & Soil Doctor (AiBrain)"]:::ai
         GPSMeasure["GPS Field Boundary & Acreage Surveyor"]:::client
@@ -74,12 +75,11 @@ flowchart TD
 
 ---
 
-## Core Innovation & Capabilities
-
+## 🧩 Core Innovation & Capabilities
 <table>
   <tr>
     <td width="50%" valign="top">
-      <h3>IoT Sensor Dashboard & Alerts</h3>
+      <h3>🌡️ IoT Sensor Dashboard & Alerts</h3>
       <ul>
         <li><b>Telemetry:</b> Real-time soil moisture percentage, ambient temperature, humidity levels, and irrigation valve state.</li>
         <li><b>Threshold Triggers:</b> Automated push notifications when soil dries below optimal moisture levels.</li>
@@ -87,7 +87,7 @@ flowchart TD
       </ul>
     </td>
     <td width="50%" valign="top">
-      <h3>Gemini Agronomy Doctor</h3>
+      <h3>🤖 Gemini Agronomy Doctor</h3>
       <ul>
         <li><b>Plant Pathology Analysis:</b> Instant diagnosis of leaf pests, fungi, and nutrient deficiencies.</li>
         <li><b>Localized Care Plans:</b> Organic and chemical treatment schedules tailored to regional climates.</li>
@@ -97,7 +97,7 @@ flowchart TD
   </tr>
   <tr>
     <td width="50%" valign="top">
-      <h3>GPS Land & Acreage Surveyor</h3>
+      <h3>🗺️ GPS Land & Acreage Surveyor</h3>
       <ul>
         <li><b>Polygon Field Mapping:</b> Walk your farm boundary to calculate exact acreage, hectares, and perimeter.</li>
         <li><b>High-Precision Polygon Rendering:</b> Powered by Leaflet Maps and Turf.js geometry calculations.</li>
@@ -117,9 +117,8 @@ flowchart TD
 
 ---
 
-## Quick Start Guide
-
-### Prerequisites
+## 🚀 Quick Start Guide
+### ⚙️ Prerequisites
 * **Node.js** `v18+` & **npm**
 
 ```bash
@@ -138,8 +137,7 @@ Open **`http://localhost:5173`** in your browser to launch the farm dashboard!
 
 ---
 
-## Repository Structure
-
+## 📂 Repository Structure
 ```
 FARM-CAP-2/
 +-- public/                     # Static assets & PWA manifest
