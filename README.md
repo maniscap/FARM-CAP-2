@@ -123,7 +123,7 @@ flowchart TD
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/maniscap/FARM-CAP-2.git
+git clone https://github.com/Tharun8994/FARM-CAP-2.git
 cd FARM-CAP-2
 
 # 2. Install dependencies
